@@ -68,5 +68,14 @@ namespace Sm4shAIEditor.Properties {
                 return ResourceManager.GetString("OpenFileFilter", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smash 4 AI Editor.
+        /// </summary>
+        internal static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
     }
 }

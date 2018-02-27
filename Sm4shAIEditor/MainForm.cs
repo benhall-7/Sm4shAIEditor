@@ -18,6 +18,7 @@ namespace Sm4shAIEditor
         public MainForm()
         {
             InitializeComponent();
+            this.Text = Properties.Resources.Title;
         }
 
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -28,6 +29,8 @@ namespace Sm4shAIEditor
             {
                 LoadFile(openFile.FileName);
             }
+
+            UpdateTreeView();
         }
 
         private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -37,6 +40,8 @@ namespace Sm4shAIEditor
             {
                 LoadFighter(openFighter.SelectedPath);
             }
+
+            UpdateTreeView();
         }
 
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
@@ -50,6 +55,8 @@ namespace Sm4shAIEditor
                     LoadFighter(fighter);
                 }
             }
+
+            UpdateTreeView();
         }
 
         private void LoadFile(string fileDirectory)
@@ -67,7 +74,6 @@ namespace Sm4shAIEditor
                     status_TB.Text += String.Format("Error loading file '{0}' in '{1}'", fileName, parent) + Environment.NewLine;
                 }
             }
-            UpdateTreeView();
         }
 
         private void LoadFighter(string fighterDirectory)
@@ -85,19 +91,30 @@ namespace Sm4shAIEditor
                     status_TB.Text += String.Format("Error loading fighter '{0}'; cannot find any AI files in the directory", fighterName) + Environment.NewLine; 
                 }
             }
-            UpdateTreeView();
         }
 
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
+
+            //basic files first
+            string[][] fileInfo = tree.GetFileInfo();
+            int fileCount = fileInfo.Length;
+            for (int i = 0; i < fileCount; i++)
+            {
+                string directory = fileInfo[i][0];
+                TreeNode node = new TreeNode(fileInfo[i][0]);
+                treeView.Nodes.Add(node);
+            }
+
+            //fighters after
             string[] fighters = tree.GetFighterNames();
             foreach (string fighter in fighters)
             {
                 string[][] fighterFileInfo = tree.GetFighterFileInfoFromName(fighter);
-                int fileCount = fighterFileInfo.Length;
-                TreeNode[] children = new TreeNode[fileCount];
-                for (int i=0; i < fileCount; i++)
+                int fighterFileCount = fighterFileInfo.Length;
+                TreeNode[] children = new TreeNode[fighterFileCount];
+                for (int i=0; i < fighterFileCount; i++)
                 {
                     children[i] = new TreeNode(fighterFileInfo[i][1]);
                 }

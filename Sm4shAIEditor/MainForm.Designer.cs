@@ -37,7 +37,7 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
-            this.status_TB = new System.Windows.Forms.TextBox();
+            this.status_TB = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,7 +110,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Location = new System.Drawing.Point(12, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(200, 318);
+            this.treeView.Size = new System.Drawing.Size(200, 300);
             this.treeView.TabIndex = 1;
             // 
             // status_TB
@@ -118,17 +118,14 @@
             this.status_TB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.status_TB.BackColor = System.Drawing.SystemColors.InfoText;
-            this.status_TB.Enabled = false;
-            this.status_TB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.status_TB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.status_TB.ForeColor = System.Drawing.SystemColors.Info;
-            this.status_TB.Location = new System.Drawing.Point(12, 351);
-            this.status_TB.MinimumSize = new System.Drawing.Size(200, 100);
-            this.status_TB.Multiline = true;
+            this.status_TB.Location = new System.Drawing.Point(12, 333);
             this.status_TB.Name = "status_TB";
             this.status_TB.ReadOnly = true;
-            this.status_TB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.status_TB.Size = new System.Drawing.Size(760, 100);
+            this.status_TB.Size = new System.Drawing.Size(760, 116);
             this.status_TB.TabIndex = 2;
+            this.status_TB.Text = "";
             // 
             // MainForm
             // 
@@ -139,7 +136,7 @@
             this.Controls.Add(this.treeView);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(400, 300);
+            this.MinimumSize = new System.Drawing.Size(400, 350);
             this.Name = "MainForm";
             this.Text = "Form1";
             this.menuStrip1.ResumeLayout(false);
@@ -160,7 +157,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAndCloseToolStripMenuItem;
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ToolStripMenuItem openAllFightersToolStripMenuItem;
-        private System.Windows.Forms.TextBox status_TB;
+        private System.Windows.Forms.RichTextBox status_TB;
     }
 }
 
