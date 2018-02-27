@@ -49,7 +49,6 @@ namespace Sm4shAIEditor
                 {
                     LoadFighter(fighter);
                 }
-                fighterDirectories[0] += "";
             }
         }
 
