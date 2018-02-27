@@ -53,6 +53,8 @@ namespace Sm4shAIEditor
                         }
                     }
                 }
+                if (files.Count == 0)
+                    throw new Exception();
             }
         }
 

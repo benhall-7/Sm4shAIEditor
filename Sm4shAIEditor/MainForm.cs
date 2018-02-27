@@ -81,7 +81,7 @@ namespace Sm4shAIEditor
                 }
                 catch
                 {
-
+                    status_TB.Text += String.Format("Error loading fighter '{0}' ", fighterName) + Environment.NewLine; 
                 }
             }
         }
