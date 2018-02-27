@@ -91,6 +91,19 @@ namespace Sm4shAIEditor
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
+            string[] fighters = tree.GetFighterNames();
+            foreach (string fighter in fighters)
+            {
+                string[][] fighterFileInfo = tree.GetFighterFileInfoFromName(fighter);
+                int fileCount = fighterFileInfo.Length;
+                TreeNode[] children = new TreeNode[fileCount];
+                for (int i=0; i < fileCount; i++)
+                {
+                    children[i] = new TreeNode(fighterFileInfo[i][1]);
+                }
+                TreeNode node = new TreeNode(fighter, children);
+                treeView.Nodes.Add(node);
+            }
         }
     }
 }
