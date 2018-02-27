@@ -67,6 +67,7 @@ namespace Sm4shAIEditor
                     status_TB.Text += String.Format("Error loading file '{0}' in '{1}'", fileName, parent) + Environment.NewLine;
                 }
             }
+            UpdateTreeView();
         }
 
         private void LoadFighter(string fighterDirectory)
@@ -84,6 +85,12 @@ namespace Sm4shAIEditor
                     status_TB.Text += String.Format("Error loading fighter '{0}'; cannot find any AI files in the directory", fighterName) + Environment.NewLine; 
                 }
             }
+            UpdateTreeView();
+        }
+
+        private void UpdateTreeView()
+        {
+            treeView.Nodes.Clear();
         }
     }
 }

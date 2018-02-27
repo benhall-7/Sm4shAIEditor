@@ -32,8 +32,8 @@ namespace Sm4shAIEditor
 
         private class AIFighter
         {
-            private List<AIFile> files { get; set; }
-            private string fighterName { get; set; }
+            public List<AIFile> files { get; set; }
+            public string fighterName { get; set; }
 
             public AIFighter(string directory, string name)
             {
@@ -65,28 +65,8 @@ namespace Sm4shAIEditor
                 fileName = name;
                 fileDir = dir;
             }
-            private string fileName { get; set; }
-            private string fileDir { get; set; }
-        }
-
-        //including a fighter folder will automatically try to find the files
-        public void AddFighter(string fighterDirectory, string fighterName)
-        {
-            AIFighter newFighter = new AIFighter(fighterDirectory, fighterName);
-            fighters.Add(newFighter);
-        }
-
-        //will not be a child of fighter, thus you may get the names confused with multiple. They'll display it somehow...
-        public void AddFile(string fileDirectory, string fileName)
-        {
-            bool canLoad = CheckFileHeader(fileDirectory, fileName);
-            if (canLoad)
-            {
-                AIFile newFile = new AIFile(fileDirectory, fileName);
-                files.Add(newFile);
-            }
-            else
-                throw new Exception();
+            public string fileDir { get; set; }
+            public string fileName { get; set; }
         }
 
         private static bool CheckFileHeader(string fileDirectory, string fileName)
@@ -103,6 +83,111 @@ namespace Sm4shAIEditor
                 isType = true;
 
             return isType;
+        }
+
+        //including a fighter folder will automatically try to find the files
+        public void AddFighter(string fighterDirectory, string fighterName)
+        {
+            string[] currentNames = GetFighterNames();
+            if (currentNames.Contains(fighterName))
+            {
+                throw new Exception();
+            }
+            AIFighter newFighter = new AIFighter(fighterDirectory, fighterName);
+            fighters.Add(newFighter);
+        }
+
+        //will not be a child of fighter, thus you may get the names confused with multiple. They'll display it somehow...
+        public void AddFile(string fileDirectory, string fileName)
+        {
+            //don't load the same file twice pls
+            string[][] currentFiles = GetFileInfo();
+            int currentFileCount = currentFiles.Length;
+            for (int i = 0 ; i < currentFileCount; i++)
+            {
+                if (fileName == currentFiles[i][1])
+                    throw new Exception();
+            }
+
+            bool canLoad = CheckFileHeader(fileDirectory, fileName);
+            if (canLoad)
+            {
+                AIFile newFile = new AIFile(fileDirectory, fileName);
+                files.Add(newFile);
+            }
+            else
+                throw new Exception();
+        }
+
+        public string[] GetFighterNames()
+        {
+            int fighterCount = fighters.Count;
+            string[] fighterNames = new string[fighterCount];
+            for (int i = 0; i < fighterCount; i++)
+            {
+                fighterNames[i] = fighters[i].fighterName;
+            }
+            return fighterNames;
+        }
+
+        public string[][] GetFighterFileInfoFromName(string fighterName)
+        {
+            //the name has to exist
+            string[] currentNames = GetFighterNames();
+            if (!currentNames.Contains(fighterName))
+                throw new Exception();
+            //get the first index containing the fighter name
+            int index = 0;
+            while (index < currentNames.Length)
+            {
+                if (currentNames[index] == fighterName)
+                    break;
+                index++;
+            }
+            //this should never fire, but just in case
+            if (index >= currentNames.Length)
+                throw new Exception();
+
+            /*
+            at fighters[index]:
+            {
+                {fileDir1,fileName1},
+                {fileDir2,fileName2},
+                {fileDir3,fileName3},
+                ... //total = fighters[index].files.Count
+            }
+            */
+            int fighterFileCount = fighters[index].files.Count;
+            string[][] fighterFileData = new string[fighterFileCount][];
+            for (int i=0; i < fighterFileCount; i++)
+            {
+                fighterFileData[i] = new string[2];
+                fighterFileData[i][0] = fighters[index].files[i].fileDir;
+                fighterFileData[i][1] = fighters[index].files[i].fileName;
+            }
+
+            return fighterFileData;
+        }
+
+        public string[][] GetFileInfo()
+        {
+            /*
+            {
+                {fileDir1,fileName1},
+                {fileDir2,fileName2},
+                {fileDir3,fileName3},
+                ... //total = files.Count
+            }
+            */
+            int fileCount = files.Count;
+            string[][] fileData = new string[fileCount][];
+            for (int i = 0; i < fileCount; i++)
+            {
+                fileData[i] = new string[2];
+                fileData[i][0] = files[i].fileDir;
+                fileData[i][1] = files[i].fileName;
+            }
+            return fileData;
         }
     }
 }
