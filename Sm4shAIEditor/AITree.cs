@@ -22,24 +22,38 @@ namespace Sm4shAIEditor
         private static Int32 ATKD_Magic = 0x444b5441;
         private static Int32 AIPD_Magic = 0x44504941;
         private static Int32 Script_Magic = 0;
+        
+        //initialization nation
+        public AITree()
+        {
+            fighters = new List<AIFighter>();
+            files = new List<AIFile>();
+        }
 
         private class AIFighter
         {
+            private List<AIFile> files { get; set; }
+            private string fighterName { get; set; }
+
             public AIFighter(string directory, string name)
             {
+                files = new List<AIFile>();
+
                 fighterName = name;
                 foreach (string fileType in fileTypes)
                 {
                     string subDir = directory + @"\script\ai\" + fileType;
                     if (System.IO.File.Exists(subDir))
                     {
-                        AIFile newFile = new AIFile(fileType, subDir);
-                        files.Add(newFile);
+                        bool canLoad = CheckFileHeader(subDir, fileType);
+                        if (canLoad)
+                        {
+                            AIFile newFile = new AIFile(subDir, fileType);
+                            files.Add(newFile);
+                        }
                     }
                 }
             }
-            private string fighterName { get; set; }
-            private List<AIFile> files { get; set; }
         }
 
         private class AIFile
@@ -60,25 +74,33 @@ namespace Sm4shAIEditor
             fighters.Add(newFighter);
         }
 
-        //will not be a child of fighter, thus you may get the names confused if you have multiple
+        //will not be a child of fighter, thus you may get the names confused with multiple. They'll display it somehow...
         public void AddFile(string fileDirectory, string fileName)
         {
-            BinaryReader binReader = new BinaryReader(File.OpenRead(fileName));
+            bool canLoad = CheckFileHeader(fileDirectory, fileName);
+            if (canLoad)
+            {
+                AIFile newFile = new AIFile(fileDirectory, fileName);
+                files.Add(newFile);
+            }
+            else
+                throw new Exception();
+        }
+
+        private static bool CheckFileHeader(string fileDirectory, string fileName)
+        {
+            bool isType = false;
+            BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
             Int32 magic = binReader.ReadInt32();
             binReader.Close();
-            if (magic == ATKD_Magic)
-            {
+            if (fileName == fileTypes[0] && magic == ATKD_Magic)
+                isType = true;
+            else if ((fileName == fileTypes[1] || fileName == fileTypes[2]) && magic == AIPD_Magic)
+                isType = true;
+            else if (fileName == fileTypes[3] && magic == Script_Magic)
+                isType = true;
 
-            }
-            else if (magic == AIPD_Magic)
-            {
-
-            }
-            else if (magic == Script_Magic)
-            {
-
-            }
-            AIFile newFile = new AIFile(fileDirectory,fileName);
+            return isType;
         }
     }
 }

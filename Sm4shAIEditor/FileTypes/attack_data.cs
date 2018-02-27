@@ -34,10 +34,10 @@ namespace Sm4shAIEditor
         public Int32 SpecialMoveIndex { get; set; }
         public Int32 SpecialIndexCount { get; set; }
         public List<attack_entry> attacks { get; set; }
-        public attack_data(string fileName)
+        public attack_data(string fileDirectory)
         {
             byte[] temp4Bytes = new byte[4];
-            using (BinaryReader binReader = new BinaryReader(File.OpenRead(fileName)))
+            using (BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory)))
             {
                 binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
                 temp4Bytes = binReader.ReadBytes(4);

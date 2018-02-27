@@ -50,9 +50,18 @@ namespace Sm4shAIEditor
 
         private void LoadFile(string fileDirectory)
         {
+            string parent = Directory.GetParent(fileDirectory).FullName;
+            string fileName = fileDirectory.Remove(0, parent.Length + 1);
             if (File.Exists(fileDirectory))
             {
-                
+                try
+                {
+                    tree.AddFile(fileDirectory, fileName);
+                }
+                catch
+                {
+
+                }
             }
         }
 
