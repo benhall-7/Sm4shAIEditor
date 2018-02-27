@@ -119,6 +119,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.status_TB.BackColor = System.Drawing.SystemColors.InfoText;
             this.status_TB.Enabled = false;
+            this.status_TB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status_TB.ForeColor = System.Drawing.SystemColors.Info;
             this.status_TB.Location = new System.Drawing.Point(12, 351);
             this.status_TB.MinimumSize = new System.Drawing.Size(200, 100);
