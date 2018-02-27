@@ -44,7 +44,12 @@ namespace Sm4shAIEditor
             FolderBrowserDialog openAllFighters = new FolderBrowserDialog();
             if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-
+                string[] fighterDirectories = Directory.EnumerateDirectories(openAllFighters.SelectedPath).ToArray();
+                foreach (string fighter in fighterDirectories)
+                {
+                    LoadFighter(fighter);
+                }
+                fighterDirectories[0] += "";
             }
         }
 
