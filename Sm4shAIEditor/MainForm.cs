@@ -19,6 +19,7 @@ namespace Sm4shAIEditor
         {
             InitializeComponent();
             this.Text = Properties.Resources.Title;
+            this.Icon = Properties.Resources.FoxLogo;
         }
 
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)

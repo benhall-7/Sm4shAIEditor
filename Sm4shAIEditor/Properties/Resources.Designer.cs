@@ -61,6 +61,16 @@ namespace Sm4shAIEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon FoxLogo {
+            get {
+                object obj = ResourceManager.GetObject("FoxLogo", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to AI Filetypes|attack_data.bin; param.bin; param_nfp.bin; script.bin|Attack data|attack_data.bin|Param data|param.bin; param_nfp.bin|Script data|script.bin.
         /// </summary>
         internal static string OpenFileFilter {
