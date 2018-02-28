@@ -54,7 +54,7 @@ namespace Sm4shAIEditor
                     }
                 }
                 if (files.Count == 0)
-                    throw new Exception();
+                    throw new ProgramException(Properties.Resources.FighterException2, fighterName);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Sm4shAIEditor
             string[] currentNames = GetFighterNames();
             if (currentNames.Contains(fighterName))
             {
-                throw new Exception();
+                throw new ProgramException(Properties.Resources.FighterException1, fighterName);
             }
             AIFighter newFighter = new AIFighter(fighterDirectory, fighterName);
             fighters.Add(newFighter);
@@ -105,8 +105,8 @@ namespace Sm4shAIEditor
             int currentFileCount = currentFiles.Length;
             for (int i = 0 ; i < currentFileCount; i++)
             {
-                if (fileName == currentFiles[i][1])
-                    throw new Exception();
+                if (fileDirectory == currentFiles[i][0])
+                    throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
             }
 
             bool canLoad = CheckFileHeader(fileDirectory, fileName);
@@ -116,7 +116,7 @@ namespace Sm4shAIEditor
                 files.Add(newFile);
             }
             else
-                throw new Exception();
+                throw new ProgramException(Properties.Resources.FileException2,fileDirectory);
         }
 
         public string[] GetFighterNames()
@@ -135,7 +135,7 @@ namespace Sm4shAIEditor
             //the name has to exist
             string[] currentNames = GetFighterNames();
             if (!currentNames.Contains(fighterName))
-                throw new Exception();
+                throw new ProgramException(Properties.Resources.FighterException3, fighterName);
             //get the first index containing the fighter name
             int index = 0;
             while (index < currentNames.Length)

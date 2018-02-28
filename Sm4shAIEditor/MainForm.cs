@@ -70,9 +70,9 @@ namespace Sm4shAIEditor
                 {
                     tree.AddFile(fileDirectory, fileName);
                 }
-                catch
+                catch (ProgramException exception)
                 {
-                    status_TB.Text += String.Format("Error loading file '{0}' in '{1}'", fileName, parent) + Environment.NewLine;
+                    status_TB.Text += exception.Message + Environment.NewLine;
                 }
             }
         }
@@ -87,9 +87,9 @@ namespace Sm4shAIEditor
                 {
                     tree.AddFighter(fighterDirectory, fighterName);
                 }
-                catch
+                catch (ProgramException exception)
                 {
-                    status_TB.Text += String.Format("Error loading fighter '{0}'; cannot find any AI files in the directory", fighterName) + Environment.NewLine; 
+                    status_TB.Text += exception.Message + Environment.NewLine; 
                 }
             }
         }

@@ -61,6 +61,60 @@ namespace Sm4shAIEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The given directory &apos;{0}&apos; does not exist.
+        /// </summary>
+        internal static string Exception1 {
+            get {
+                return ResourceManager.GetString("Exception1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fighter &apos;{0}&apos; not loaded; it is already a member of the tree.
+        /// </summary>
+        internal static string FighterException1 {
+            get {
+                return ResourceManager.GetString("FighterException1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fighter &apos;{0}&apos; not loaded; could not find AI files.
+        /// </summary>
+        internal static string FighterException2 {
+            get {
+                return ResourceManager.GetString("FighterException2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempt to load file info from non-existant fighter &apos;{0}&apos;.
+        /// </summary>
+        internal static string FighterException3 {
+            get {
+                return ResourceManager.GetString("FighterException3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File &apos;{0}&apos; not loaded; it is already a member of the tree.
+        /// </summary>
+        internal static string FileException1 {
+            get {
+                return ResourceManager.GetString("FileException1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File &apos;{0}&apos; not loaded; invalid header or file name.
+        /// </summary>
+        internal static string FileException2 {
+            get {
+                return ResourceManager.GetString("FileException2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon FoxLogo {
