@@ -38,6 +38,7 @@
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
+            this.fileTabContainer = new System.Windows.Forms.TabControl();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -128,11 +129,26 @@
             this.status_TB.TabIndex = 2;
             this.status_TB.Text = "";
             // 
+            // fileTabContainer
+            // 
+            this.fileTabContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileTabContainer.Location = new System.Drawing.Point(219, 27);
+            this.fileTabContainer.Name = "fileTabContainer";
+            this.fileTabContainer.SelectedIndex = 0;
+            this.fileTabContainer.Size = new System.Drawing.Size(553, 300);
+            this.fileTabContainer.TabIndex = 3;
+            this.fileTabContainer.Visible = false;
+            this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
+            this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 461);
+            this.Controls.Add(this.fileTabContainer);
             this.Controls.Add(this.status_TB);
             this.Controls.Add(this.treeView);
             this.Controls.Add(this.menuStrip1);
@@ -159,6 +175,7 @@
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ToolStripMenuItem openAllFightersToolStripMenuItem;
         private System.Windows.Forms.RichTextBox status_TB;
+        private System.Windows.Forms.TabControl fileTabContainer;
     }
 }
 

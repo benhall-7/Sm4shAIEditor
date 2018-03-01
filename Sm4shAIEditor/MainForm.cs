@@ -63,10 +63,14 @@ namespace Sm4shAIEditor
             }
         }
 
-        //maybe a method to load the control would be better suited for the class itself?
-        private void LoadATKD(string directory)
+        //maybe a method to load the tab control/data would be better suited for the class itself
+        private void LoadATKD(string directory, string fileName)
         {
             attack_data atkdFile = new attack_data(directory);
+            TabPage atkdTab = new TabPage();
+            atkdTab.Tag = atkdFile;
+            atkdTab.Text = fileName;
+            fileTabContainer.TabPages.Add(atkdTab);
         }
 
         private void LoadAIPD(string directory)
@@ -159,12 +163,24 @@ namespace Sm4shAIEditor
             if (nodeTag != null)
             {
                 if (nodeTag[1] == fileTypes[0])
-                    LoadATKD(nodeTag[0]);
+                    LoadATKD(nodeTag[0], nodeTag[1]);
                 else if (nodeTag[1] == fileTypes[1] || nodeTag[1] == fileTypes[2])
                     LoadAIPD(nodeTag[0]);
                 else if (nodeTag[1] == fileTypes[3])
                     LoadScript(nodeTag[0]);
             }
+        }
+
+        private void fileTabContainer_ControlAdded(object sender, ControlEventArgs e)
+        {
+            if (fileTabContainer.TabCount != 0)
+                fileTabContainer.Visible = true;
+        }
+
+        private void fileTabContainer_ControlRemoved(object sender, ControlEventArgs e)
+        {
+            if (fileTabContainer.TabCount == 0)
+                fileTabContainer.Visible = false;
         }
     }
 }
