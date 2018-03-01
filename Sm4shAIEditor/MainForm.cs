@@ -14,6 +14,13 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
+        private static string[] fileTypes =
+        {
+            "attack_data.bin",
+            "param.bin",
+            "param_nfp.bin",
+            "script.bin"
+        };
 
         public MainForm()
         {
@@ -105,6 +112,7 @@ namespace Sm4shAIEditor
             {
                 string directory = fileInfo[i][0];
                 TreeNode node = new TreeNode(fileInfo[i][0]);
+                node.Tag = fileInfo[i];
                 treeView.Nodes.Add(node);
             }
 
@@ -118,6 +126,7 @@ namespace Sm4shAIEditor
                 for (int i=0; i < fighterFileCount; i++)
                 {
                     children[i] = new TreeNode(fighterFileInfo[i][1]);
+                    children[i].Tag = fighterFileInfo[i];
                 }
                 TreeNode node = new TreeNode(fighter, children);
                 treeView.Nodes.Add(node);
@@ -126,23 +135,22 @@ namespace Sm4shAIEditor
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //based on the way I set this up,
-            //files you can open == nodes with no children
-            //of those, if a parent exists it must be a fighter
-            //maybe in the future this will turn out to be a bad idea
-            TreeNode lastNode = treeView.SelectedNode.LastNode;
-            TreeNode parentNode = treeView.SelectedNode.Parent;
-            if (lastNode == null)
+            //based on the way I set this up, only the main files have a tag attribute
+            //the tag contains the file info (directory/name) for each file which will be used to open the file
+            string[] nodeTag = (string[])treeView.SelectedNode.Tag;
+            if (nodeTag != null)
             {
-                if (parentNode == null)
+                if (nodeTag[1] == fileTypes[0])
                 {
-                    //regular file
 
                 }
-                else
+                else if (nodeTag[1] == fileTypes[1] || nodeTag[1] == fileTypes[2])
                 {
-                    //fighter file
-                    //string[][] fighterFileInfo = tree.GetFighterFileInfoFromName(parentNode.Name);
+
+                }
+                else if (nodeTag[1] == fileTypes[3])
+                {
+
                 }
             }
         }
