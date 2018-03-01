@@ -22,6 +22,40 @@ namespace Sm4shAIEditor
             this.Icon = Properties.Resources.FoxLogo;
         }
 
+        private void LoadFile(string fileDirectory)
+        {
+            string parent = Directory.GetParent(fileDirectory).FullName;
+            string fileName = fileDirectory.Remove(0, parent.Length + 1);
+            if (File.Exists(fileDirectory))
+            {
+                try
+                {
+                    tree.AddFile(fileDirectory, fileName);
+                }
+                catch (ProgramException exception)
+                {
+                    status_TB.Text += exception.Message + Environment.NewLine;
+                }
+            }
+        }
+
+        private void LoadFighter(string fighterDirectory)
+        {
+            string parent = Directory.GetParent(fighterDirectory).FullName;
+            string fighterName = fighterDirectory.Remove(0, parent.Length + 1);
+            if (Directory.Exists(fighterDirectory))
+            {
+                try
+                {
+                    tree.AddFighter(fighterDirectory, fighterName);
+                }
+                catch (ProgramException exception)
+                {
+                    status_TB.Text += exception.Message + Environment.NewLine;
+                }
+            }
+        }
+
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -60,40 +94,6 @@ namespace Sm4shAIEditor
             UpdateTreeView();
         }
 
-        private void LoadFile(string fileDirectory)
-        {
-            string parent = Directory.GetParent(fileDirectory).FullName;
-            string fileName = fileDirectory.Remove(0, parent.Length + 1);
-            if (File.Exists(fileDirectory))
-            {
-                try
-                {
-                    tree.AddFile(fileDirectory, fileName);
-                }
-                catch (ProgramException exception)
-                {
-                    status_TB.Text += exception.Message + Environment.NewLine;
-                }
-            }
-        }
-
-        private void LoadFighter(string fighterDirectory)
-        {
-            string parent = Directory.GetParent(fighterDirectory).FullName;
-            string fighterName = fighterDirectory.Remove(0, parent.Length + 1);
-            if (Directory.Exists(fighterDirectory))
-            {
-                try
-                {
-                    tree.AddFighter(fighterDirectory, fighterName);
-                }
-                catch (ProgramException exception)
-                {
-                    status_TB.Text += exception.Message + Environment.NewLine; 
-                }
-            }
-        }
-
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
@@ -121,6 +121,29 @@ namespace Sm4shAIEditor
                 }
                 TreeNode node = new TreeNode(fighter, children);
                 treeView.Nodes.Add(node);
+            }
+        }
+
+        private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //based on the way I set this up,
+            //files you can open == nodes with no children
+            //of those, if a parent exists it must be a fighter
+            //maybe in the future this will turn out to be a bad idea
+            TreeNode lastNode = treeView.SelectedNode.LastNode;
+            TreeNode parentNode = treeView.SelectedNode.Parent;
+            if (lastNode == null)
+            {
+                if (parentNode == null)
+                {
+                    //regular file
+
+                }
+                else
+                {
+                    //fighter file
+                    //string[][] fighterFileInfo = tree.GetFighterFileInfoFromName(parentNode.Name);
+                }
             }
         }
     }
