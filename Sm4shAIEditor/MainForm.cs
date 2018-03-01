@@ -63,6 +63,22 @@ namespace Sm4shAIEditor
             }
         }
 
+        //maybe a method to load the control would be better suited for the class itself?
+        private void LoadATKD(string directory)
+        {
+            attack_data atkdFile = new attack_data(directory);
+        }
+
+        private void LoadAIPD(string directory)
+        {
+
+        }
+
+        private void LoadScript(string directory)
+        {
+
+        }
+
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -135,23 +151,19 @@ namespace Sm4shAIEditor
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            //TODO: unload any files previously selected here (will this be automatic?)
+
             //based on the way I set this up, only the main files have a tag attribute
             //the tag contains the file info (directory/name) for each file which will be used to open the file
             string[] nodeTag = (string[])treeView.SelectedNode.Tag;
             if (nodeTag != null)
             {
                 if (nodeTag[1] == fileTypes[0])
-                {
-
-                }
+                    LoadATKD(nodeTag[0]);
                 else if (nodeTag[1] == fileTypes[1] || nodeTag[1] == fileTypes[2])
-                {
-
-                }
+                    LoadAIPD(nodeTag[0]);
                 else if (nodeTag[1] == fileTypes[3])
-                {
-
-                }
+                    LoadScript(nodeTag[0]);
             }
         }
     }
