@@ -63,13 +63,38 @@ namespace Sm4shAIEditor
             }
         }
 
-        //maybe a method to load the tab control/data would be better suited for the class itself
+        //maybe a method to load the tab data would be better suited for the class itself
         private void LoadATKD(string directory, string fileName)
         {
             attack_data atkdFile = new attack_data(directory);
+
             TabPage atkdTab = new TabPage();
             atkdTab.Tag = atkdFile;
             atkdTab.Text = fileName;
+
+            DataGridView atkdData = new DataGridView();
+            atkdData.RowCount = atkdFile.EntryCount;
+            atkdData.ColumnCount = 7;
+            atkdData.Columns[0].HeaderText = "SubactionID";
+            atkdData.Columns[1].HeaderText = "First Frame";
+            atkdData.Columns[2].HeaderText = "Last Frame";
+            atkdData.Columns[3].HeaderText = "X1";
+            atkdData.Columns[4].HeaderText = "X2";
+            atkdData.Columns[5].HeaderText = "Y1";
+            atkdData.Columns[6].HeaderText = "Y2";
+            foreach (DataGridViewRow row in atkdData.Rows)
+            {
+                row.Cells[0].Value = atkdFile.attacks[row.Index].SubactionID;
+                row.Cells[1].Value = atkdFile.attacks[row.Index].FirstFrame;
+                row.Cells[2].Value = atkdFile.attacks[row.Index].LastFrame;
+                row.Cells[3].Value = atkdFile.attacks[row.Index].X1;
+                row.Cells[4].Value = atkdFile.attacks[row.Index].X2;
+                row.Cells[5].Value = atkdFile.attacks[row.Index].Y1;
+                row.Cells[6].Value = atkdFile.attacks[row.Index].Y2;
+            }
+            atkdData.AutoSize = true;
+            atkdData.Parent = atkdTab;
+            atkdData.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(atkdTab);
         }
 

@@ -134,7 +134,7 @@ namespace Sm4shAIEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Smash 4 AI Editor.
+        ///   Looks up a localized string similar to Smash 4 AI File Viewer.
         /// </summary>
         internal static string Title {
             get {
