@@ -95,6 +95,7 @@ namespace Sm4shAIEditor
             atkdData.AutoSize = true;
             atkdData.Parent = atkdTab;
             atkdData.Dock = DockStyle.Fill;
+            atkdData.ReadOnly = true;
             fileTabContainer.TabPages.Add(atkdTab);
         }
 
