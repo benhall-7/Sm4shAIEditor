@@ -72,17 +72,17 @@ namespace Sm4shAIEditor
             atkdTab.Tag = atkdFile;
             atkdTab.Text = fileName;
 
-            DataGridView atkdData = new DataGridView();
-            atkdData.RowCount = atkdFile.EntryCount;
-            atkdData.ColumnCount = 7;
-            atkdData.Columns[0].HeaderText = "SubactionID";
-            atkdData.Columns[1].HeaderText = "First Frame";
-            atkdData.Columns[2].HeaderText = "Last Frame";
-            atkdData.Columns[3].HeaderText = "X1";
-            atkdData.Columns[4].HeaderText = "X2";
-            atkdData.Columns[5].HeaderText = "Y1";
-            atkdData.Columns[6].HeaderText = "Y2";
-            foreach (DataGridViewRow row in atkdData.Rows)
+            DataGridView atkdTabData = new DataGridView();
+            atkdTabData.RowCount = atkdFile.EntryCount;
+            atkdTabData.ColumnCount = 7;
+            atkdTabData.Columns[0].HeaderText = "SubactionID";
+            atkdTabData.Columns[1].HeaderText = "First Frame";
+            atkdTabData.Columns[2].HeaderText = "Last Frame";
+            atkdTabData.Columns[3].HeaderText = "X1";
+            atkdTabData.Columns[4].HeaderText = "X2";
+            atkdTabData.Columns[5].HeaderText = "Y1";
+            atkdTabData.Columns[6].HeaderText = "Y2";
+            foreach (DataGridViewRow row in atkdTabData.Rows)
             {
                 row.Cells[0].Value = atkdFile.attacks[row.Index].SubactionID;
                 row.Cells[1].Value = atkdFile.attacks[row.Index].FirstFrame;
@@ -92,10 +92,10 @@ namespace Sm4shAIEditor
                 row.Cells[5].Value = atkdFile.attacks[row.Index].Y1;
                 row.Cells[6].Value = atkdFile.attacks[row.Index].Y2;
             }
-            atkdData.AutoSize = true;
-            atkdData.Parent = atkdTab;
-            atkdData.Dock = DockStyle.Fill;
-            atkdData.ReadOnly = true;
+            atkdTabData.AutoSize = true;
+            atkdTabData.Parent = atkdTab;
+            atkdTabData.Dock = DockStyle.Fill;
+            atkdTabData.ReadOnly = true;
             fileTabContainer.TabPages.Add(atkdTab);
         }
 
