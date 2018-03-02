@@ -75,7 +75,7 @@ namespace Sm4shAIEditor
             DataGridView atkdTabData = new DataGridView();
             atkdTabData.RowCount = atkdFile.EntryCount;
             atkdTabData.ColumnCount = 7;
-            atkdTabData.Columns[0].HeaderText = "SubactionID";
+            atkdTabData.Columns[0].HeaderText = "Subaction Index";
             atkdTabData.Columns[1].HeaderText = "First Frame";
             atkdTabData.Columns[2].HeaderText = "Last Frame";
             atkdTabData.Columns[3].HeaderText = "X1";
@@ -92,10 +92,11 @@ namespace Sm4shAIEditor
                 row.Cells[5].Value = atkdFile.attacks[row.Index].Y1;
                 row.Cells[6].Value = atkdFile.attacks[row.Index].Y2;
             }
-            atkdTabData.AutoSize = true;
             atkdTabData.Parent = atkdTab;
             atkdTabData.Dock = DockStyle.Fill;
             atkdTabData.ReadOnly = true;
+            atkdTabData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            atkdTabData.AutoResizeColumns();
             fileTabContainer.TabPages.Add(atkdTab);
         }
 
