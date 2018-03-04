@@ -14,6 +14,9 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
+        public List<TabPage> fileTabs = new List<TabPage>();//for keeping files open
+        public TabPage previewTab = new TabPage();//for looking at a file temporarily
+
         private static string[] fileTypes =
         {
             "attack_data.bin",
@@ -29,6 +32,7 @@ namespace Sm4shAIEditor
             this.Icon = Properties.Resources.FoxLogo;
         }
 
+        //sub method used for loading adding files with no associated fighter
         private void LoadFile(string fileDirectory)
         {
             string parent = Directory.GetParent(fileDirectory).FullName;
@@ -46,6 +50,7 @@ namespace Sm4shAIEditor
             }
         }
 
+        //sub method for loading fighters and their associated files
         private void LoadFighter(string fighterDirectory)
         {
             string parent = Directory.GetParent(fighterDirectory).FullName;
@@ -196,6 +201,11 @@ namespace Sm4shAIEditor
                 else if (nodeTag[1] == fileTypes[3])
                     LoadScript(nodeTag[0]);
             }
+        }
+
+        private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+
         }
 
         private void fileTabContainer_ControlAdded(object sender, ControlEventArgs e)

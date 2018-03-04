@@ -48,7 +48,7 @@ namespace Sm4shAIEditor
                         bool canLoad = CheckFileHeader(subDir, fileType);
                         if (canLoad)
                         {
-                            AIFile newFile = new AIFile(subDir, fileType);
+                            AIFile newFile = new AIFile(subDir, fileType, fighterName);
                             files.Add(newFile);
                         }
                     }
@@ -64,9 +64,17 @@ namespace Sm4shAIEditor
             {
                 fileName = name;
                 fileDir = dir;
+                relatedFighter = null;
+            }
+            public AIFile(string dir, string name, string owner)
+            {
+                fileName = name;
+                fileDir = dir;
+                relatedFighter = owner;
             }
             public string fileDir { get; set; }
             public string fileName { get; set; }
+            public string relatedFighter { get; set; }
         }
 
         private static bool CheckFileHeader(string fileDirectory, string fileName)
@@ -183,9 +191,10 @@ namespace Sm4shAIEditor
             string[][] fileData = new string[fileCount][];
             for (int i = 0; i < fileCount; i++)
             {
-                fileData[i] = new string[2];
+                fileData[i] = new string[3];
                 fileData[i][0] = files[i].fileDir;
                 fileData[i][1] = files[i].fileName;
+                fileData[i][2] = files[i].relatedFighter;
             }
             return fileData;
         }
