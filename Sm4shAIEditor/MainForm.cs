@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Sm4shAIEditor.FileTypes;
 
 namespace Sm4shAIEditor
 {
@@ -16,15 +17,7 @@ namespace Sm4shAIEditor
         public static AITree tree = new AITree();
         public List<TabPage> fileTabs = new List<TabPage>();//for keeping files open
         public TabPage previewTab = new TabPage();//for looking at a file temporarily
-
-        private static string[] fileTypes =
-        {
-            "attack_data.bin",
-            "param.bin",
-            "param_nfp.bin",
-            "script.bin"
-        };
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -194,11 +187,12 @@ namespace Sm4shAIEditor
             string[] nodeTag = (string[])treeView.SelectedNode.Tag;
             if (nodeTag != null)
             {
-                if (nodeTag[1] == fileTypes[0])
+                //later on I should apply an association between a file name and function in the static_file_def
+                if (nodeTag[1] == static_file_def.Names[0])
                     LoadATKD(nodeTag[0], nodeTag[1]);
-                else if (nodeTag[1] == fileTypes[1] || nodeTag[1] == fileTypes[2])
+                else if (nodeTag[1] == static_file_def.Names[1] || nodeTag[1] == static_file_def.Names[2])
                     LoadAIPD(nodeTag[0]);
-                else if (nodeTag[1] == fileTypes[3])
+                else if (nodeTag[1] == static_file_def.Names[3])
                     LoadScript(nodeTag[0]);
             }
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Sm4shAIEditor.FileTypes;
 
 namespace Sm4shAIEditor
 {
@@ -11,17 +12,6 @@ namespace Sm4shAIEditor
     {
         private List<AIFighter> fighters { get; set; }
         private List<AIFile> files { get; set; }
-
-        private static string[] fileTypes =
-        {
-            "attack_data.bin",
-            "param.bin",
-            "param_nfp.bin",
-            "script.bin"
-        };
-        private static Int32 ATKD_Magic = 0x444b5441;
-        private static Int32 AIPD_Magic = 0x44504941;
-        private static Int32 Script_Magic = 0;
         
         //initialization nation
         public AITree()
@@ -40,12 +30,12 @@ namespace Sm4shAIEditor
                 files = new List<AIFile>();
 
                 fighterName = name;
-                foreach (string fileType in fileTypes)
+                foreach (string fileType in static_file_def.Names)
                 {
                     string subDir = directory + @"\script\ai\" + fileType;
                     if (System.IO.File.Exists(subDir))
                     {
-                        bool canLoad = CheckFileHeader(subDir, fileType);
+                        bool canLoad = static_file_def.IsValidFile(subDir);
                         if (canLoad)
                         {
                             AIFile newFile = new AIFile(subDir, fileType, fighterName);
@@ -76,23 +66,7 @@ namespace Sm4shAIEditor
             public string fileName { get; set; }
             public string relatedFighter { get; set; }
         }
-
-        private static bool CheckFileHeader(string fileDirectory, string fileName)
-        {
-            bool isType = false;
-            BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
-            Int32 magic = binReader.ReadInt32();
-            binReader.Close();
-            if (fileName == fileTypes[0] && magic == ATKD_Magic)
-                isType = true;
-            else if ((fileName == fileTypes[1] || fileName == fileTypes[2]) && magic == AIPD_Magic)
-                isType = true;
-            else if (fileName == fileTypes[3] && magic == Script_Magic)
-                isType = true;
-
-            return isType;
-        }
-
+        
         //including a fighter folder will automatically try to find the files
         public void AddFighter(string fighterDirectory, string fighterName)
         {
@@ -117,7 +91,7 @@ namespace Sm4shAIEditor
                     throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
             }
 
-            bool canLoad = CheckFileHeader(fileDirectory, fileName);
+            bool canLoad = static_file_def.IsValidFile(fileDirectory);
             if (canLoad)
             {
                 AIFile newFile = new AIFile(fileDirectory, fileName);
