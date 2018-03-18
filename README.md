@@ -1,5 +1,5 @@
 # Sm4shAIEditor
 
-Open and edit attack_data, param, and script files for Smash 4's AI
+Plan: Open and edit attack_data, param, and script files for Smash 4's AI
 
-Current status: non-functional
+Current status: Can open ai directories. Can read (not write) attack_data.bin files
