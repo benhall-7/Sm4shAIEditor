@@ -15,8 +15,8 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
-        public List<TabPage> fileTabs = new List<TabPage>();//for keeping files open
-        public TabPage previewTab = new TabPage();//for looking at a file temporarily
+        public List<TabPage> fileTabs = new List<TabPage>();//for keeping files open - currently unused
+        public TabPage previewTab = new TabPage();//for looking at a file temporarily - currently unused
         
         public MainForm()
         {
@@ -26,38 +26,28 @@ namespace Sm4shAIEditor
         }
 
         //sub method used for loading adding files with no associated fighter
-        private void LoadFile(string fileDirectory)
+        private void LoadFiles(string[] fileDirectories)
         {
-            string parent = Directory.GetParent(fileDirectory).FullName;
-            string fileName = fileDirectory.Remove(0, parent.Length + 1);
-            if (File.Exists(fileDirectory))
+            try
             {
-                try
-                {
-                    tree.AddFile(fileDirectory, fileName);
-                }
-                catch (ProgramException exception)
-                {
-                    status_TB.Text += exception.Message + Environment.NewLine;
-                }
+                tree.AddFiles(fileDirectories);
+            }
+            catch (ProgramException exception)
+            {
+                status_TB.Text += exception.Message + Environment.NewLine;
             }
         }
 
         //sub method for loading fighters and their associated files
-        private void LoadFighter(string fighterDirectory)
+        private void LoadFighters(string[] fighterDirectories)
         {
-            string parent = Directory.GetParent(fighterDirectory).FullName;
-            string fighterName = fighterDirectory.Remove(0, parent.Length + 1);
-            if (Directory.Exists(fighterDirectory))
+            try
             {
-                try
-                {
-                    tree.AddFighter(fighterDirectory, fighterName);
-                }
-                catch (ProgramException exception)
-                {
-                    status_TB.Text += exception.Message + Environment.NewLine;
-                }
+                tree.AddFighters(fighterDirectories);
+            }
+            catch (ProgramException exception)
+            {
+                status_TB.Text += exception.Message + Environment.NewLine;
             }
         }
 
@@ -112,9 +102,10 @@ namespace Sm4shAIEditor
         {
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = Properties.Resources.OpenFileFilter;
+            openFile.Multiselect = true;
             if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                LoadFile(openFile.FileName);
+                LoadFiles(openFile.FileNames);
             }
 
             UpdateTreeView();
@@ -122,10 +113,10 @@ namespace Sm4shAIEditor
 
         private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog openFighter = new FolderBrowserDialog();
+            FolderSelectDialog openFighter = new FolderSelectDialog(true);
             if (openFighter.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                LoadFighter(openFighter.SelectedPath);
+                LoadFighters(openFighter.SelectedPaths);
             }
 
             UpdateTreeView();
@@ -133,14 +124,12 @@ namespace Sm4shAIEditor
 
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog openAllFighters = new FolderBrowserDialog();
+            //credit to Smash Forge for showing me how this worked
+            FolderSelectDialog openAllFighters = new FolderSelectDialog(false);
             if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string[] fighterDirectories = Directory.EnumerateDirectories(openAllFighters.SelectedPath).ToArray();
-                foreach (string fighter in fighterDirectories)
-                {
-                    LoadFighter(fighter);
-                }
+                LoadFighters(fighterDirectories);
             }
 
             UpdateTreeView();
@@ -149,51 +138,60 @@ namespace Sm4shAIEditor
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
-
-            //basic files first
-            string[][] fileInfo = tree.GetFileInfo();
-            int fileCount = fileInfo.Length;
-            for (int i = 0; i < fileCount; i++)
-            {
-                string directory = fileInfo[i][0];
-                TreeNode node = new TreeNode(fileInfo[i][0]);
-                node.Tag = fileInfo[i];
-                treeView.Nodes.Add(node);
-            }
-
-            //fighters after
-            string[] fighters = tree.GetFighterNames();
+            string nodeName;
+            string nodeTag;
+            
+            string[] fileDirs = tree.aiFiles.Keys.ToArray();
+            string[] fighters = tree.fighters.ToArray();
             foreach (string fighter in fighters)
             {
-                string[][] fighterFileInfo = tree.GetFighterFileInfoFromName(fighter);
-                int fighterFileCount = fighterFileInfo.Length;
-                TreeNode[] children = new TreeNode[fighterFileCount];
-                for (int i=0; i < fighterFileCount; i++)
+                nodeName = fighter;
+                treeView.Nodes.Add(nodeName,nodeName);//given key is the fighter name, which allows the search method below
+            }
+
+            foreach (string key in fileDirs)
+            {
+                string owner = tree.aiFiles[key];
+                nodeTag = key;
+                if (owner == null)
                 {
-                    children[i] = new TreeNode(fighterFileInfo[i][1]);
-                    children[i].Tag = fighterFileInfo[i];
+                    nodeName = key;
+                    TreeNode node = new TreeNode(nodeName);
+                    node.Tag = nodeTag;
+                    treeView.Nodes.Add(node);
                 }
-                TreeNode node = new TreeNode(fighter, children);
-                treeView.Nodes.Add(node);
+                else
+                {
+                    //Computation time of O[n] which is not that good. This can be fixed later.
+                    TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
+                    string keyParent = Directory.GetParent(key).FullName;
+                    nodeName = key.Remove(0, keyParent.Length + 1);
+                    TreeNode child = new TreeNode(nodeName);
+                    child.Tag = nodeTag;
+                    fighterNode.Nodes.Add(child);
+                }
             }
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //TODO: unload any files previously selected here (will this be automatic?)
+            //TODO: unload any files previously selected here
 
             //based on the way I set this up, only the main files have a tag attribute
             //the tag contains the file info (directory/name) for each file which will be used to open the file
-            string[] nodeTag = (string[])treeView.SelectedNode.Tag;
+            string nodeTag = (string)treeView.SelectedNode.Tag;
             if (nodeTag != null)
             {
-                //later on I should apply an association between a file name and function in the static_file_def
-                if (nodeTag[1] == static_file_def.Names[0])
-                    LoadATKD(nodeTag[0], nodeTag[1]);
-                else if (nodeTag[1] == static_file_def.Names[1] || nodeTag[1] == static_file_def.Names[2])
-                    LoadAIPD(nodeTag[0]);
-                else if (nodeTag[1] == static_file_def.Names[3])
-                    LoadScript(nodeTag[0]);
+                //later on I might choose to make this into a dictionary.
+                string parent = Directory.GetParent(nodeTag).FullName;
+                string nodeFileName = nodeTag.Remove(0, parent.Length + 1);
+
+                if (nodeFileName == static_file_def.Names[0])
+                    LoadATKD(nodeTag, nodeFileName);
+                else if (nodeTag == static_file_def.Names[1] || nodeTag == static_file_def.Names[2])
+                    LoadAIPD(nodeTag);
+                else if (nodeTag == static_file_def.Names[3])
+                    LoadScript(nodeTag);
             }
         }
 
@@ -212,6 +210,11 @@ namespace Sm4shAIEditor
         {
             if (fileTabContainer.TabCount == 0)
                 fileTabContainer.Visible = false;
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

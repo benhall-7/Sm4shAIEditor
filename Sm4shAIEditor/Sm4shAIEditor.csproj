@@ -47,6 +47,12 @@
   <ItemGroup>
     <Compile Include="AITree.cs" />
     <Compile Include="FileTypes\static_file_def.cs" />
+    <Compile Include="FolderSelectDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FolderSelectDialog.designer.cs">
+      <DependentUpon>FolderSelectDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProgramException.cs" />
     <Compile Include="FileTypes\attack_data.cs" />
     <Compile Include="MainForm.cs">
