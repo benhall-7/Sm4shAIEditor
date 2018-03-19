@@ -28,36 +28,24 @@ namespace Sm4shAIEditor
         //sub method used for loading adding files with no associated fighter
         private void LoadFiles(string[] fileDirectories)
         {
-            try
-            {
-                tree.AddFiles(fileDirectories);
-            }
-            catch (ProgramException exception)
-            {
-                status_TB.Text += exception.Message + Environment.NewLine;
-            }
+            tree.AddFiles(fileDirectories, ref status_TB);
         }
 
         //sub method for loading fighters and their associated files
         private void LoadFighters(string[] fighterDirectories)
         {
-            try
-            {
-                tree.AddFighters(fighterDirectories);
-            }
-            catch (ProgramException exception)
-            {
-                status_TB.Text += exception.Message + Environment.NewLine;
-            }
+            tree.AddFighters(fighterDirectories, ref status_TB);
         }
 
         //maybe a method to load the tab data would be better suited for the class itself
-        private void LoadATKD(string directory, string fileName)
+        private void LoadATKD(string directory)
         {
             attack_data atkdFile = new attack_data(directory);
 
             TabPage atkdTab = new TabPage();
             atkdTab.Tag = atkdFile;
+            string parent = Directory.GetParent(directory).FullName;
+            string fileName = directory.Remove(0, parent.Length + 1);
             atkdTab.Text = fileName;
 
             DataGridView atkdTabData = new DataGridView();
@@ -98,6 +86,43 @@ namespace Sm4shAIEditor
 
         }
 
+        private void UpdateTreeView()
+        {
+            treeView.Nodes.Clear();
+            string nodeName;
+            string nodeTag;
+
+            string[] fileDirs = tree.aiFiles.Keys.ToArray();
+            string[] fighters = tree.fighters.ToArray();
+            foreach (string fighter in fighters)
+            {
+                nodeName = fighter;
+                treeView.Nodes.Add(nodeName, nodeName);//given key is the fighter name, which allows the search method below
+            }
+
+            foreach (string key in fileDirs)
+            {
+                string owner = tree.aiFiles[key];
+                nodeTag = key;
+                if (owner == null)
+                {
+                    nodeName = key;
+                    TreeNode node = new TreeNode(nodeName);
+                    node.Tag = nodeTag;
+                    treeView.Nodes.Add(node);
+                }
+                else
+                {
+                    TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
+                    string keyParent = Directory.GetParent(key).FullName;
+                    nodeName = key.Remove(0, keyParent.Length + 1);
+                    TreeNode child = new TreeNode(nodeName);
+                    child.Tag = nodeTag;
+                    fighterNode.Nodes.Add(child);
+                }
+            }
+        }
+
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -124,7 +149,6 @@ namespace Sm4shAIEditor
 
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //credit to Smash Forge for showing me how this worked
             FolderSelectDialog openAllFighters = new FolderSelectDialog(false);
             if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -135,59 +159,19 @@ namespace Sm4shAIEditor
             UpdateTreeView();
         }
 
-        private void UpdateTreeView()
-        {
-            treeView.Nodes.Clear();
-            string nodeName;
-            string nodeTag;
-            
-            string[] fileDirs = tree.aiFiles.Keys.ToArray();
-            string[] fighters = tree.fighters.ToArray();
-            foreach (string fighter in fighters)
-            {
-                nodeName = fighter;
-                treeView.Nodes.Add(nodeName,nodeName);//given key is the fighter name, which allows the search method below
-            }
-
-            foreach (string key in fileDirs)
-            {
-                string owner = tree.aiFiles[key];
-                nodeTag = key;
-                if (owner == null)
-                {
-                    nodeName = key;
-                    TreeNode node = new TreeNode(nodeName);
-                    node.Tag = nodeTag;
-                    treeView.Nodes.Add(node);
-                }
-                else
-                {
-                    //Computation time of O[n] which is not that good. This can be fixed later.
-                    TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
-                    string keyParent = Directory.GetParent(key).FullName;
-                    nodeName = key.Remove(0, keyParent.Length + 1);
-                    TreeNode child = new TreeNode(nodeName);
-                    child.Tag = nodeTag;
-                    fighterNode.Nodes.Add(child);
-                }
-            }
-        }
-
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //TODO: unload any files previously selected here
 
-            //based on the way I set this up, only the main files have a tag attribute
-            //the tag contains the file info (directory/name) for each file which will be used to open the file
+            //only the main files have a tag attribute; it stores the file directory and uses it as a unique identifier
             string nodeTag = (string)treeView.SelectedNode.Tag;
             if (nodeTag != null)
             {
-                //later on I might choose to make this into a dictionary.
+                //later on I might choose to make this into a dictionary
                 string parent = Directory.GetParent(nodeTag).FullName;
                 string nodeFileName = nodeTag.Remove(0, parent.Length + 1);
-
                 if (nodeFileName == static_file_def.Names[0])
-                    LoadATKD(nodeTag, nodeFileName);
+                    LoadATKD(nodeTag);
                 else if (nodeTag == static_file_def.Names[1] || nodeTag == static_file_def.Names[2])
                     LoadAIPD(nodeTag);
                 else if (nodeTag == static_file_def.Names[3])

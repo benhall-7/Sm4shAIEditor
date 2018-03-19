@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 using Sm4shAIEditor.FileTypes;
 
 namespace Sm4shAIEditor
@@ -19,37 +20,30 @@ namespace Sm4shAIEditor
             aiFiles = new Dictionary<string, string>(0);
             fighters = new List<string>(0);
         }
-        public AITree(string[] directoryList, bool fighterOption)
-        {
-            aiFiles = new Dictionary<string, string>(0);
-            fighters = new List<string>(0);
-            if (fighterOption)
-            {
-                AddFighters(directoryList);
-            }
-            else //raw file directories with no owner
-            {
-                AddFiles(directoryList);
-            }
-        }
 
         //automatically will load the files that belong here
-        public void AddFighters(string[] directoryList)
+        public void AddFighters(string[] directoryList, ref RichTextBox messageBox)
         {
             foreach (string fighterDirectory in directoryList)
             {
-                if (!Directory.Exists(fighterDirectory))
-                    throw new Exception(); //PLEASE SPECIFY
+                try
+                {
+                    if (!Directory.Exists(fighterDirectory))
+                        throw new ProgramException(Properties.Resources.FighterException3, fighterDirectory);
 
-                string fighterParent = Directory.GetParent(fighterDirectory).FullName;
-                string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
-                string[] currentNames = fighters.ToArray();
-                if (currentNames.Contains(fighterName))
-                    throw new ProgramException(Properties.Resources.FighterException1, fighterName);
-                else
+                    string fighterParent = Directory.GetParent(fighterDirectory).FullName;
+                    string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
+                    string[] currentNames = fighters.ToArray();
+                    if (currentNames.Contains(fighterName))
+                        throw new ProgramException(Properties.Resources.FighterException1, fighterName);
+
+                    AddFighterFiles(fighterDirectory);
                     fighters.Add(fighterName);
-
-                AddFighterFiles(fighterDirectory);
+                }
+                catch (ProgramException exception)
+                {
+                    messageBox.Text += exception.Message + Environment.NewLine;
+                }
             }
         }
 
@@ -74,21 +68,27 @@ namespace Sm4shAIEditor
             if (empty)
                 throw new ProgramException(Properties.Resources.FighterException2, fighterName);
         }
-
-        //will not be a child of fighter, thus you may get the names confused with multiple. They'll display it somehow...
-        public void AddFiles(string[] directoryList)
+        
+        public void AddFiles(string[] directoryList, ref RichTextBox messageBox)
         {
             foreach (string fileDirectory in directoryList)
             {
-                //don't load the same file twice pls
-                if (aiFiles.ContainsKey(fileDirectory))
-                    throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
+                try
+                {
+                    //don't load the same file twice pls
+                    if (aiFiles.ContainsKey(fileDirectory))
+                        throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
 
-                bool canLoad = static_file_def.IsValidFile(fileDirectory);
-                if (canLoad)
-                    aiFiles.Add(fileDirectory, null);
-                else
-                    throw new ProgramException(Properties.Resources.FileException2, fileDirectory);
+                    bool canLoad = static_file_def.IsValidFile(fileDirectory);
+                    if (canLoad)
+                        aiFiles.Add(fileDirectory, null);
+                    else
+                        throw new ProgramException(Properties.Resources.FileException2, fileDirectory);
+                }
+                catch (ProgramException exception)
+                {
+                    messageBox.Text += exception.Message + Environment.NewLine;
+                }
             }
         }
         public void GetFighterFileInfoFromName(string fighterName)
