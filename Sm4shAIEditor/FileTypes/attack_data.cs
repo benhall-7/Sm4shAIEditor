@@ -35,6 +35,7 @@ namespace Sm4shAIEditor
         public UInt32 SpecialMoveIndex { get; set; }
         public UInt32 SpecialIndexCount { get; set; }
         public List<attack_entry> attacks { get; set; }
+
         public attack_data(string fileDirectory)
         {
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
@@ -52,7 +53,6 @@ namespace Sm4shAIEditor
         private void InitializeEntries(UInt32 entryCount, BinaryReader binReader)
         {
             attacks = new List<attack_entry>();
-            //who needs a real method to reverse endianness when you could repeat a task for every value...
             for (Int32 i = 0; i < entryCount; i++)
             {
                 //have to initialize the thing or get the error thing
@@ -70,17 +70,17 @@ namespace Sm4shAIEditor
                 attacks[i].Y2 = task_helper.ReadReverseFloat(ref binReader);
             }
         }
-    }
 
-    class attack_entry
-    {
-        public UInt16 SubactionID { get; set; }
-        public UInt16 Unk_1 { get; set; }
-        public UInt16 FirstFrame { get; set; }
-        public UInt16 LastFrame { get; set; }
-        public Single X1 { get; set; }
-        public Single X2 { get; set; }
-        public Single Y1 { get; set; }
-        public Single Y2 { get; set; }
+        public class attack_entry
+        {
+            public UInt16 SubactionID { get; set; }
+            public UInt16 Unk_1 { get; set; }
+            public UInt16 FirstFrame { get; set; }
+            public UInt16 LastFrame { get; set; }
+            public Single X1 { get; set; }
+            public Single X2 { get; set; }
+            public Single Y1 { get; set; }
+            public Single Y2 { get; set; }
+        }
     }
 }

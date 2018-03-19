@@ -49,7 +49,7 @@ namespace Sm4shAIEditor
             atkdTab.Text = fileName;
 
             DataGridView atkdTabData = new DataGridView();
-            atkdTabData.RowCount = atkdFile.EntryCount;
+            atkdTabData.RowCount = (int)atkdFile.EntryCount;
             atkdTabData.ColumnCount = 7;
             atkdTabData.Columns[0].HeaderText = "Subaction Index";
             atkdTabData.Columns[1].HeaderText = "First Frame";
