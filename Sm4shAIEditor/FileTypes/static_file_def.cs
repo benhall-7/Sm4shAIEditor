@@ -9,49 +9,32 @@ namespace Sm4shAIEditor.FileTypes
 {
     public static class static_file_def
     {
-        public static string[] Names = 
+        public static Dictionary<string, Int32> FileMagic = new Dictionary<string, int>()
         {
-            "attack_data.bin",
-            "param.bin",
-            "param_nfp.bin",
-            "script.bin"
-        };
-        public static Int32[] Magic =
-        {
-            0x444b5441,
-            0x44504941,
-            0x44504941,
-            0x00000000
+            { "attack_data.bin", 0x444b5441 },
+            { "param.bin", 0x44504941 },
+            { "param_nfp.bin", 0x44504941 },
+            { "script.bin", 0x00000000 }
         };
         public static bool IsValidFile(string fileDirectory)
         {
             if (!File.Exists(fileDirectory))
                 throw new Exception("file directory does not exist!");
 
-            bool validity = false;
             string fileParentDir = Directory.GetParent(fileDirectory).FullName;
             string fileName = fileDirectory.Remove(0, fileParentDir.Length + 1);
 
-            int typeNumber = -1;
-            for (int i = 0; i < Names.Length; i++)
-            {
-                if (fileName == Names[i])
-                {
-                    typeNumber = i;
-                    break;
-                }
-            }
-            if (typeNumber == -1)
-                return validity;
+            if (!FileMagic.ContainsKey(fileName))
+                return false;
 
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
             Int32 magic = binReader.ReadInt32();
             binReader.Close();
 
-            if (magic == Magic[typeNumber])
-                validity = true;
+            if (magic != FileMagic[fileName])
+                return false;
 
-            return validity;
+            return true;
         }
     }
 }
