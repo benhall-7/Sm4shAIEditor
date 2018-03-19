@@ -9,7 +9,7 @@ namespace Sm4shAIEditor.FileTypes
 {
     public static class static_file_def
     {
-        public static Dictionary<string, Int32> FileMagic = new Dictionary<string, int>()
+        public static Dictionary<string, Int32> fileAttributes = new Dictionary<string, int>()
         {
             { "attack_data.bin", 0x444b5441 },
             { "param.bin", 0x44504941 },
@@ -24,14 +24,14 @@ namespace Sm4shAIEditor.FileTypes
             string fileParentDir = Directory.GetParent(fileDirectory).FullName;
             string fileName = fileDirectory.Remove(0, fileParentDir.Length + 1);
 
-            if (!FileMagic.ContainsKey(fileName))
+            if (!fileAttributes.ContainsKey(fileName))
                 return false;
 
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
             Int32 magic = binReader.ReadInt32();
             binReader.Close();
 
-            if (magic != FileMagic[fileName])
+            if (magic != fileAttributes[fileName])
                 return false;
 
             return true;
