@@ -52,12 +52,12 @@ namespace Sm4shAIEditor
             string fighterParent = Directory.GetParent(fighterDirectory).FullName;
             string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
             bool empty = true;
-            foreach (string fileType in static_file_def.fileAttributes.Keys)
+            foreach (string fileType in task_helper.fileAttributes.Keys)
             {
                 string subDir = fighterDirectory + @"\script\ai\" + fileType;
                 if (File.Exists(subDir))
                 {
-                    bool canLoad = static_file_def.IsValidFile(subDir);
+                    bool canLoad = task_helper.IsValidFile(subDir);
                     if (canLoad)
                     {
                         aiFiles.Add(subDir, fighterName);
@@ -79,7 +79,7 @@ namespace Sm4shAIEditor
                     if (aiFiles.ContainsKey(fileDirectory))
                         throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
 
-                    bool canLoad = static_file_def.IsValidFile(fileDirectory);
+                    bool canLoad = task_helper.IsValidFile(fileDirectory);
                     if (canLoad)
                         aiFiles.Add(fileDirectory, null);
                     else

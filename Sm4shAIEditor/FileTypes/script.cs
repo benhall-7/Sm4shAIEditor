@@ -8,5 +8,16 @@ namespace Sm4shAIEditor
 {
     class script
     {
+        public UInt32 RoutineCount { get; set; }
+
+        public script()
+        {
+
+        }
+
+        class Routine
+        {
+
+        }
     }
 }

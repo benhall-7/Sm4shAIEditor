@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AITree.cs" />
-    <Compile Include="FileTypes\static_file_def.cs" />
+    <Compile Include="FileTypes\task_helper.cs" />
     <Compile Include="FolderSelectDialog.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -170,11 +170,11 @@ namespace Sm4shAIEditor
                 //later on I might choose to make this into a dictionary
                 string parent = Directory.GetParent(nodeTag).FullName;
                 string nodeFileName = nodeTag.Remove(0, parent.Length + 1);
-                if (nodeFileName == static_file_def.fileAttributes.ElementAt(0).Key)
+                if (nodeFileName == task_helper.fileAttributes.ElementAt(0).Key)
                     LoadATKD(nodeTag);
-                else if (nodeTag == static_file_def.fileAttributes.ElementAt(1).Key || nodeTag == static_file_def.fileAttributes.ElementAt(2).Key)
+                else if (nodeTag == task_helper.fileAttributes.ElementAt(1).Key || nodeTag == task_helper.fileAttributes.ElementAt(2).Key)
                     LoadAIPD(nodeTag);
-                else if (nodeTag == static_file_def.fileAttributes.ElementAt(3).Key)
+                else if (nodeTag == task_helper.fileAttributes.ElementAt(3).Key)
                     LoadScript(nodeTag);
             }
         }
