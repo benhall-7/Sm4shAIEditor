@@ -60,7 +60,7 @@ namespace Sm4shAIEditor
                     Command cmd = new Command(ref binReader);
                     CommandList.Add(cmd);
                     
-                    relOffset = (int)binReader.BaseStream.Position;
+                    relOffset = (int)binReader.BaseStream.Position - (int)offset;
                 }
             }
 
