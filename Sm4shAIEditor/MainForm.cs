@@ -84,16 +84,22 @@ namespace Sm4shAIEditor
         {
             script scriptFile = new script(directory);
 
-            TabPage scriptTab = new TabPage();
-            scriptTab.Tag = directory;
+            TabPage entireScript = new TabPage();
+            entireScript.Tag = directory;
             string fileName = task_helper.GetFileName(directory);
-            scriptTab.Text = tree.aiFiles[directory] + "/" + fileName;
-            RichTextBox scriptTabData = new RichTextBox();
-            string text = "";
+            entireScript.Text = tree.aiFiles[directory] + "/" + fileName;
+
+            TabControl routineTabContainer = new TabControl();
+
             foreach (script.Routine routine in scriptFile.Routines.Keys)
             {
-                //Quick and Dirty and method to show script data. NOT PERMANENT
-                text += routine.RoutineID.ToString("X") + "{" + Environment.NewLine;
+                TabPage routineTab = new TabPage();
+                routineTab.Text = routine.RoutineID.ToString("X4");
+
+                RichTextBox routine_TB = new RichTextBox();
+
+                //quick method to show script data, needs some organization in the future
+                string text = "";
                 foreach (script.Routine.Command cmd in routine.CommandList)
                 {
                     string cmdParams = "";
@@ -105,13 +111,16 @@ namespace Sm4shAIEditor
                     }
                     text += "    " + script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
                 }
-                text += "}" + Environment.NewLine;
+
+                routine_TB.Text = text;
+                routine_TB.Font = new Font(new FontFamily("Courier New"), 10f);
+                routine_TB.Parent = routineTab;
+                routine_TB.Dock = DockStyle.Fill;
+                routineTabContainer.TabPages.Add(routineTab);
             }
-            scriptTabData.Text = text;
-            scriptTabData.Font = new Font(new FontFamily("Courier New"),10f);
-            scriptTabData.Parent = scriptTab;
-            scriptTabData.Dock = DockStyle.Fill;
-            fileTabContainer.TabPages.Add(scriptTab);
+            routineTabContainer.Parent = entireScript;
+            routineTabContainer.Dock = DockStyle.Fill;
+            fileTabContainer.TabPages.Add(entireScript);
         }
 
         private void UpdateTreeView()
