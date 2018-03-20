@@ -109,7 +109,7 @@ namespace Sm4shAIEditor
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }
-                    text += "    " + script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
+                    text += script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
                 }
 
                 routine_TB.Text = text;

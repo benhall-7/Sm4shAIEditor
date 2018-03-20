@@ -54,13 +54,13 @@ namespace Sm4shAIEditor
 
                 //Commands
                 CommandList = new List<Command>();
-                int relOffset = 0;
+                UInt32 relOffset = 0;
                 while (relOffset < ConstOffset)
                 {
                     Command cmd = new Command(ref binReader);
                     CommandList.Add(cmd);
                     
-                    relOffset = (int)binReader.BaseStream.Position - (int)offset;
+                    relOffset = (UInt32)binReader.BaseStream.Position - offset;
                 }
             }
 
