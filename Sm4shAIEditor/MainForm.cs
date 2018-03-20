@@ -103,11 +103,12 @@ namespace Sm4shAIEditor
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }
-                    text += "        " + script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
+                    text += "    " + script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
                 }
                 text += "}" + Environment.NewLine;
             }
             scriptTabData.Text = text;
+            scriptTabData.Font = new Font(new FontFamily("Courier New"),10f);
             scriptTabData.Parent = scriptTab;
             scriptTabData.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(scriptTab);
