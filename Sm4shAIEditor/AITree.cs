@@ -52,7 +52,7 @@ namespace Sm4shAIEditor
             string fighterParent = Directory.GetParent(fighterDirectory).FullName;
             string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
             bool empty = true;
-            foreach (string fileType in task_helper.fileAttributes.Keys)
+            foreach (string fileType in task_helper.fileMagic.Keys)
             {
                 string subDir = fighterDirectory + @"\script\ai\" + fileType;
                 if (File.Exists(subDir))

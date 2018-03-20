@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Sm4shAIEditor.FileTypes;
 
 namespace Sm4shAIEditor
 {
@@ -14,9 +15,21 @@ namespace Sm4shAIEditor
 
         public script(string fileDirectory)
         {
+            Routines = new Dictionary<Routine, uint>();
+
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
 
-            //initialization process
+            binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
+            RoutineCount = task_helper.ReadReverseUInt32(ref binReader);
+            //fill the Routines
+            for (int i = 0; i < RoutineCount; i++)
+            {
+                binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
+                UInt32 routineOffset = task_helper.ReadReverseUInt32(ref binReader);
+                Routine routine = new Routine(ref binReader, routineOffset);
+
+                Routines.Add(routine, routineOffset);
+            }
 
             binReader.Close();
         }
@@ -26,18 +39,54 @@ namespace Sm4shAIEditor
             public UInt32 RoutineID { get; set; }
             public UInt32 Unk_1 { get; set; }
             public UInt32 ConstOffset { get; set; }
-            public UInt32 VarCount { get; set; }
+            public UInt16 VarCount { get; set; }
 
             public List<Command> CommandList { get; set; }
-            public List<float> ConstantList { get; set; }
+
+            public Routine(ref BinaryReader binReader, UInt32 offset)
+            {
+                binReader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                RoutineID = task_helper.ReadReverseUInt32(ref binReader);
+                Unk_1 = task_helper.ReadReverseUInt32(ref binReader);
+                ConstOffset = task_helper.ReadReverseUInt32(ref binReader);
+                VarCount = task_helper.ReadReverseUInt16(ref binReader);
+                binReader.ReadInt16();//padding
+
+                //Commands
+                CommandList = new List<Command>();
+                int relOffset = 0;
+                while (relOffset < ConstOffset)
+                {
+                    Command cmd = new Command(ref binReader);
+                    CommandList.Add(cmd);
+                    
+                    relOffset = (int)binReader.BaseStream.Position;
+                }
+            }
 
             public class Command
             {
-                byte CmdID { get; set; }
-                byte paramCount { get; set; }
-                UInt16 CmdSize { get; set; }
+                public byte CmdID { get; set; }
+                public byte paramCount { get; set; }
+                public UInt16 CmdSize { get; set; }
 
                 public List<UInt32> ParamList { get; set; }
+
+                public Command(ref BinaryReader binReader)
+                {
+                    CmdID = binReader.ReadByte();
+                    paramCount = binReader.ReadByte();
+                    CmdSize = task_helper.ReadReverseUInt16(ref binReader);
+                    ParamList = new List<UInt32>(paramCount);
+                    int readBytes = 4;
+                    int readParams = 0;
+                    while (readBytes < CmdSize && readParams < paramCount)
+                    {
+                        ParamList.Add(task_helper.ReadReverseUInt32(ref binReader));
+                        readBytes += 4;
+                        readParams += 1;
+                    }
+                }
             }
         }
 
@@ -95,6 +144,16 @@ namespace Sm4shAIEditor
             { 0x30, "Unk_Cmd30" },
             { 0x31, "GetNearestCliffAbs" },
             { 0x32, "ClearStick" },
+            { 0x33, "Unk_Cmd33" },
+            { 0x34, "Unk_Cmd34" },
+            { 0x35, "Unk_Cmd35" },
+            { 0x36, "Unk_Cmd36" },
+            { 0x37, "Unk_Cmd37" },
+            { 0x38, "Unk_Cmd38" },
+            { 0x39, "Unk_Cmd39" },
+            { 0x3A, "Unk_Cmd3A" },
+            { 0x3B, "Unk_Cmd3B" },
+            { 0x3C, "Unk_Cmd3C" },//I don't know exactly how many commands there are, but there are at least 52
         };
     }
 }

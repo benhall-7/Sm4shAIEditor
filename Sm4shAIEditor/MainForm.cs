@@ -43,10 +43,9 @@ namespace Sm4shAIEditor
             attack_data atkdFile = new attack_data(directory);
 
             TabPage atkdTab = new TabPage();
-            atkdTab.Tag = atkdFile;
-            string parent = Directory.GetParent(directory).FullName;
-            string fileName = directory.Remove(0, parent.Length + 1);
-            atkdTab.Text = fileName;
+            atkdTab.Tag = directory;
+            string fileName = task_helper.GetFileName(directory);
+            atkdTab.Text = tree.aiFiles[directory]+"/"+fileName;
 
             DataGridView atkdTabData = new DataGridView();
             atkdTabData.RowCount = (int)atkdFile.EntryCount;
@@ -83,7 +82,35 @@ namespace Sm4shAIEditor
 
         private void LoadScript(string directory)
         {
+            script scriptFile = new script(directory);
 
+            TabPage scriptTab = new TabPage();
+            scriptTab.Tag = directory;
+            string fileName = task_helper.GetFileName(directory);
+            scriptTab.Text = tree.aiFiles[directory] + "/" + fileName;
+            RichTextBox scriptTabData = new RichTextBox();
+            string text = "";
+            foreach (script.Routine routine in scriptFile.Routines.Keys)
+            {
+                //Quick and Dirty and method to show script data. NOT PERMANENT
+                text += routine.RoutineID.ToString("X") + "{" + Environment.NewLine;
+                foreach (script.Routine.Command cmd in routine.CommandList)
+                {
+                    string cmdParams = "";
+                    for (int i = 0; i < cmd.ParamList.Count; i++)
+                    {
+                        cmdParams += cmd.ParamList[i].ToString("X");
+                        if (i != cmd.ParamList.Count - 1)
+                            cmdParams += ", ";
+                    }
+                    text += "        " + script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
+                }
+                text += "}" + Environment.NewLine;
+            }
+            scriptTabData.Text = text;
+            scriptTabData.Parent = scriptTab;
+            scriptTabData.Dock = DockStyle.Fill;
+            fileTabContainer.TabPages.Add(scriptTab);
         }
 
         private void UpdateTreeView()
@@ -114,8 +141,7 @@ namespace Sm4shAIEditor
                 else
                 {
                     TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
-                    string keyParent = Directory.GetParent(key).FullName;
-                    nodeName = key.Remove(0, keyParent.Length + 1);
+                    nodeName = task_helper.GetFileName(key);
                     TreeNode child = new TreeNode(nodeName);
                     child.Tag = nodeTag;
                     fighterNode.Nodes.Add(child);
@@ -168,13 +194,12 @@ namespace Sm4shAIEditor
             if (nodeTag != null)
             {
                 //later on I might choose to make this into a dictionary
-                string parent = Directory.GetParent(nodeTag).FullName;
-                string nodeFileName = nodeTag.Remove(0, parent.Length + 1);
-                if (nodeFileName == task_helper.fileAttributes.ElementAt(0).Key)
+                string nodeFileName = task_helper.GetFileName(nodeTag);
+                if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
                     LoadATKD(nodeTag);
-                else if (nodeTag == task_helper.fileAttributes.ElementAt(1).Key || nodeTag == task_helper.fileAttributes.ElementAt(2).Key)
+                else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key || nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
                     LoadAIPD(nodeTag);
-                else if (nodeTag == task_helper.fileAttributes.ElementAt(3).Key)
+                else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
                     LoadScript(nodeTag);
             }
         }
