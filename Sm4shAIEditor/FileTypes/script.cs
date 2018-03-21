@@ -11,11 +11,11 @@ namespace Sm4shAIEditor
     class script
     {
         public UInt32 RoutineCount { get; set; }
-        public Dictionary<Routine,UInt32> Routines { get; set; }
+        public Dictionary<Act,UInt32> acts { get; set; }
 
         public script(string fileDirectory)
         {
-            Routines = new Dictionary<Routine, uint>();
+            acts = new Dictionary<Act, uint>();
 
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
 
@@ -25,37 +25,37 @@ namespace Sm4shAIEditor
             for (int i = 0; i < RoutineCount; i++)
             {
                 binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
-                UInt32 routineOffset = task_helper.ReadReverseUInt32(ref binReader);
-                Routine routine = new Routine(ref binReader, routineOffset);
+                UInt32 actOffset = task_helper.ReadReverseUInt32(ref binReader);
+                Act act = new Act(ref binReader, actOffset);
 
-                Routines.Add(routine, routineOffset);
+                acts.Add(act, actOffset);
             }
 
             binReader.Close();
         }
 
-        public class Routine
+        public class Act
         {
-            public UInt32 RoutineID { get; set; }
-            public UInt32 Unk_1 { get; set; }
-            public UInt32 ConstOffset { get; set; }
+            public UInt32 ActID { get; set; }
+            public UInt32 ScriptOffset { get; set; }
+            public UInt32 ScriptValueOffset { get; set; }
             public UInt16 VarCount { get; set; }
 
             public List<Command> CommandList { get; set; }
 
-            public Routine(ref BinaryReader binReader, UInt32 offset)
+            public Act(ref BinaryReader binReader, UInt32 offset)
             {
                 binReader.BaseStream.Seek(offset, SeekOrigin.Begin);
-                RoutineID = task_helper.ReadReverseUInt32(ref binReader);
-                Unk_1 = task_helper.ReadReverseUInt32(ref binReader);
-                ConstOffset = task_helper.ReadReverseUInt32(ref binReader);
+                ActID = task_helper.ReadReverseUInt32(ref binReader);
+                ScriptOffset = task_helper.ReadReverseUInt32(ref binReader);
+                ScriptValueOffset = task_helper.ReadReverseUInt32(ref binReader);
                 VarCount = task_helper.ReadReverseUInt16(ref binReader);
-                binReader.ReadInt16();//padding
+                binReader.BaseStream.Seek(ScriptOffset + offset, SeekOrigin.Begin);
 
                 //Commands
                 CommandList = new List<Command>();
                 UInt32 relOffset = 0;
-                while (relOffset < ConstOffset)
+                while (relOffset < ScriptValueOffset)
                 {
                     Command cmd = new Command(ref binReader);
                     CommandList.Add(cmd);

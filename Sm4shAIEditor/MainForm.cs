@@ -91,16 +91,16 @@ namespace Sm4shAIEditor
 
             TabControl routineTabContainer = new TabControl();
 
-            foreach (script.Routine routine in scriptFile.Routines.Keys)
+            foreach (script.Act routine in scriptFile.acts.Keys)
             {
                 TabPage routineTab = new TabPage();
-                routineTab.Text = routine.RoutineID.ToString("X4");
+                routineTab.Text = routine.ActID.ToString("X4");
 
                 RichTextBox routine_TB = new RichTextBox();
 
                 //quick method to show script data, needs some organization in the future
                 string text = "";
-                foreach (script.Routine.Command cmd in routine.CommandList)
+                foreach (script.Act.Command cmd in routine.CommandList)
                 {
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
