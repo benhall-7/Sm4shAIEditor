@@ -15,8 +15,6 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
-        public List<TabPage> fileTabs = new List<TabPage>();//for keeping files open - currently unused
-        public TabPage previewTab = new TabPage();//for looking at a file temporarily - currently unused
         
         public MainForm()
         {
@@ -24,26 +22,24 @@ namespace Sm4shAIEditor
             this.Text = Properties.Resources.Title;
             this.Icon = Properties.Resources.FoxLogo;
         }
-
-        //sub method used for loading adding files with no associated fighter
+        
         private void LoadFiles(string[] fileDirectories)
         {
             tree.AddFiles(fileDirectories, ref status_TB);
         }
-
-        //sub method for loading fighters and their associated files
+        
         private void LoadFighters(string[] fighterDirectories)
         {
             tree.AddFighters(fighterDirectories, ref status_TB);
         }
 
-        //maybe a method to load the tab data would be better suited for the class itself
+        //maybe turn these into delegates instead of using if/else statements
         private void LoadATKD(string directory)
         {
             attack_data atkdFile = new attack_data(directory);
 
             TabPage atkdTab = new TabPage();
-            atkdTab.Tag = directory;
+            atkdTab.Name = directory;
             string fileName = task_helper.GetFileName(directory);
             atkdTab.Text = tree.aiFiles[directory]+"/"+fileName;
 
@@ -73,6 +69,7 @@ namespace Sm4shAIEditor
             atkdTabData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             atkdTabData.AutoResizeColumns();
             fileTabContainer.TabPages.Add(atkdTab);
+            fileTabContainer.SelectedTab = atkdTab;
         }
 
         private void LoadAIPD(string directory)
@@ -85,7 +82,7 @@ namespace Sm4shAIEditor
             script scriptFile = new script(directory);
 
             TabPage entireScript = new TabPage();
-            entireScript.Tag = directory;
+            entireScript.Name = directory;
             string fileName = task_helper.GetFileName(directory);
             entireScript.Text = tree.aiFiles[directory] + "/" + fileName;
 
@@ -121,6 +118,7 @@ namespace Sm4shAIEditor
             actTabContainer.Parent = entireScript;
             actTabContainer.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(entireScript);
+            fileTabContainer.SelectedTab = entireScript;
         }
 
         private void UpdateTreeView()
@@ -200,17 +198,21 @@ namespace Sm4shAIEditor
             //TODO: unload any files previously selected here
 
             //only the main files have a tag attribute; it stores the file directory and uses it as a unique identifier
-            string nodeTag = (string)treeView.SelectedNode.Tag;
-            if (nodeTag != null)
+            string nodeDirectory = (string)treeView.SelectedNode.Tag;
+            if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
+            {
+                fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(nodeDirectory);
+            }
+            else if (nodeDirectory != null)
             {
                 //later on I might choose to make this into a dictionary
-                string nodeFileName = task_helper.GetFileName(nodeTag);
+                string nodeFileName = task_helper.GetFileName(nodeDirectory);
                 if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
-                    LoadATKD(nodeTag);
+                    LoadATKD(nodeDirectory);
                 else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key || nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
-                    LoadAIPD(nodeTag);
+                    LoadAIPD(nodeDirectory);
                 else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
-                    LoadScript(nodeTag);
+                    LoadScript(nodeDirectory);
             }
         }
 

@@ -20,7 +20,6 @@ namespace Sm4shAIEditor
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
             binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
             actScriptCount = task_helper.ReadReverseUInt32(ref binReader);
-            //fill the Routines
             for (int i = 0; i < actScriptCount; i++)
             {
                 binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
