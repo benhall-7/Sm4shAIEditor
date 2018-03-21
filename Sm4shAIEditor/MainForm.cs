@@ -89,18 +89,18 @@ namespace Sm4shAIEditor
             string fileName = task_helper.GetFileName(directory);
             entireScript.Text = tree.aiFiles[directory] + "/" + fileName;
 
-            TabControl routineTabContainer = new TabControl();
+            TabControl actTabContainer = new TabControl();
 
-            foreach (script.Act routine in scriptFile.acts.Keys)
+            foreach (script.Act act in scriptFile.acts.Keys)
             {
-                TabPage routineTab = new TabPage();
-                routineTab.Text = routine.ActID.ToString("X4");
+                TabPage actTab = new TabPage();
+                actTab.Text = act.ActID.ToString("X4");
 
-                RichTextBox routine_TB = new RichTextBox();
+                RichTextBox act_TB = new RichTextBox();
 
                 //quick method to show script data, needs some organization in the future
                 string text = "";
-                foreach (script.Act.Command cmd in routine.CommandList)
+                foreach (script.Act.Command cmd in act.CommandList)
                 {
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
@@ -112,14 +112,14 @@ namespace Sm4shAIEditor
                     text += script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
                 }
 
-                routine_TB.Text = text;
-                routine_TB.Font = new Font(new FontFamily("Courier New"), 10f);
-                routine_TB.Parent = routineTab;
-                routine_TB.Dock = DockStyle.Fill;
-                routineTabContainer.TabPages.Add(routineTab);
+                act_TB.Text = text;
+                act_TB.Font = new Font(new FontFamily("Courier New"), 10f);
+                act_TB.Parent = actTab;
+                act_TB.Dock = DockStyle.Fill;
+                actTabContainer.TabPages.Add(actTab);
             }
-            routineTabContainer.Parent = entireScript;
-            routineTabContainer.Dock = DockStyle.Fill;
+            actTabContainer.Parent = entireScript;
+            actTabContainer.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(entireScript);
         }
 

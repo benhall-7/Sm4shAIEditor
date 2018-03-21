@@ -10,7 +10,7 @@ namespace Sm4shAIEditor
 {
     class script
     {
-        public UInt32 RoutineCount { get; set; }
+        public UInt32 actScriptCount { get; set; }
         public Dictionary<Act,UInt32> acts { get; set; }
 
         public script(string fileDirectory)
@@ -18,11 +18,10 @@ namespace Sm4shAIEditor
             acts = new Dictionary<Act, uint>();
 
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
-
             binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
-            RoutineCount = task_helper.ReadReverseUInt32(ref binReader);
+            actScriptCount = task_helper.ReadReverseUInt32(ref binReader);
             //fill the Routines
-            for (int i = 0; i < RoutineCount; i++)
+            for (int i = 0; i < actScriptCount; i++)
             {
                 binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
                 UInt32 actOffset = task_helper.ReadReverseUInt32(ref binReader);
