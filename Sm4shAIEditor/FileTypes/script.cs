@@ -127,12 +127,12 @@ namespace Sm4shAIEditor
             { 0x21, "Unk_Cmd21" },//get_range_floor? halt?
             { 0x22, "Wait" },//SetWait? Stores a variable at offset 0x94
             { 0x23, "CliffCheck" },
-            { 0x24, "EstTimePassX" },
-            { 0x25, "EstTimePassY" },
-            { 0x26, "EstTimeShield" },
+            { 0x24, "CalcArriveFrameX" },
+            { 0x25, "CalcArriveFrameY" },
+            { 0x26, "GetShieldHP" },
             { 0x27, "RandStagePoint" },
-            { 0x28, "EstX" },
-            { 0x29, "EstY" },
+            { 0x28, "CalcArrivePosX" },
+            { 0x29, "CalcArrivePosY" },
             { 0x2A, "AtkDiceRoll" },
             { 0x2B, "Break" },
             { 0x2C, "Norm" },
