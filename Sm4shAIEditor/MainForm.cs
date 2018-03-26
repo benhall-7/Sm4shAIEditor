@@ -91,14 +91,28 @@ namespace Sm4shAIEditor
             foreach (script.Act act in scriptFile.acts.Keys)
             {
                 TabPage actTab = new TabPage();
-                actTab.Text = act.ActID.ToString("X4");
+                actTab.Text = act.ID.ToString("X4");
 
                 RichTextBox act_TB = new RichTextBox();
 
                 //quick method to show script data, needs some organization in the future
                 string text = "";
-                foreach (script.Act.Command cmd in act.CommandList)
+                int ifNestLevel = 0;
+                foreach (script.Act.Cmd cmd in act.CmdList)
                 {
+                    //control the nested level spaces. Currently something is wrong regarding EndIfs and Ifs etc.
+                    string ifPadding = "";
+                    if (cmd.ID == 9)
+                        ifNestLevel--;
+                    if (ifNestLevel < 0)
+                        ifNestLevel = 0;
+                    for (int i = 0; i < ifNestLevel; i++)
+                    {
+                        ifPadding += "  ";
+                    }
+                    if (cmd.ID == 6 || cmd.ID == 7)
+                        ifNestLevel++;
+                    //define the params
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
                     {
@@ -106,7 +120,8 @@ namespace Sm4shAIEditor
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }
-                    text += script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
+                    //whole string written out
+                    text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
                 }
 
                 act_TB.Text = text;

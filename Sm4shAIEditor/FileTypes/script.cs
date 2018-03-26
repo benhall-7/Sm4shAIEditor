@@ -34,51 +34,51 @@ namespace Sm4shAIEditor
 
         public class Act
         {
-            public UInt32 ActID { get; set; }
+            public UInt32 ID { get; set; }
             public UInt32 ScriptOffset { get; set; }
             public UInt32 ScriptValueOffset { get; set; }
             public UInt16 VarCount { get; set; }
 
-            public List<Command> CommandList { get; set; }
+            public List<Cmd> CmdList { get; set; }
 
             public Act(ref BinaryReader binReader, UInt32 offset)
             {
                 binReader.BaseStream.Seek(offset, SeekOrigin.Begin);
-                ActID = task_helper.ReadReverseUInt32(ref binReader);
+                ID = task_helper.ReadReverseUInt32(ref binReader);
                 ScriptOffset = task_helper.ReadReverseUInt32(ref binReader);
                 ScriptValueOffset = task_helper.ReadReverseUInt32(ref binReader);
                 VarCount = task_helper.ReadReverseUInt16(ref binReader);
                 binReader.BaseStream.Seek(ScriptOffset + offset, SeekOrigin.Begin);
 
                 //Commands
-                CommandList = new List<Command>();
+                CmdList = new List<Cmd>();
                 UInt32 relOffset = 0;
                 while (relOffset < ScriptValueOffset)
                 {
-                    Command cmd = new Command(ref binReader);
-                    CommandList.Add(cmd);
+                    Cmd cmd = new Cmd(ref binReader);
+                    CmdList.Add(cmd);
                     
                     relOffset = (UInt32)binReader.BaseStream.Position - offset;
                 }
             }
 
-            public class Command
+            public class Cmd
             {
-                public byte CmdID { get; set; }
+                public byte ID { get; set; }
                 public byte paramCount { get; set; }
-                public UInt16 CmdSize { get; set; }
+                public UInt16 Size { get; set; }
 
                 public List<UInt32> ParamList { get; set; }
 
-                public Command(ref BinaryReader binReader)
+                public Cmd(ref BinaryReader binReader)
                 {
-                    CmdID = binReader.ReadByte();
+                    ID = binReader.ReadByte();
                     paramCount = binReader.ReadByte();
-                    CmdSize = task_helper.ReadReverseUInt16(ref binReader);
+                    Size = task_helper.ReadReverseUInt16(ref binReader);
                     ParamList = new List<UInt32>(paramCount);
                     int readBytes = 4;
                     int readParams = 0;
-                    while (readBytes < CmdSize && readParams < paramCount)
+                    while (readBytes < Size && readParams < paramCount)
                     {
                         ParamList.Add(task_helper.ReadReverseUInt32(ref binReader));
                         readBytes += 4;
@@ -88,70 +88,83 @@ namespace Sm4shAIEditor
             }
         }
 
-        //is this really the right way to make such a list?
-        public static Dictionary<byte, string> CmdNames = new Dictionary<byte, string>()
+        //when I get a chance overloads and parameters will be included
+        public class CmdInfo
         {
-            { 0x00, "End" },
-            { 0x01, "SetVar" },
-            { 0x02, "SetVec2D" },//SetVec2D
-            { 0x03, "SetLabel" },
-            { 0x04, "Return" },
-            { 0x05, "SearchLabel" },//Searches entire script for label that uses {arg}. If it contains no arguments then it searches forward for the first one it finds. When a label is found it sets the "Skip" position to that label
-            { 0x06, "If" },
-            { 0x07, "IfNot" },
-            { 0x08, "Else" },
-            { 0x09, "EndIf" },
-            { 0x0a, "SetStickRel" },
-            { 0x0b, "SetButton" },
-            { 0x0c, "VarAdd" },
-            { 0x0d, "VarSub" },
-            { 0x0e, "VarMult" },
-            { 0x0f, "VarDiv" },
-            { 0x10, "VecAdd" },
-            { 0x11, "VecSub" },
-            { 0x12, "VecMult" },
-            { 0x13, "VecDiv" },
-            { 0x14, "GoToCurrentLabel" },
-            { 0x15, "SetVarRandf" },
-            { 0x16, "Or" },
-            { 0x17, "OrNot" },
-            { 0x18, "And" },
-            { 0x19, "AndNot" },
-            { 0x1A, "SetFrame" },
-            { 0x1B, "Call" },
-            { 0x1C, "GoToLabel" },
-            { 0x1D, "GetNearestCliffRel" },
-            { 0x1E, "VarAbs" },
-            { 0x1F, "SetStickAbs" },
-            { 0x20, "Unk_Cmd20" },
-            { 0x21, "Unk_Cmd21" },//get_range_floor? halt?
-            { 0x22, "Wait" },//SetWait? Stores a variable at offset 0x94
-            { 0x23, "CliffCheck" },
-            { 0x24, "CalcArriveFrameX" },
-            { 0x25, "CalcArriveFrameY" },
-            { 0x26, "GetShieldHP" },
-            { 0x27, "RandStagePoint" },
-            { 0x28, "CalcArrivePosX" },
-            { 0x29, "CalcArrivePosY" },
-            { 0x2A, "AtkDiceRoll" },
-            { 0x2B, "Break" },
-            { 0x2C, "Norm" },
-            { 0x2D, "Dot" },
-            { 0x2E, "EstPosVec_sec" },
-            { 0x2F, "Unk_Cmd2F_atkd" },
-            { 0x30, "Unk_Cmd30" },
-            { 0x31, "GetNearestCliffAbs" },
-            { 0x32, "ClearStick" },
-            { 0x33, "Unk_Cmd33" },
-            { 0x34, "Unk_Cmd34" },
-            { 0x35, "Unk_Cmd35" },
-            { 0x36, "Unk_Cmd36" },
-            { 0x37, "Unk_Cmd37" },
-            { 0x38, "Unk_Cmd38" },
-            { 0x39, "Unk_Cmd39" },
-            { 0x3A, "Unk_Cmd3A" },
-            { 0x3B, "Unk_Cmd3B" },
-            { 0x3C, "Unk_Cmd3C" },//I don't know exactly how many commands there are, but there are at least 52
+            public byte ID;
+            public string Name;
+            public string Description;
+
+            public CmdInfo(byte id, string name, string description)
+            {
+                ID = id;
+                Name = name;
+                Description = description;
+            }
+        }
+        public static List<CmdInfo> CmdData = new List<CmdInfo>()
+        {
+            new CmdInfo(0x00, "End", ""),
+            new CmdInfo(0x01, "SetVar", "Stores the value retrieved by arg2 to the variable ID specified by arg1"),
+            new CmdInfo(0x02, "SetVec2D", ""),
+            new CmdInfo(0x03, "SetLabel", ""),
+            new CmdInfo(0x04, "Return", ""),
+            new CmdInfo(0x05, "SearchLabel", ""),
+            new CmdInfo(0x06, "If", ""),
+            new CmdInfo(0x07, "IfNot", ""),
+            new CmdInfo(0x08, "Else", ""),
+            new CmdInfo(0x09, "EndIf", ""),
+            new CmdInfo(0x0a, "SetStickRel", ""),
+            new CmdInfo(0x0b, "SetButton", ""),
+            new CmdInfo(0x0c, "VarAdd", ""),
+            new CmdInfo(0x0d, "VarSub", ""),
+            new CmdInfo(0x0e, "VarMul", ""),
+            new CmdInfo(0x0f, "VarDiv", ""),
+            new CmdInfo(0x10, "VecAdd", ""),
+            new CmdInfo(0x11, "VecSub", ""),
+            new CmdInfo(0x12, "VecMul", ""),
+            new CmdInfo(0x13, "VecDiv", ""),
+            new CmdInfo(0x14, "GoToCurrentLabel", ""),
+            new CmdInfo(0x15, "SetVarRandf", ""),
+            new CmdInfo(0x16, "Or", ""),
+            new CmdInfo(0x17, "OrNot", ""),
+            new CmdInfo(0x18, "And", ""),
+            new CmdInfo(0x19, "AndNot", ""),
+            new CmdInfo(0x1a, "SetFrame", ""),
+            new CmdInfo(0x1b, "SetAct", ""),
+            new CmdInfo(0x1c, "GoToLabel", ""),
+            new CmdInfo(0x1d, "GetNearestCliffRel", ""),
+            new CmdInfo(0x1e, "VarAbs", ""),
+            new CmdInfo(0x1f, "SetStickAbs", ""),
+            new CmdInfo(0x20, "Unk_20", ""),
+            new CmdInfo(0x21, "Unk_21", ""),
+            new CmdInfo(0x22, "SetWait", ""),
+            new CmdInfo(0x23, "CliffCheck", ""),
+            new CmdInfo(0x24, "CalcArriveFrameX", ""),
+            new CmdInfo(0x25, "CalcArriveFrameY", ""),
+            new CmdInfo(0x26, "GetShieldHP", ""),
+            new CmdInfo(0x27, "StagePtRand", ""),
+            new CmdInfo(0x28, "CalcArrivePosX", ""),
+            new CmdInfo(0x29, "CalcArrivePosY", ""),
+            new CmdInfo(0x2a, "AtkdDiceRoll", ""),
+            new CmdInfo(0x2b, "Break", ""),
+            new CmdInfo(0x2c, "Norm", ""),
+            new CmdInfo(0x2d, "Dot", ""),
+            new CmdInfo(0x2e, "CalcArrivePos_Sec", ""),
+            new CmdInfo(0x2f, "Unk_2f", ""),
+            new CmdInfo(0x30, "Unk_30", ""),
+            new CmdInfo(0x31, "SetVar", ""),
+            new CmdInfo(0x32, "GetNearestCliffAbs", ""),
+            new CmdInfo(0x33, "ClearStick", ""),
+            new CmdInfo(0x34, "Unk_34", ""),
+            new CmdInfo(0x35, "Unk_35", ""),
+            new CmdInfo(0x36, "Unk_36", ""),
+            new CmdInfo(0x37, "Unk_37", ""),
+            new CmdInfo(0x38, "Unk_38", ""),
+            new CmdInfo(0x39, "Unk_39", ""),
+            new CmdInfo(0x3a, "Unk_3a", ""),
+            new CmdInfo(0x3b, "Unk_3b", ""),
+            new CmdInfo(0x3c, "Unk_3c", ""),
         };
     }
 }
