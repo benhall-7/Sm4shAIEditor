@@ -88,6 +88,7 @@ namespace Sm4shAIEditor
 
             TabControl actTabContainer = new TabControl();
 
+            byte lastCmd = 0xff;
             foreach (script.Act act in scriptFile.acts.Keys)
             {
                 TabPage actTab = new TabPage();
@@ -100,18 +101,19 @@ namespace Sm4shAIEditor
                 int ifNestLevel = 0;
                 foreach (script.Act.Cmd cmd in act.CmdList)
                 {
-                    //control the nested level spaces. Currently something is wrong regarding EndIfs and Ifs etc.
+                    //control the nested level spaces
                     string ifPadding = "";
-                    if (cmd.ID == 9)
+                    if (cmd.ID == 8 || cmd.ID == 9)
                         ifNestLevel--;
-                    if (ifNestLevel < 0)
-                        ifNestLevel = 0;
                     for (int i = 0; i < ifNestLevel; i++)
                     {
                         ifPadding += "  ";
                     }
-                    if (cmd.ID == 6 || cmd.ID == 7)
+                    //account for the "else if" statement, which messes up the nest level
+                    //This is because both those commands together should only change by 1 level, not 2
+                    if (((cmd.ID == 6 || cmd.ID == 7) && lastCmd != 8) || cmd.ID == 8)
                         ifNestLevel++;
+
                     //define the params
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
@@ -120,6 +122,9 @@ namespace Sm4shAIEditor
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }
+
+                    lastCmd = cmd.ID;
+
                     //whole string written out
                     text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
                 }
