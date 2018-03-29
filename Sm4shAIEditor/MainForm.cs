@@ -107,7 +107,7 @@ namespace Sm4shAIEditor
                         ifNestLevel--;
                     for (int i = 0; i < ifNestLevel; i++)
                     {
-                        ifPadding += "  ";
+                        ifPadding += "    ";
                     }
                     //account for the "else if" statement, which messes up the nest level
                     //This is because both those commands together should only change by 1 level, not 2
@@ -120,10 +120,10 @@ namespace Sm4shAIEditor
                     {
                         UInt32 paramID = cmd.ParamList[i];
                         string paramString = "";
-                        if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                        if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]) && cmd.ID != 0x1b)
                             paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
                         else
-                            paramString = cmd.ParamList[i].ToString("X");
+                            paramString = "0x" + cmd.ParamList[i].ToString("X");
 
                         cmdParams += paramString;
                         if (i != cmd.ParamList.Count - 1)
