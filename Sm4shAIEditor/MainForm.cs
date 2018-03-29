@@ -88,25 +88,52 @@ namespace Sm4shAIEditor
 
             TabControl actTabContainer = new TabControl();
 
+            byte lastCmd = 0xff;
             foreach (script.Act act in scriptFile.acts.Keys)
             {
                 TabPage actTab = new TabPage();
-                actTab.Text = act.ActID.ToString("X4");
+                actTab.Text = act.ID.ToString("X4");
 
                 RichTextBox act_TB = new RichTextBox();
 
                 //quick method to show script data, needs some organization in the future
                 string text = "";
-                foreach (script.Act.Command cmd in act.CommandList)
+                int ifNestLevel = 0;
+                foreach (script.Act.Cmd cmd in act.CmdList)
                 {
+                    //control the nested level spaces
+                    string ifPadding = "";
+                    if (cmd.ID == 8 || cmd.ID == 9)
+                        ifNestLevel--;
+                    for (int i = 0; i < ifNestLevel; i++)
+                    {
+                        ifPadding += "    ";
+                    }
+                    //account for the "else if" statement, which messes up the nest level
+                    //This is because both those commands together should only change by 1 level, not 2
+                    if (((cmd.ID == 6 || cmd.ID == 7) && lastCmd != 8) || cmd.ID == 8)
+                        ifNestLevel++;
+
+                    //define the params
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
                     {
-                        cmdParams += cmd.ParamList[i].ToString("X");
+                        UInt32 paramID = cmd.ParamList[i];
+                        string paramString = "";
+                        if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]) && cmd.ID != 0x1b)
+                            paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
+                        else
+                            paramString = "0x" + cmd.ParamList[i].ToString("X");
+
+                        cmdParams += paramString;
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }
-                    text += script.CmdNames[cmd.CmdID] + "(" + cmdParams + ")" + Environment.NewLine;
+
+                    lastCmd = cmd.ID;
+
+                    //whole string written out
+                    text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
                 }
 
                 act_TB.Text = text;
