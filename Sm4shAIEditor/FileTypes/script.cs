@@ -58,10 +58,6 @@ namespace Sm4shAIEditor
                 UInt32 relOffset = ScriptOffset;
                 while (relOffset < ScriptFloatOffset)
                 {
-                    if (relOffset == 1156)
-                    {
-                        string text = "debug";
-                    }
                     Cmd cmd = new Cmd(ref binReader);
                     CmdList.Add(cmd);
 
