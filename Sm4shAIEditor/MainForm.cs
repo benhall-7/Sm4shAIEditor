@@ -118,7 +118,14 @@ namespace Sm4shAIEditor
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamList.Count; i++)
                     {
-                        cmdParams += cmd.ParamList[i].ToString("X");
+                        UInt32 paramID = cmd.ParamList[i];
+                        string paramString = "";
+                        if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                            paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
+                        else
+                            paramString = cmd.ParamList[i].ToString("X");
+
+                        cmdParams += paramString;
                         if (i != cmd.ParamList.Count - 1)
                             cmdParams += ", ";
                     }

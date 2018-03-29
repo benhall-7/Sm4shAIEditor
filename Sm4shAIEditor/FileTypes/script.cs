@@ -36,30 +36,63 @@ namespace Sm4shAIEditor
         {
             public UInt32 ID { get; set; }
             public UInt32 ScriptOffset { get; set; }
-            public UInt32 ScriptValueOffset { get; set; }
+            public UInt32 ScriptFloatOffset { get; set; }
             public UInt16 VarCount { get; set; }
+            public Dictionary<UInt32, float> ScriptFloats { get; set; }
 
             public List<Cmd> CmdList { get; set; }
 
-            public Act(ref BinaryReader binReader, UInt32 offset)
+            public Act(ref BinaryReader binReader, UInt32 actPosition)
             {
-                binReader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                binReader.BaseStream.Seek(actPosition, SeekOrigin.Begin);
                 ID = task_helper.ReadReverseUInt32(ref binReader);
                 ScriptOffset = task_helper.ReadReverseUInt32(ref binReader);
-                ScriptValueOffset = task_helper.ReadReverseUInt32(ref binReader);
+                ScriptFloatOffset = task_helper.ReadReverseUInt32(ref binReader);
                 VarCount = task_helper.ReadReverseUInt16(ref binReader);
-                binReader.BaseStream.Seek(ScriptOffset + offset, SeekOrigin.Begin);
+                binReader.BaseStream.Seek(ScriptOffset + actPosition, SeekOrigin.Begin);
+
+                ScriptFloats = new Dictionary<uint, float>();
 
                 //Commands
                 CmdList = new List<Cmd>();
-                UInt32 relOffset = 0;
-                while (relOffset < ScriptValueOffset)
+                UInt32 relOffset = ScriptOffset;
+                while (relOffset < ScriptFloatOffset)
                 {
+                    if (relOffset == 1156)
+                    {
+                        string text = "debug";
+                    }
                     Cmd cmd = new Cmd(ref binReader);
                     CmdList.Add(cmd);
-                    
-                    relOffset = (UInt32)binReader.BaseStream.Position - offset;
+
+                    //add values to the script float list
+                    foreach (UInt32 cmdParam in cmd.ParamList)
+                    {
+                        if (cmdParam >= 0x2000 &&
+                            cmdParam < 0x3000 &&
+                            !ScriptFloats.ContainsKey(cmdParam))
+                        {
+                            ScriptFloats.Add(cmdParam, GetScriptFloat(ref binReader, cmdParam, actPosition, ScriptFloatOffset));
+                        }
+                    }
+
+                    relOffset += cmd.Size;
                 }
+            }
+
+            protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
+            {
+                float scriptFloat;
+
+                Int32 binPosition = (Int32)binReader.BaseStream.Position;
+                if (cmdParam < 0x2000)
+                    throw new Exception("The command parameter is invalid");
+
+                cmdParam -= 0x2000;
+                binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
+                scriptFloat = task_helper.ReadReverseFloat(ref binReader);
+                binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
+                return scriptFloat;
             }
 
             public class Cmd
@@ -76,12 +109,10 @@ namespace Sm4shAIEditor
                     paramCount = binReader.ReadByte();
                     Size = task_helper.ReadReverseUInt16(ref binReader);
                     ParamList = new List<UInt32>(paramCount);
-                    int readBytes = 4;
                     int readParams = 0;
-                    while (readBytes < Size && readParams < paramCount)
+                    while (readParams < paramCount)
                     {
                         ParamList.Add(task_helper.ReadReverseUInt32(ref binReader));
-                        readBytes += 4;
                         readParams += 1;
                     }
                 }
