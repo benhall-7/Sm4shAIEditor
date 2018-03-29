@@ -134,7 +134,7 @@ namespace Sm4shAIEditor
             new CmdInfo(0x00, "End", ""),
             new CmdInfo(0x01, "SetVar", "Stores the value retrieved by arg2 to the variable ID specified by arg1"),
             new CmdInfo(0x02, "SetVec2D", ""),
-            new CmdInfo(0x03, "SetLabel", ""),
+            new CmdInfo(0x03, "Label", ""),
             new CmdInfo(0x04, "Return", ""),
             new CmdInfo(0x05, "SearchLabel", ""),
             new CmdInfo(0x06, "If", ""),
