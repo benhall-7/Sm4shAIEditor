@@ -144,16 +144,17 @@ namespace Sm4shAIEditor
                         int cmdAfterIndex = 1;
                         while (cmdIndex + cmdAfterIndex < act.CmdList.Count)
                         {
+                            script.Act.Cmd cmdCurr = act.CmdList[cmdIndex + cmdAfterIndex - 1];
                             if (cmdAfterIndex == 1)
                                 cmdString += "(";
-                            for (int i = 0; i < cmd.paramCount; i++)
+                            for (int i = 0; i < cmdCurr.paramCount; i++)
                             {
-                                if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
-                                    cmdParams += act.ScriptFloats[cmd.ParamList[i]];
+                                if (act.ScriptFloats.ContainsKey(cmdCurr.ParamList[i]))
+                                    cmdParams += act.ScriptFloats[cmdCurr.ParamList[i]];
                                 else
-                                    cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+                                    cmdParams += "0x" + cmdCurr.ParamList[i].ToString("X");
 
-                                if (i != cmd.paramCount - 1)
+                                if (i != cmdCurr.paramCount - 1)
                                     cmdParams += ", ";
                             }
                             cmdParams += ")";
@@ -190,11 +191,23 @@ namespace Sm4shAIEditor
                         if (act.CmdList[cmdIndex + 1].ID == 0x6 || act.CmdList[cmdIndex + 1].ID == 0x7)
                             cmdString += script.CmdData[cmd.ID].Name + " ";
                         else
-                            cmdString += script.CmdData[cmd.ID].Name + Environment.NewLine;
+                            cmdString += script.CmdData[cmd.ID].Name + " {" + Environment.NewLine;
                         text += cmdString;
                         break;
                     case 0x09://EndIf
                         cmdString += "}" + Environment.NewLine;//use the symbol instead of the name
+                        text += ifPadding + cmdString;
+                        break;
+                    case 0x1b://SetAct
+                        cmdString += script.CmdData[cmd.ID].Name + "(";
+                        for (int i = 0; i < cmd.paramCount; i++)
+                        {
+                            //never uses a "get_script_value" argument so routines numbered 0x20XX will appear correctly
+                            cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+                            if (i != cmd.paramCount - 1)
+                                cmdParams += ", ";
+                        }
+                        cmdString += cmdParams + ")" + Environment.NewLine;
                         text += ifPadding + cmdString;
                         break;
                     default:
