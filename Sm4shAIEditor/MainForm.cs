@@ -88,7 +88,6 @@ namespace Sm4shAIEditor
 
             TabControl actTabContainer = new TabControl();
 
-            byte lastCmd = 0xff;
             foreach (script.Act act in scriptFile.acts.Keys)
             {
                 TabPage actTab = new TabPage();
@@ -97,44 +96,7 @@ namespace Sm4shAIEditor
                 RichTextBox act_TB = new RichTextBox();
 
                 //quick method to show script data, needs some organization in the future
-                string text = "";
-                int ifNestLevel = 0;
-                foreach (script.Act.Cmd cmd in act.CmdList)
-                {
-                    //control the nested level spaces
-                    string ifPadding = "";
-                    if (cmd.ID == 8 || cmd.ID == 9)
-                        ifNestLevel--;
-                    for (int i = 0; i < ifNestLevel; i++)
-                    {
-                        ifPadding += "    ";
-                    }
-                    //account for the "else if" statement, which messes up the nest level
-                    //This is because both those commands together should only change by 1 level, not 2
-                    if (((cmd.ID == 6 || cmd.ID == 7) && lastCmd != 8) || cmd.ID == 8)
-                        ifNestLevel++;
-
-                    //define the params
-                    string cmdParams = "";
-                    for (int i = 0; i < cmd.ParamList.Count; i++)
-                    {
-                        UInt32 paramID = cmd.ParamList[i];
-                        string paramString = "";
-                        if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]) && cmd.ID != 0x1b)
-                            paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
-                        else
-                            paramString = "0x" + cmd.ParamList[i].ToString("X");
-
-                        cmdParams += paramString;
-                        if (i != cmd.ParamList.Count - 1)
-                            cmdParams += ", ";
-                    }
-
-                    lastCmd = cmd.ID;
-
-                    //whole string written out
-                    text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
-                }
+                string text = WriteScript(act);
 
                 act_TB.Text = text;
                 act_TB.Font = new Font(new FontFamily("Courier New"), 10f);
@@ -146,6 +108,51 @@ namespace Sm4shAIEditor
             actTabContainer.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(entireScript);
             fileTabContainer.SelectedTab = entireScript;
+        }
+
+        private string WriteScript(script.Act act)
+        {
+            byte lastCmd = 0xff;
+            string text = "";
+            int ifNestLevel = 0;
+            foreach (script.Act.Cmd cmd in act.CmdList)
+            {
+                //control the nested level spaces
+                string ifPadding = "";
+                if (cmd.ID == 8 || cmd.ID == 9)
+                    ifNestLevel--;
+                for (int i = 0; i < ifNestLevel; i++)
+                {
+                    ifPadding += "    ";
+                }
+                //account for the "else if" statement, which messes up the nest level
+                //This is because both those commands together should only change by 1 level, not 2
+                if (((cmd.ID == 6 || cmd.ID == 7) && lastCmd != 8) || cmd.ID == 8)
+                    ifNestLevel++;
+
+                //define the params
+                string cmdParams = "";
+                for (int i = 0; i < cmd.ParamList.Count; i++)
+                {
+                    UInt32 paramID = cmd.ParamList[i];
+                    string paramString = "";
+                    if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]) && cmd.ID != 0x1b)
+                        paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
+                    else
+                        paramString = "0x" + cmd.ParamList[i].ToString("X");
+
+                    cmdParams += paramString;
+                    if (i != cmd.ParamList.Count - 1)
+                        cmdParams += ", ";
+                }
+
+                lastCmd = cmd.ID;
+
+                //whole string written out
+                text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
+            }
+
+            return text;
         }
 
         private void UpdateTreeView()
