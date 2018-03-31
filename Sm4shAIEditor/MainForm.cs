@@ -112,11 +112,14 @@ namespace Sm4shAIEditor
 
         private string WriteScript(script.Act act)
         {
-            byte lastCmd = 0xff;
             string text = "";
+            byte lastCmdID = 0xff;
             int ifNestLevel = 0;
-            foreach (script.Act.Cmd cmd in act.CmdList)
+            //Oh boy
+            for (int cmdIndex = 0; cmdIndex < act.CmdList.Count; cmdIndex++)
             {
+                script.Act.Cmd cmd = act.CmdList[cmdIndex];
+
                 //control the nested level spaces
                 string ifPadding = "";
                 if (cmd.ID == 8 || cmd.ID == 9)
@@ -126,33 +129,93 @@ namespace Sm4shAIEditor
                     ifPadding += "    ";
                 }
                 //account for the "else if" statement, which messes up the nest level
-                //This is because both those commands together should only change by 1 level, not 2
-                if (((cmd.ID == 6 || cmd.ID == 7) && lastCmd != 8) || cmd.ID == 8)
+                if (((cmd.ID == 6 || cmd.ID == 7) && lastCmdID != 8) || cmd.ID == 8)
                     ifNestLevel++;
-
-                //define the params
+                
+                string cmdString = "";
                 string cmdParams = "";
-                for (int i = 0; i < cmd.ParamList.Count; i++)
+                switch (cmd.ID)
                 {
-                    UInt32 paramID = cmd.ParamList[i];
-                    string paramString = "";
-                    if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]) && cmd.ID != 0x1b)
-                        paramString = act.ScriptFloats[cmd.ParamList[i]].ToString();
-                    else
-                        paramString = "0x" + cmd.ParamList[i].ToString("X");
+                    case 0x06://If
+                    case 0x07://IfNot
+                        cmdString += script.CmdData[0x6].Name + "(";
+                        if (cmd.ID == 0x7)
+                            cmdString += "!";
+                        int cmdAfterIndex = 0;
+                        while (cmdIndex + cmdAfterIndex < act.CmdList.Count)
+                        {
+                            if (cmdAfterIndex == 0)
+                                cmdString += "(";
+                            for (int i = 0; i < cmd.paramCount; i++)
+                            {
+                                if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                                    cmdParams += act.ScriptFloats[cmd.ParamList[i]];
+                                else
+                                    cmdParams += "0x" + cmd.ParamList[i].ToString("X");
 
-                    cmdParams += paramString;
-                    if (i != cmd.ParamList.Count - 1)
-                        cmdParams += ", ";
+                                if (i != cmd.paramCount - 1)
+                                    cmdParams += ", ";
+                            }
+                            cmdParams += ")";
+                            cmdAfterIndex++;
+                            //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
+                            //believe it or not this next check is actually what the source code does
+                            Int32 relID = ((Int32)act.CmdList[cmdIndex + cmdAfterIndex].ID + 0xEA) % 0x100;
+                            if (relID <= 3)
+                            {
+                                cmdParams += " ";
+                                if (relID / 2 == 0)
+                                    cmdParams += "|| ";
+                                else
+                                    cmdParams += "&& ";
+                                if (relID % 2 == 0)
+                                    cmdParams += "(";
+                                else
+                                    cmdParams += "!(";
+                            }
+                            else
+                            {
+                                cmdIndex += cmdAfterIndex;
+                                break;
+                            }
+                        }
+                        cmdString += cmdParams + ") {" + NewlinePadding(ifPadding);
+                        break;
+                    case 0x08://Else
+                        cmdString += "}" + NewlinePadding(ifPadding);
+                        //if next command is an "if" don't put it on a separate line
+                        if (act.CmdList[cmdIndex + 1].ID == 0x6 || act.CmdList[cmdIndex + 1].ID == 0x7)
+                            cmdString += script.CmdData[cmd.ID].Name + " ";
+                        else
+                            cmdString += script.CmdData[cmd.ID].Name + NewlinePadding(ifPadding) + " ";
+                        break;
+                    case 0x09://EndIf
+                        cmdString += "}" + NewlinePadding(ifPadding);//use the symbol instead of the name
+                        break;
+                    default:
+                        cmdString += script.CmdData[cmd.ID].Name + "(";
+                        for (int i = 0; i < cmd.paramCount; i++)
+                        {
+                            if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                                cmdParams += act.ScriptFloats[cmd.ParamList[i]];
+                            else
+                                cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+
+                            if (i != cmd.paramCount - 1)
+                                cmdParams += ", ";
+                        }
+                        cmdString += cmdParams + ")" + NewlinePadding(ifPadding);
+                        break;
                 }
-
-                lastCmd = cmd.ID;
-
-                //whole string written out
-                text += ifPadding + script.CmdData[cmd.ID].Name + "(" + cmdParams + ")" + Environment.NewLine;
+                text += cmdString;
             }
 
             return text;
+        }
+
+        private string NewlinePadding(string padding)
+        {
+            return Environment.NewLine + padding;
         }
 
         private void UpdateTreeView()
