@@ -115,7 +115,7 @@ namespace Sm4shAIEditor
             string text = "";
             byte lastCmdID = 0xff;
             int ifNestLevel = 0;
-            //Oh boy
+            //Excuse the mess
             for (int cmdIndex = 0; cmdIndex < act.CmdList.Count; cmdIndex++)
             {
                 script.Act.Cmd cmd = act.CmdList[cmdIndex];
@@ -141,10 +141,10 @@ namespace Sm4shAIEditor
                         cmdString += script.CmdData[0x6].Name + "(";
                         if (cmd.ID == 0x7)
                             cmdString += "!";
-                        int cmdAfterIndex = 0;
+                        int cmdAfterIndex = 1;
                         while (cmdIndex + cmdAfterIndex < act.CmdList.Count)
                         {
-                            if (cmdAfterIndex == 0)
+                            if (cmdAfterIndex == 1)
                                 cmdString += "(";
                             for (int i = 0; i < cmd.paramCount; i++)
                             {
@@ -157,7 +157,6 @@ namespace Sm4shAIEditor
                                     cmdParams += ", ";
                             }
                             cmdParams += ")";
-                            cmdAfterIndex++;
                             //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                             //believe it or not this next check is actually what the source code does
                             Int32 relID = ((Int32)act.CmdList[cmdIndex + cmdAfterIndex].ID + 0xEA) % 0x100;
@@ -172,25 +171,31 @@ namespace Sm4shAIEditor
                                     cmdParams += "(";
                                 else
                                     cmdParams += "!(";
+                                cmdAfterIndex++;
                             }
                             else
                             {
-                                cmdIndex += cmdAfterIndex;
+                                cmdIndex += cmdAfterIndex - 1;
                                 break;
                             }
                         }
-                        cmdString += cmdParams + ") {" + NewlinePadding(ifPadding);
+                        cmdString += cmdParams + ") {" + Environment.NewLine;
+                        if (lastCmdID != 0x8)
+                            text += ifPadding;
+                        text += cmdString;
                         break;
                     case 0x08://Else
-                        cmdString += "}" + NewlinePadding(ifPadding);
-                        //if next command is an "if" don't put it on a separate line
+                        cmdString += ifPadding + "}" + Environment.NewLine + ifPadding;
+                        //if next command is an "if" or "ifNot" don't put it on a separate line
                         if (act.CmdList[cmdIndex + 1].ID == 0x6 || act.CmdList[cmdIndex + 1].ID == 0x7)
                             cmdString += script.CmdData[cmd.ID].Name + " ";
                         else
-                            cmdString += script.CmdData[cmd.ID].Name + NewlinePadding(ifPadding) + " ";
+                            cmdString += script.CmdData[cmd.ID].Name + Environment.NewLine;
+                        text += cmdString;
                         break;
                     case 0x09://EndIf
-                        cmdString += "}" + NewlinePadding(ifPadding);//use the symbol instead of the name
+                        cmdString += "}" + Environment.NewLine;//use the symbol instead of the name
+                        text += ifPadding + cmdString;
                         break;
                     default:
                         cmdString += script.CmdData[cmd.ID].Name + "(";
@@ -204,18 +209,14 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
-                        cmdString += cmdParams + ")" + NewlinePadding(ifPadding);
+                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        text += ifPadding + cmdString;
                         break;
                 }
-                text += cmdString;
+                lastCmdID = cmd.ID;
             }
 
             return text;
-        }
-
-        private string NewlinePadding(string padding)
-        {
-            return Environment.NewLine + padding;
         }
 
         private void UpdateTreeView()
