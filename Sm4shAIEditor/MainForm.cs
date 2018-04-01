@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Sm4shAIEditor.FileTypes;
+using System.Configuration;
 
 namespace Sm4shAIEditor
 {
@@ -97,9 +98,12 @@ namespace Sm4shAIEditor
 
                 //quick method to show script data, needs some organization in the future
                 string text = WriteScript(act);
+                Font scriptFont = new Font(
+                    new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
+                    float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
 
                 act_TB.Text = text;
-                act_TB.Font = new Font(new FontFamily("Courier New"), 10f);
+                act_TB.Font = scriptFont;
                 act_TB.Parent = actTab;
                 act_TB.Dock = DockStyle.Fill;
                 actTabContainer.TabPages.Add(actTab);

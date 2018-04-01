@@ -36,10 +36,10 @@
             this.openAllFightersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +49,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(784, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(984, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -107,13 +107,20 @@
             this.saveAndCloseToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.saveAndCloseToolStripMenuItem.Text = "Save and Close";
             // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
             // treeView
             // 
             this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Location = new System.Drawing.Point(12, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(200, 300);
+            this.treeView.Size = new System.Drawing.Size(200, 400);
             this.treeView.TabIndex = 1;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
@@ -125,10 +132,10 @@
             this.status_TB.BackColor = System.Drawing.SystemColors.InfoText;
             this.status_TB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.status_TB.ForeColor = System.Drawing.SystemColors.Info;
-            this.status_TB.Location = new System.Drawing.Point(12, 333);
+            this.status_TB.Location = new System.Drawing.Point(12, 433);
             this.status_TB.Name = "status_TB";
             this.status_TB.ReadOnly = true;
-            this.status_TB.Size = new System.Drawing.Size(760, 116);
+            this.status_TB.Size = new System.Drawing.Size(960, 116);
             this.status_TB.TabIndex = 2;
             this.status_TB.Text = "";
             // 
@@ -140,24 +147,17 @@
             this.fileTabContainer.Location = new System.Drawing.Point(219, 27);
             this.fileTabContainer.Name = "fileTabContainer";
             this.fileTabContainer.SelectedIndex = 0;
-            this.fileTabContainer.Size = new System.Drawing.Size(553, 300);
+            this.fileTabContainer.Size = new System.Drawing.Size(753, 400);
             this.fileTabContainer.TabIndex = 3;
             this.fileTabContainer.Visible = false;
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
             // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 461);
+            this.ClientSize = new System.Drawing.Size(984, 561);
             this.Controls.Add(this.fileTabContainer);
             this.Controls.Add(this.status_TB);
             this.Controls.Add(this.treeView);
