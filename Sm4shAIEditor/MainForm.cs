@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using Sm4shAIEditor.FileTypes;
+using Sm4shAIEditor.Filetypes;
 using System.Configuration;
 
 namespace Sm4shAIEditor
@@ -16,7 +16,12 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
-        
+        //Runtime variable
+        public static Font scriptFont = new Font(
+                    new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
+                    float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
+        public static string fighterDirectory = ConfigurationManager.AppSettings.Get("fighter_directory");
+
         public MainForm()
         {
             InitializeComponent();
@@ -98,9 +103,6 @@ namespace Sm4shAIEditor
 
                 //quick method to show script data, needs some organization in the future
                 string text = WriteScript(act);
-                Font scriptFont = new Font(
-                    new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
-                    float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
 
                 act_TB.Text = text;
                 act_TB.Font = scriptFont;
@@ -277,6 +279,8 @@ namespace Sm4shAIEditor
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = Properties.Resources.OpenFileFilter;
             openFile.Multiselect = true;
+            if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
+                openFile.InitialDirectory = fighterDirectory;
             if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 LoadFiles(openFile.FileNames);
@@ -288,6 +292,8 @@ namespace Sm4shAIEditor
         private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FolderSelectDialog openFighter = new FolderSelectDialog(true);
+            if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
+                openFighter.InitialDirectory = fighterDirectory;
             if (openFighter.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 LoadFighters(openFighter.SelectedPaths);
@@ -299,7 +305,12 @@ namespace Sm4shAIEditor
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FolderSelectDialog openAllFighters = new FolderSelectDialog(false);
-            if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
+            {
+                string[] fighterDirectories = Directory.EnumerateDirectories(fighterDirectory).ToArray();
+                LoadFighters(fighterDirectories);
+            }
+            else if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string[] fighterDirectories = Directory.EnumerateDirectories(openAllFighters.SelectedPath).ToArray();
                 LoadFighters(fighterDirectories);

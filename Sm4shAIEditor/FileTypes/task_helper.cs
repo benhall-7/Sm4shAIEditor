@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Sm4shAIEditor.FileTypes
+namespace Sm4shAIEditor.Filetypes
 {
     public static class task_helper
     {

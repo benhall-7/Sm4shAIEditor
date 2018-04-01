@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
-using Sm4shAIEditor.FileTypes;
+using Sm4shAIEditor.Filetypes;
 
 namespace Sm4shAIEditor
 {
