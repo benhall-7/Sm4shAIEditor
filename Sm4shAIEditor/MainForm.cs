@@ -368,7 +368,7 @@ namespace Sm4shAIEditor
             RecursiveArrayBuilder(treeView.Nodes, "script.bin", ref nodes);
             foreach (TreeNode node in nodes)
             {
-                string path = @"script_disassembly\";
+                string path = @"script_disasm\";
                 string fileDirectory = (string)node.Tag;
                 string nodeParent = null;
                 if (node.Parent != null)
@@ -387,6 +387,38 @@ namespace Sm4shAIEditor
                 }
             }
             status_TB.Text += "Disassembled scripts to folder" + Environment.NewLine;
+        }
+
+        private void everyATKDToCSV_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<TreeNode> nodes = new List<TreeNode>();
+            RecursiveArrayBuilder(treeView.Nodes, "attack_data.bin", ref nodes);
+            foreach (TreeNode node in nodes)
+            {
+                string path = @"atkd_disasm\";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string fileDirectory = (string)node.Tag;
+                if (node.Parent != null)
+                {
+                    attack_data atkdFile = new attack_data(fileDirectory);
+                    string text = "";
+                    foreach (attack_data.attack_entry attack in atkdFile.attacks)
+                    {
+                        text += attack.SubactionID + ",";
+                        text += attack.Unk_1 + ",";
+                        text += attack.FirstFrame + ",";
+                        text += attack.LastFrame + ",";
+                        text += attack.X1 + ",";
+                        text += attack.X2 + ",";
+                        text += attack.Y1 + ",";
+                        text += attack.Y2 + Environment.NewLine;
+                    }
+                    File.WriteAllText(path + node.Parent.Name + "_atkd.csv", text);
+                }
+            }
+            status_TB.Text += "Disassembled attack_data to folder" + Environment.NewLine;
         }
 
         private void RecursiveArrayBuilder(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
