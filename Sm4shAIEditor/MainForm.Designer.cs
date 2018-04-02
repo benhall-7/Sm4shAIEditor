@@ -40,13 +40,18 @@
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
+            this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decompileAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aTKDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptToTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.compilationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
@@ -153,6 +158,36 @@
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
             // 
+            // compilationToolStripMenuItem
+            // 
+            this.compilationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.decompileAllToolStripMenuItem});
+            this.compilationToolStripMenuItem.Name = "compilationToolStripMenuItem";
+            this.compilationToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
+            this.compilationToolStripMenuItem.Text = "Assembly";
+            // 
+            // decompileAllToolStripMenuItem
+            // 
+            this.decompileAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aTKDToolStripMenuItem,
+            this.scriptToTXTToolStripMenuItem});
+            this.decompileAllToolStripMenuItem.Name = "decompileAllToolStripMenuItem";
+            this.decompileAllToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.decompileAllToolStripMenuItem.Text = "Disassemble All";
+            // 
+            // aTKDToolStripMenuItem
+            // 
+            this.aTKDToolStripMenuItem.Name = "aTKDToolStripMenuItem";
+            this.aTKDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aTKDToolStripMenuItem.Text = "ATKD to CSV";
+            // 
+            // scriptToTXTToolStripMenuItem
+            // 
+            this.scriptToTXTToolStripMenuItem.Name = "scriptToTXTToolStripMenuItem";
+            this.scriptToTXTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scriptToTXTToolStripMenuItem.Text = "Script to TXT";
+            this.scriptToTXTToolStripMenuItem.Click += new System.EventHandler(this.everyScriptToTXT_ToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -187,6 +222,10 @@
         private System.Windows.Forms.RichTextBox status_TB;
         private System.Windows.Forms.TabControl fileTabContainer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compilationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem decompileAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aTKDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptToTXTToolStripMenuItem;
     }
 }
 

@@ -66,7 +66,8 @@ namespace Sm4shAIEditor
                     {
                         if (cmdParam >= 0x2000 &&
                             cmdParam < 0x3000 &&
-                            !ScriptFloats.ContainsKey(cmdParam))
+                            !ScriptFloats.ContainsKey(cmdParam) &&
+                            cmd.ID != 0x1b)
                         {
                             ScriptFloats.Add(cmdParam, GetScriptFloat(ref binReader, cmdParam, actPosition, ScriptFloatOffset));
                         }
@@ -180,18 +181,15 @@ namespace Sm4shAIEditor
             new CmdInfo(0x2e, "CalcArrivePos_Sec", ""),
             new CmdInfo(0x2f, "Unk_2f", ""),
             new CmdInfo(0x30, "Unk_30", ""),
-            new CmdInfo(0x31, "SetVar", ""),
-            new CmdInfo(0x32, "GetNearestCliffAbs", ""),
-            new CmdInfo(0x33, "ClearStick", ""),
+            new CmdInfo(0x31, "GetNearestCliffAbs", ""),
+            new CmdInfo(0x32, "ClearStick", ""),
+            new CmdInfo(0x33, "Unk_33", ""),
             new CmdInfo(0x34, "Unk_34", ""),
             new CmdInfo(0x35, "Unk_35", ""),
-            new CmdInfo(0x36, "Unk_36", ""),
+            new CmdInfo(0x36, "Unk_36", "Unused"),
             new CmdInfo(0x37, "Unk_37", ""),
             new CmdInfo(0x38, "Unk_38", ""),
-            new CmdInfo(0x39, "Unk_39", ""),
-            new CmdInfo(0x3a, "Unk_3a", ""),
-            new CmdInfo(0x3b, "Unk_3b", ""),
-            new CmdInfo(0x3c, "Unk_3c", ""),
+            new CmdInfo(0x39, "Unk_39", ""),//maximum command ID found through searching
         };
     }
 }

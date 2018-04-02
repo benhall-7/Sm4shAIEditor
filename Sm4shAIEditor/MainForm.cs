@@ -100,10 +100,8 @@ namespace Sm4shAIEditor
                 actTab.Text = act.ID.ToString("X4");
 
                 RichTextBox act_TB = new RichTextBox();
-
-                //quick method to show script data, needs some organization in the future
+                
                 string text = WriteScript(act);
-
                 act_TB.Text = text;
                 act_TB.Font = scriptFont;
                 act_TB.Parent = actTab;
@@ -362,6 +360,47 @@ namespace Sm4shAIEditor
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void everyScriptToTXT_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<TreeNode> nodes = new List<TreeNode>();
+            RecursiveArrayBuilder(treeView.Nodes, "script.bin", ref nodes);
+            foreach (TreeNode node in nodes)
+            {
+                string path = @"script_disassembly\";
+                string fileDirectory = (string)node.Tag;
+                string nodeParent = null;
+                if (node.Parent != null)
+                    nodeParent = node.Parent.Name;
+                else
+                    nodeParent = "any";
+                path += nodeParent + @"\";
+
+                script scriptFile = new script(fileDirectory);
+                foreach (script.Act act in scriptFile.acts.Keys)
+                {
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+                    string text = WriteScript(act);
+                    File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
+                }
+            }
+            status_TB.Text += "Disassembled scripts to folder" + Environment.NewLine;
+        }
+
+        private void RecursiveArrayBuilder(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Tag != null)
+                {
+                    if (task_helper.GetFileName((string)node.Tag) == fileName)
+                        collection_added_to.Add(node);
+                }
+                if (node.Nodes.Count != 0)
+                    RecursiveArrayBuilder(node.Nodes, fileName, ref collection_added_to);
+            }
         }
     }
 }
