@@ -17,8 +17,8 @@ namespace Sm4shAIEditor
         //initialization nation
         public AITree()
         {
-            aiFiles = new Dictionary<string, string>(0);
-            fighters = new List<string>(0);
+            aiFiles = new Dictionary<string, string>();
+            fighters = new List<string>();
         }
 
         //automatically will load the files that belong here
@@ -31,14 +31,14 @@ namespace Sm4shAIEditor
                     if (!Directory.Exists(fighterDirectory))
                         throw new ProgramException(Properties.Resources.FighterException3, fighterDirectory);
 
-                    string fighterParent = Directory.GetParent(fighterDirectory).FullName;
-                    string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
+                    string fighterName = task_helper.GetFileName(fighterDirectory);
                     string[] currentNames = fighters.ToArray();
                     if (currentNames.Contains(fighterName))
                         throw new ProgramException(Properties.Resources.FighterException1, fighterName);
 
                     AddFighterFiles(fighterDirectory);
                     fighters.Add(fighterName);
+                    fighters.Sort();
                 }
                 catch (ProgramException exception)
                 {
@@ -90,15 +90,6 @@ namespace Sm4shAIEditor
                     messageBox.Text += exception.Message + Environment.NewLine;
                 }
             }
-        }
-        public void GetFighterFileInfoFromName(string fighterName)
-        {
-            //temporarily nulled
-        }
-
-        public void GetFileInfo()
-        {
-            //temporarily nulled
         }
     }
 }
