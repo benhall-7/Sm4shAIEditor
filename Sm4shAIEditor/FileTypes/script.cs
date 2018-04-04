@@ -114,6 +114,16 @@ namespace Sm4shAIEditor
                     }
                 }
             }
+
+            public string get_script_value(UInt32 paramID)
+            {
+                if (paramID < 0x1000)
+                    return "var" + paramID;
+                if (paramID >= 0x2000 && ScriptFloats.ContainsKey(paramID))
+                    return ScriptFloats[paramID].ToString();
+                else
+                    return "0x" + paramID.ToString("X4");
+            }
         }
 
         //when I get a chance overloads and parameters will be included
@@ -189,7 +199,7 @@ namespace Sm4shAIEditor
             new CmdInfo(0x36, "Unk_36", "Unused"),
             new CmdInfo(0x37, "Unk_37", ""),
             new CmdInfo(0x38, "Unk_38", ""),
-            new CmdInfo(0x39, "Unk_39", ""),//maximum command ID found through searching
+            new CmdInfo(0x39, "Unk_39", ""),
         };
     }
 }

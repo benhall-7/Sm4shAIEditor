@@ -119,6 +119,7 @@ namespace Sm4shAIEditor
             string text = "";
             byte lastCmdID = 0xff;
             int ifNestLevel = 0;
+            byte relID = 0xFF;
             //Excuse the mess
             for (int cmdIndex = 0; cmdIndex < act.CmdList.Count; cmdIndex++)
             {
@@ -140,6 +141,18 @@ namespace Sm4shAIEditor
                 string cmdParams = "";
                 switch (cmd.ID)
                 {
+                    case 0x01://SetVar, uses notation [varX = Y]
+                        cmdString += "var" + cmd.ParamList[0] + " = ";
+                        cmdParams += act.get_script_value(cmd.ParamList[1]);
+                        cmdString += cmdParams + Environment.NewLine;
+                        text += ifPadding + cmdString;
+                        break;
+                    case 0x02://SetVec, uses notation [vecX = Y]
+                        cmdString += "vec" + cmd.ParamList[0] + " = ";
+                        cmdParams += act.get_script_value(cmd.ParamList[1]);
+                        cmdString += cmdParams + Environment.NewLine;
+                        text += ifPadding + cmdString;
+                        break;
                     case 0x06://If
                     case 0x07://IfNot
                         cmdString += script.CmdData[0x6].Name + "(";
@@ -153,6 +166,8 @@ namespace Sm4shAIEditor
                                 cmdString += "(";
                             for (int i = 0; i < cmdCurr.paramCount; i++)
                             {
+                                //IMPORTANT NOTE:
+                                //Don't use the "get_script_value" because normal integers can be used as arguments. In the future these have to be decided on a case-by-case basis using the Requirement IDs
                                 if (act.ScriptFloats.ContainsKey(cmdCurr.ParamList[i]))
                                     cmdParams += act.ScriptFloats[cmdCurr.ParamList[i]];
                                 else
@@ -164,7 +179,7 @@ namespace Sm4shAIEditor
                             cmdParams += ")";
                             //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                             //believe it or not this next check is actually what the source code does
-                            Int32 relID = ((Int32)act.CmdList[cmdIndex + cmdAfterIndex].ID + 0xEA) % 0x100;
+                            relID = (byte)(act.CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
                             if (relID <= 3)
                             {
                                 cmdParams += " ";
@@ -202,6 +217,39 @@ namespace Sm4shAIEditor
                         cmdString += "}" + Environment.NewLine;//use the symbol instead of the name
                         text += ifPadding + cmdString;
                         break;
+                    case 0x0c://var operators
+                    case 0x0d:
+                    case 0x0e:
+                    case 0x0f:
+                    case 0x10://vec operators
+                    case 0x11:
+                    case 0x12:
+                    case 0x13:
+                        relID = (byte)(cmd.ID - 0xc);
+                        if (relID < 4)
+                            cmdString += "var" + cmd.ParamList[0];
+                        else
+                            cmdString += "vec" + cmd.ParamList[0];
+
+                        if (relID % 4 == 0)
+                            cmdString += " += ";
+                        else if (relID % 4 == 1)
+                            cmdString += " -= ";
+                        else if (relID % 4 == 2)
+                            cmdString += " *= ";
+                        else
+                            cmdString += " /= ";
+                        
+                        for (int i = 1; i < cmd.paramCount; i++)
+                        {
+                            cmdParams += act.get_script_value(cmd.ParamList[i]);
+
+                            if (i != cmd.paramCount - 1)
+                                cmdParams += ", ";
+                        }
+                        cmdString += cmdParams + Environment.NewLine;
+                        text += ifPadding + cmdString;
+                        break;
                     case 0x1b://SetAct
                         cmdString += script.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
@@ -218,10 +266,7 @@ namespace Sm4shAIEditor
                         cmdString += script.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
                         {
-                            if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
-                                cmdParams += act.ScriptFloats[cmd.ParamList[i]];
-                            else
-                                cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+                            cmdParams += act.get_script_value(cmd.ParamList[i]);
 
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
