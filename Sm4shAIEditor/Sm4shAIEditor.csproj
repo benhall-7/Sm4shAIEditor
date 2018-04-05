@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AITree.cs" />
+    <Compile Include="Filetypes\script_data.cs" />
     <Compile Include="Filetypes\task_helper.cs" />
     <Compile Include="FolderSelectDialog.cs">
       <SubType>Component</SubType>

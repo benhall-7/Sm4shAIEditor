@@ -17,7 +17,7 @@ struct HEADER{
 }
 struct ENTRY{
     ushort subactionIndex;
-    ushort unk;
+    ushort pad16;
     ushort firstFrame;
     ushort lastFrame;
     float xmin;

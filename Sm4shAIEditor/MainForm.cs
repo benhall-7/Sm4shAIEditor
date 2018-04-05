@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using Sm4shAIEditor.Filetypes;
 using System.Configuration;
+using Sm4shAIEditor.Filetypes;
 
 namespace Sm4shAIEditor
 {
@@ -155,7 +155,7 @@ namespace Sm4shAIEditor
                         break;
                     case 0x06://If
                     case 0x07://IfNot
-                        cmdString += script.CmdData[0x6].Name + "(";
+                        cmdString += script_data.CmdData[0x6].Name + "(";
                         if (cmd.ID == 0x7)
                             cmdString += "!";
                         int cmdAfterIndex = 1;
@@ -208,9 +208,9 @@ namespace Sm4shAIEditor
                         cmdString += ifPadding + "}" + Environment.NewLine + ifPadding;
                         //if next command is an "if" or "ifNot" don't put it on a separate line
                         if (act.CmdList[cmdIndex + 1].ID == 0x6 || act.CmdList[cmdIndex + 1].ID == 0x7)
-                            cmdString += script.CmdData[cmd.ID].Name + " ";
+                            cmdString += script_data.CmdData[cmd.ID].Name + " ";
                         else
-                            cmdString += script.CmdData[cmd.ID].Name + " {" + Environment.NewLine;
+                            cmdString += script_data.CmdData[cmd.ID].Name + " {" + Environment.NewLine;
                         text += cmdString;
                         break;
                     case 0x09://EndIf
@@ -251,7 +251,7 @@ namespace Sm4shAIEditor
                         text += ifPadding + cmdString;
                         break;
                     case 0x1b://SetAct
-                        cmdString += script.CmdData[cmd.ID].Name + "(";
+                        cmdString += script_data.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
                         {
                             //never uses a "get_script_value" argument so routines numbered 0x20XX will appear correctly
@@ -263,7 +263,7 @@ namespace Sm4shAIEditor
                         text += ifPadding + cmdString;
                         break;
                     default:
-                        cmdString += script.CmdData[cmd.ID].Name + "(";
+                        cmdString += script_data.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
                         {
                             if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
@@ -455,7 +455,7 @@ namespace Sm4shAIEditor
                     foreach (attack_data.attack_entry attack in atkdFile.attacks)
                     {
                         text += attack.SubactionID + ",";
-                        text += attack.Unk_1 + ",";
+                        //leave out the second Uint16 because it's always 0 and probably never read; they only needed 3 ints
                         text += attack.FirstFrame + ",";
                         text += attack.LastFrame + ",";
                         text += attack.X1 + ",";
