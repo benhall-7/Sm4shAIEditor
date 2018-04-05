@@ -266,7 +266,10 @@ namespace Sm4shAIEditor
                         cmdString += script.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
                         {
-                            cmdParams += act.get_script_value(cmd.ParamList[i]);
+                            if (act.ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                                cmdParams += act.ScriptFloats[cmd.ParamList[i]];
+                            else
+                                cmdParams += "0x" + cmd.ParamList[i].ToString("X");
 
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
