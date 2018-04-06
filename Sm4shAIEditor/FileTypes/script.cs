@@ -128,7 +128,15 @@ namespace Sm4shAIEditor
                 if (paramID >= 0x2000 && ScriptFloats.ContainsKey(paramID))
                     return ScriptFloats[paramID].ToString();
                 else
-                    return "0x" + paramID.ToString("X4");
+                {
+                    string value;
+                    if (script_data.script_value_uniq.ContainsKey(paramID))
+                        value = script_data.script_value_uniq[paramID];
+                    else
+                        value = "0x" + paramID.ToString("X4");
+
+                    return value;
+                }
             }
         }
     }

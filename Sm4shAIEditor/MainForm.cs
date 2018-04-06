@@ -217,6 +217,19 @@ namespace Sm4shAIEditor
                         cmdString += "}" + Environment.NewLine;//use the symbol instead of the name
                         text += ifPadding + cmdString;
                         break;
+                    case 0x0a://SetStickRel
+                    case 0x1f://SetStickAbs
+                        cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                        for (int i = 0; i < cmd.paramCount; i++)
+                        {
+                            cmdParams += act.get_script_value(cmd.ParamList[i]);
+
+                            if (i != cmd.paramCount - 1)
+                                cmdParams += ", ";
+                        }
+                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        text += ifPadding + cmdString;
+                        break;
                     case 0x0c://var operators
                     case 0x0d:
                     case 0x0e:
