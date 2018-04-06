@@ -84,7 +84,7 @@ namespace Sm4shAIEditor.Filetypes
             new CmdInfo(0x39, "Unk_39", ""),
         };
 
-        public static Dictionary<UInt32, string> script_value_uniq = new Dictionary<uint, string>()
+        public static Dictionary<UInt32, string> script_value_uniq = new Dictionary<UInt32, string>()
         {
             {0x1003, "get_lr_tgt" },
             {0x1004, "ai_position" },
