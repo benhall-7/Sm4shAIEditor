@@ -162,7 +162,7 @@ namespace Sm4shAIEditor
                         while (cmdIndex + cmdAfterIndex < act.CmdList.Count)
                         {
                             script.Act.Cmd cmdCurr = act.CmdList[cmdIndex + cmdAfterIndex - 1];
-                            cmdParams += "(" + act.get_if_chk(cmdCurr.ParamList.ToArray()) + ")";
+                            cmdParams += "[" + act.get_if_chk(cmdCurr.ParamList.ToArray()) + "]";
                             //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                             //believe it or not this next check is actually what the source code does
                             relID = (byte)(act.CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
