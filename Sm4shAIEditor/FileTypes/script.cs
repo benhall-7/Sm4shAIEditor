@@ -138,6 +138,33 @@ namespace Sm4shAIEditor
                     return value;
                 }
             }
-        }
-    }
+
+            public string get_if_chk(UInt32[] cmdParams)
+            {
+                UInt32 reqID = cmdParams[0];
+                string requirement = "";
+                switch (reqID)
+                {
+                    case 0x101E:
+                        requirement += "tgt_char == " + script_data.fighters[(int)cmdParams[1]];
+                        break;
+                    default:
+                        for (int i = 0; i < cmdParams.Length; i++)
+                        {
+                            //NOTE:
+                            //Don't use the "get_script_value" because normal integers can be used as arguments for some checks
+                            if (ScriptFloats.ContainsKey(cmdParams[i]))
+                                requirement += ScriptFloats[cmdParams[i]];
+                            else
+                                requirement += "0x" + cmdParams[i].ToString("X");
+
+                            if (i != cmdParams.Length - 1)
+                                requirement += ", ";
+                        }
+                        break;
+                }
+                return requirement;
+            }
+        }//end of Act class
+    }//end of Script class
 }

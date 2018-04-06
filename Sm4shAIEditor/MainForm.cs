@@ -162,21 +162,7 @@ namespace Sm4shAIEditor
                         while (cmdIndex + cmdAfterIndex < act.CmdList.Count)
                         {
                             script.Act.Cmd cmdCurr = act.CmdList[cmdIndex + cmdAfterIndex - 1];
-                            if (cmdAfterIndex == 1)
-                                cmdString += "(";
-                            for (int i = 0; i < cmdCurr.paramCount; i++)
-                            {
-                                //IMPORTANT NOTE:
-                                //Don't use the "get_script_value" because normal integers can be used as arguments. In the future these have to be decided on a case-by-case basis using the Requirement IDs
-                                if (act.ScriptFloats.ContainsKey(cmdCurr.ParamList[i]))
-                                    cmdParams += act.ScriptFloats[cmdCurr.ParamList[i]];
-                                else
-                                    cmdParams += "0x" + cmdCurr.ParamList[i].ToString("X");
-
-                                if (i != cmdCurr.paramCount - 1)
-                                    cmdParams += ", ";
-                            }
-                            cmdParams += ")";
+                            cmdParams += "(" + act.get_if_chk(cmdCurr.ParamList.ToArray()) + ")";
                             //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                             //believe it or not this next check is actually what the source code does
                             relID = (byte)(act.CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
@@ -187,10 +173,9 @@ namespace Sm4shAIEditor
                                     cmdParams += "|| ";
                                 else
                                     cmdParams += "&& ";
-                                if (relID % 2 == 0)
-                                    cmdParams += "(";
-                                else
-                                    cmdParams += "!(";
+
+                                if (relID % 2 != 0)
+                                    cmdParams += "!";
                                 cmdAfterIndex++;
                             }
                             else
@@ -272,6 +257,14 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
+                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        text += ifPadding + cmdString;
+                        break;
+                    case 0x1d://cliff vector stuff
+                    case 0x27:
+                    case 0x31:
+                        cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                        cmdParams += "vec" + cmd.ParamList[0].ToString();
                         cmdString += cmdParams + ")" + Environment.NewLine;
                         text += ifPadding + cmdString;
                         break;
