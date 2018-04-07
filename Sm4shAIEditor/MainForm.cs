@@ -131,7 +131,7 @@ namespace Sm4shAIEditor
                     ifNestLevel--;
                 for (int i = 0; i < ifNestLevel; i++)
                 {
-                    ifPadding += "    ";
+                    ifPadding += "\t";
                 }
                 //account for the "else if" statement, which messes up the nest level
                 if (((cmd.ID == 6 || cmd.ID == 7) && lastCmdID != 8) || cmd.ID == 8)
@@ -144,13 +144,13 @@ namespace Sm4shAIEditor
                     case 0x01://SetVar, uses notation [varX = Y]
                         cmdString += "var" + cmd.ParamList[0] + " = ";
                         cmdParams += act.get_script_value(cmd.ParamList[1]);
-                        cmdString += cmdParams + Environment.NewLine;
+                        cmdString += cmdParams + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     case 0x02://SetVec, uses notation [vecX = Y]
                         cmdString += "vec" + cmd.ParamList[0] + " = ";
                         cmdParams += act.get_script_value(cmd.ParamList[1]);
-                        cmdString += cmdParams + Environment.NewLine;
+                        cmdString += cmdParams + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     case 0x06://If
@@ -184,22 +184,22 @@ namespace Sm4shAIEditor
                                 break;
                             }
                         }
-                        cmdString += cmdParams + ") {" + Environment.NewLine;
+                        cmdString += cmdParams + ") {" + "\r\n";
                         if (lastCmdID != 0x8)
                             text += ifPadding;
                         text += cmdString;
                         break;
                     case 0x08://Else
-                        cmdString += ifPadding + "}" + Environment.NewLine + ifPadding;
+                        cmdString += ifPadding + "}" + "\r\n" + ifPadding;
                         //if next command is an "if" or "ifNot" don't put it on a separate line
                         if (act.CmdList[cmdIndex + 1].ID == 0x6 || act.CmdList[cmdIndex + 1].ID == 0x7)
                             cmdString += script_data.CmdData[cmd.ID].Name + " ";
                         else
-                            cmdString += script_data.CmdData[cmd.ID].Name + " {" + Environment.NewLine;
+                            cmdString += script_data.CmdData[cmd.ID].Name + " {" + "\r\n";
                         text += cmdString;
                         break;
                     case 0x09://EndIf
-                        cmdString += "}" + Environment.NewLine;//use the symbol instead of the name
+                        cmdString += "}" + "\r\n";//use the symbol instead of the name
                         text += ifPadding + cmdString;
                         break;
                     case 0x0a://SetStickRel
@@ -212,7 +212,7 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
-                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     case 0x0c://var operators
@@ -245,7 +245,7 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
-                        cmdString += cmdParams + Environment.NewLine;
+                        cmdString += cmdParams + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     case 0x1b://SetAct
@@ -257,7 +257,7 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
-                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     case 0x1d://cliff vector stuff
@@ -265,7 +265,7 @@ namespace Sm4shAIEditor
                     case 0x31:
                         cmdString += script_data.CmdData[cmd.ID].Name + "(";
                         cmdParams += "vec" + cmd.ParamList[0].ToString();
-                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                     default:
@@ -280,7 +280,7 @@ namespace Sm4shAIEditor
                             if (i != cmd.paramCount - 1)
                                 cmdParams += ", ";
                         }
-                        cmdString += cmdParams + ")" + Environment.NewLine;
+                        cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
                 }
@@ -440,7 +440,7 @@ namespace Sm4shAIEditor
                     File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
                 }
             }
-            status_TB.Text += "Disassembled scripts to folder" + Environment.NewLine;
+            status_TB.Text += "Disassembled scripts to folder" + "\r\n";
         }
 
         private void everyATKDToCSV_ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -467,12 +467,12 @@ namespace Sm4shAIEditor
                         text += attack.X1 + ",";
                         text += attack.X2 + ",";
                         text += attack.Y1 + ",";
-                        text += attack.Y2 + Environment.NewLine;
+                        text += attack.Y2 + "\r\n";
                     }
                     File.WriteAllText(path + node.Parent.Name + "_atkd.csv", text);
                 }
             }
-            status_TB.Text += "Disassembled attack_data to folder" + Environment.NewLine;
+            status_TB.Text += "Disassembled attack_data to folder" + "\r\n";
         }
 
         private void RecursiveArrayBuilder(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
