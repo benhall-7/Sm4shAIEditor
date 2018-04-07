@@ -215,6 +215,28 @@ namespace Sm4shAIEditor
                         cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
+                    case 0x0b://SetButton
+                        cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                        List<string> cmdButtons = new List<string>();
+                        //generate buttons from command
+                        for (int i = 0; i < 4; i++)
+                        {
+                            int mask = 1 << i;
+                            if ((cmd.ParamList[0] & mask) == mask)
+                            {
+                                cmdButtons.Add(script_data.buttons[i]);
+                            }
+                        }
+                        //write out button list
+                        for (int i = 0; i < cmdButtons.Count; i++)
+                        {
+                            if (i != 0)
+                                cmdParams += "+";
+                            cmdParams += cmdButtons[i];
+                        }
+                        cmdString += cmdParams + ")" + "\r\n";
+                        text += ifPadding + cmdString;
+                        break;
                     case 0x0c://var operators
                     case 0x0d:
                     case 0x0e:

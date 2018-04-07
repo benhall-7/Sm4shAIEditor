@@ -160,9 +160,9 @@ namespace Sm4shAIEditor.Filetypes
             "miienemyg"
         };
 
-        public static List<string> actions = new List<string>()
+        public static List<string> buttons = new List<string>
         {
-            //empty for now
+            "attack", "special", "shield", "jump"
         };
     }
 }
