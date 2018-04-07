@@ -159,5 +159,10 @@ namespace Sm4shAIEditor.Filetypes
             "miienemys",
             "miienemyg"
         };
+
+        public static List<string> actions = new List<string>()
+        {
+            //empty for now
+        };
     }
 }

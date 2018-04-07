@@ -268,6 +268,12 @@ namespace Sm4shAIEditor
                         cmdString += cmdParams + ")" + "\r\n";
                         text += ifPadding + cmdString;
                         break;
+                    case 0x2c://Norm = length of vector with given components
+                        cmdString += "var" + cmd.ParamList[0] + " = " + script_data.CmdData[cmd.ID].Name + "(";
+                        cmdParams += act.get_script_value(cmd.ParamList[1]) + ", " + act.get_script_value(cmd.ParamList[2]);
+                        cmdString += cmdParams + ")" + "\r\n";
+                        text += ifPadding + cmdString;
+                        break;
                     default:
                         cmdString += script_data.CmdData[cmd.ID].Name + "(";
                         for (int i = 0; i < cmd.paramCount; i++)
@@ -373,8 +379,6 @@ namespace Sm4shAIEditor
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //TODO: unload any files previously selected here
-
             //only the main files have a tag attribute; it stores the file directory and uses it as a unique identifier
             string nodeDirectory = (string)treeView.SelectedNode.Tag;
             if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
@@ -392,11 +396,6 @@ namespace Sm4shAIEditor
                 else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
                     LoadScript(nodeDirectory);
             }
-        }
-
-        private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-
         }
 
         private void fileTabContainer_ControlAdded(object sender, ControlEventArgs e)

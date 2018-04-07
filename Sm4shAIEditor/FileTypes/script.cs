@@ -145,6 +145,15 @@ namespace Sm4shAIEditor
                 string requirement = "";
                 switch (reqID)
                 {
+                    case 0x1007://Greater than (not thouroughly tested)
+                        requirement += get_script_value(cmdParams[1]) + " > " + get_script_value(cmdParams[2]);
+                        break;
+                    case 0x1008://Less than (not thouroughly tested)
+                        requirement += get_script_value(cmdParams[1]) + " < " + get_script_value(cmdParams[2]);
+                        break;
+                    case 0x100F:
+                        requirement += "ai_action == " + "0x" + cmdParams[1].ToString("X");
+                        break;
                     case 0x101E:
                         requirement += "tgt_char == " + script_data.fighters[(int)cmdParams[1]];
                         break;
