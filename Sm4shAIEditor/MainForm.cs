@@ -231,7 +231,7 @@ namespace Sm4shAIEditor
                         for (int i = 0; i < cmdButtons.Count; i++)
                         {
                             if (i != 0)
-                                cmdParams += "+";
+                                cmdParams += "+";//never used in vanilla smash 4 scripts
                             cmdParams += cmdButtons[i];
                         }
                         cmdString += cmdParams + ")" + "\r\n";

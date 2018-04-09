@@ -145,20 +145,41 @@ namespace Sm4shAIEditor
                 string requirement = "";
                 switch (reqID)
                 {
-                    case 0x1007://Greater
-                        requirement += get_script_value(cmdParams[1]) + " > " + get_script_value(cmdParams[2]);
+                    case 0x1002://Checks if execution frame is greater than provided argument
+                        requirement = "TimerPassed " + get_script_value(cmdParams[1]);
+                        break;
+                    case 0x1005:
+                        requirement = "ai_aerial";
+                        break;
+                    case 0x1007://Greater than
+                        requirement = get_script_value(cmdParams[1]) + " > " + get_script_value(cmdParams[2]);
                         break;
                     case 0x1008://Less than
-                        requirement += get_script_value(cmdParams[1]) + " < " + get_script_value(cmdParams[2]);
+                        requirement = get_script_value(cmdParams[1]) + " < " + get_script_value(cmdParams[2]);
                         break;
-                    case 0x100F://action check
-                        requirement += "ai_action == " + "0x" + cmdParams[1].ToString("X");
+                    case 0x1009://Greater than or Equal
+                        requirement = get_script_value(cmdParams[1]) + " >= " + get_script_value(cmdParams[2]);
                         break;
-                    case 0x101E://opponent character
-                        requirement += "tgt_char == " + script_data.fighters[(int)cmdParams[1]];
+                    case 0x100a://Less than or Equal
+                        requirement = get_script_value(cmdParams[1]) + " <= " + get_script_value(cmdParams[2]);
                         break;
-                    case 0x1024:
-                        requirement += "ai_subaction == " + "0x" + cmdParams[1].ToString("X");
+                    case 0x100d:
+                        requirement = "ai_off_stage";
+                        break;
+                    case 0x100f://action
+                        requirement = "ai_action == " + "0x" + cmdParams[1].ToString("X");
+                        break;
+                    case 0x101b:
+                        requirement = "tgt_aerial";
+                        break;
+                    case 0x101E://ai character
+                        requirement = "ai_char " + script_data.fighters[(int)cmdParams[1]];
+                        break;
+                    case 0x101F://target character
+                        requirement = "tgt_char " + script_data.fighters[(int)cmdParams[1]];
+                        break;
+                    case 0x1024://subaction
+                        requirement = "ai_subaction == " + "0x" + cmdParams[1].ToString("X");
                         break;
                     default:
                         for (int i = 0; i < cmdParams.Length; i++)

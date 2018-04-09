@@ -67,7 +67,7 @@ namespace Sm4shAIEditor.Filetypes
             new CmdInfo(0x28, "CalcArrivePosX", ""),
             new CmdInfo(0x29, "CalcArrivePosY", ""),
             new CmdInfo(0x2a, "AtkdDiceRoll", ""),
-            new CmdInfo(0x2b, "Break", ""),
+            new CmdInfo(0x2b, "Unk_2b", ""),
             new CmdInfo(0x2c, "Norm", ""),
             new CmdInfo(0x2d, "Dot", ""),
             new CmdInfo(0x2e, "CalcArrivePos_Sec", ""),
