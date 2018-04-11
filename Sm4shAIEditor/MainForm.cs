@@ -16,7 +16,7 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
-        //Runtime variable
+        //runtime variable
         public static Font scriptFont = new Font(
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
@@ -440,7 +440,7 @@ namespace Sm4shAIEditor
         private void everyScriptToTXT_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<TreeNode> nodes = new List<TreeNode>();
-            RecursiveArrayBuilder(treeView.Nodes, "script.bin", ref nodes);
+            RecursiveTreeArray(treeView.Nodes, "script.bin", ref nodes);
             foreach (TreeNode node in nodes)
             {
                 string path = @"script_disasm\";
@@ -467,7 +467,7 @@ namespace Sm4shAIEditor
         private void everyATKDToCSV_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<TreeNode> nodes = new List<TreeNode>();
-            RecursiveArrayBuilder(treeView.Nodes, "attack_data.bin", ref nodes);
+            RecursiveTreeArray(treeView.Nodes, "attack_data.bin", ref nodes);
             foreach (TreeNode node in nodes)
             {
                 string path = @"atkd_disasm\";
@@ -496,7 +496,7 @@ namespace Sm4shAIEditor
             status_TB.Text += "Disassembled attack_data to folder" + "\r\n";
         }
 
-        private void RecursiveArrayBuilder(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
+        private void RecursiveTreeArray(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
         {
             foreach (TreeNode node in nodes)
             {
@@ -506,7 +506,33 @@ namespace Sm4shAIEditor
                         collection_added_to.Add(node);
                 }
                 if (node.Nodes.Count != 0)
-                    RecursiveArrayBuilder(node.Nodes, fileName, ref collection_added_to);
+                    RecursiveTreeArray(node.Nodes, fileName, ref collection_added_to);
+            }
+        }
+
+        private void assembleATKD()
+        {
+
+        }
+
+        private void assembleAIPD()
+        {
+
+        }
+
+        private void assembleScript()
+        {
+
+        }
+
+        private void compilationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AssemblyDialog asmDialog = new AssemblyDialog();
+            if (asmDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                
+
+                asmDialog.Dispose();
             }
         }
     }

@@ -38,12 +38,10 @@
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.decompileAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aTKDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptToTXTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
+            this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,33 +120,10 @@
             // compilationToolStripMenuItem
             // 
             this.compilationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.decompileAllToolStripMenuItem});
+            this.assemblyDialogToolStripMenuItem});
             this.compilationToolStripMenuItem.Name = "compilationToolStripMenuItem";
             this.compilationToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.compilationToolStripMenuItem.Text = "Assembly";
-            // 
-            // decompileAllToolStripMenuItem
-            // 
-            this.decompileAllToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aTKDToolStripMenuItem,
-            this.scriptToTXTToolStripMenuItem});
-            this.decompileAllToolStripMenuItem.Name = "decompileAllToolStripMenuItem";
-            this.decompileAllToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.decompileAllToolStripMenuItem.Text = "Disassemble All";
-            // 
-            // aTKDToolStripMenuItem
-            // 
-            this.aTKDToolStripMenuItem.Name = "aTKDToolStripMenuItem";
-            this.aTKDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aTKDToolStripMenuItem.Text = "ATKD to CSV";
-            this.aTKDToolStripMenuItem.Click += new System.EventHandler(this.everyATKDToCSV_ToolStripMenuItem_Click);
-            // 
-            // scriptToTXTToolStripMenuItem
-            // 
-            this.scriptToTXTToolStripMenuItem.Name = "scriptToTXTToolStripMenuItem";
-            this.scriptToTXTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.scriptToTXTToolStripMenuItem.Text = "Script to TXT";
-            this.scriptToTXTToolStripMenuItem.Click += new System.EventHandler(this.everyScriptToTXT_ToolStripMenuItem_Click);
             // 
             // treeView
             // 
@@ -188,6 +163,13 @@
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
             // 
+            // assemblyDialogToolStripMenuItem
+            // 
+            this.assemblyDialogToolStripMenuItem.Name = "assemblyDialogToolStripMenuItem";
+            this.assemblyDialogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.assemblyDialogToolStripMenuItem.Text = "Assembly Dialog";
+            this.assemblyDialogToolStripMenuItem.Click += new System.EventHandler(this.compilationToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -223,9 +205,7 @@
         private System.Windows.Forms.TabControl fileTabContainer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compilationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem decompileAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aTKDToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptToTXTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem assemblyDialogToolStripMenuItem;
     }
 }
 
