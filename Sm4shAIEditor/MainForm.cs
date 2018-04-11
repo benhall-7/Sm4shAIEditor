@@ -413,10 +413,40 @@ namespace Sm4shAIEditor
                 string nodeFileName = task_helper.GetFileName(nodeDirectory);
                 if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
                     LoadATKD(nodeDirectory);
-                else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key || nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
+                else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key ||
+                    nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
                     LoadAIPD(nodeDirectory);
                 else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
                     LoadScript(nodeDirectory);
+            }
+        }
+
+        private void treeView_DoubleClick(object sender, EventArgs e)
+        {
+            //double clicking a fighter opens all their files
+            TreeNode selectedNode = treeView.SelectedNode;
+            if ((string)selectedNode.Tag == null)
+            {
+                for(int i=0; i < selectedNode.Nodes.Count; i++)
+                {
+                    TreeNode subNode = selectedNode.Nodes[i];
+                    string subNodeDir = (string)subNode.Tag;
+                    if (subNodeDir != null && !fileTabContainer.TabPages.ContainsKey(subNodeDir))
+                    {
+                        string nodeFileName = task_helper.GetFileName(subNodeDir);
+                        if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
+                            LoadATKD(subNodeDir);
+                        else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key ||
+                            nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
+                            LoadAIPD(subNodeDir);
+                        else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
+                            LoadScript(subNodeDir);
+                    }
+                    if (i == selectedNode.Nodes.Count - 1)
+                    {
+                        fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(subNodeDir);
+                    }
+                }
             }
         }
 

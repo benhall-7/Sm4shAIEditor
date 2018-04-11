@@ -134,6 +134,7 @@
             this.treeView.Size = new System.Drawing.Size(200, 400);
             this.treeView.TabIndex = 1;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            this.treeView.DoubleClick += new System.EventHandler(this.treeView_DoubleClick);
             // 
             // status_TB
             // 
