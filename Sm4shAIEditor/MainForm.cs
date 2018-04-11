@@ -75,7 +75,6 @@ namespace Sm4shAIEditor
             atkdTabData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             atkdTabData.AutoResizeColumns();
             fileTabContainer.TabPages.Add(atkdTab);
-            fileTabContainer.SelectedTab = atkdTab;
         }
 
         private void LoadAIPD(string directory)
@@ -111,7 +110,6 @@ namespace Sm4shAIEditor
             actTabContainer.Parent = entireScript;
             actTabContainer.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(entireScript);
-            fileTabContainer.SelectedTab = entireScript;
         }
 
         private string WriteScript(script.Act act)
@@ -403,11 +401,7 @@ namespace Sm4shAIEditor
         {
             //only the main files have a tag attribute; it stores the file directory and uses it as a unique identifier
             string nodeDirectory = (string)treeView.SelectedNode.Tag;
-            if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
-            {
-                fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(nodeDirectory);
-            }
-            else if (nodeDirectory != null)
+            if (nodeDirectory != null && !fileTabContainer.TabPages.ContainsKey(nodeDirectory))
             {
                 //later on I might choose to make this into a dictionary
                 string nodeFileName = task_helper.GetFileName(nodeDirectory);
@@ -418,6 +412,10 @@ namespace Sm4shAIEditor
                     LoadAIPD(nodeDirectory);
                 else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
                     LoadScript(nodeDirectory);
+            }
+            if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
+            {
+                fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(nodeDirectory);
             }
         }
 
@@ -526,6 +524,7 @@ namespace Sm4shAIEditor
             status_TB.Text += "Disassembled attack_data to folder" + "\r\n";
         }
 
+        //totally unnecessary since the tree never goes past a second level but idc
         private void RecursiveTreeArray(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
         {
             foreach (TreeNode node in nodes)
