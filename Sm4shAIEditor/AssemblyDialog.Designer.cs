@@ -35,14 +35,14 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.gB_assemblyScope = new System.Windows.Forms.GroupBox();
-            this.gB_disassemblyScope = new System.Windows.Forms.GroupBox();
-            this.rB_asmFromTabs = new System.Windows.Forms.RadioButton();
             this.rB_asmFromFolder = new System.Windows.Forms.RadioButton();
-            this.rB_disasmFromTabs = new System.Windows.Forms.RadioButton();
+            this.rB_asmFromTabs = new System.Windows.Forms.RadioButton();
+            this.gB_disassemblyScope = new System.Windows.Forms.GroupBox();
+            this.cB_disasmTreeAndTabs = new System.Windows.Forms.CheckBox();
             this.rB_disasmFromTree = new System.Windows.Forms.RadioButton();
+            this.rB_disasmFromTabs = new System.Windows.Forms.RadioButton();
             this.button_cancel = new System.Windows.Forms.Button();
             this.button_accept = new System.Windows.Forms.Button();
-            this.cB_disasmTreeAndTabs = new System.Windows.Forms.CheckBox();
             this.gB_filetypes.SuspendLayout();
             this.gB_assemblyScope.SuspendLayout();
             this.gB_disassemblyScope.SuspendLayout();
@@ -126,17 +126,16 @@
             this.gB_assemblyScope.TabStop = false;
             this.gB_assemblyScope.Text = "Assembly Scope";
             // 
-            // gB_disassemblyScope
+            // rB_asmFromFolder
             // 
-            this.gB_disassemblyScope.Controls.Add(this.cB_disasmTreeAndTabs);
-            this.gB_disassemblyScope.Controls.Add(this.rB_disasmFromTree);
-            this.gB_disassemblyScope.Controls.Add(this.rB_disasmFromTabs);
-            this.gB_disassemblyScope.Location = new System.Drawing.Point(12, 154);
-            this.gB_disassemblyScope.Name = "gB_disassemblyScope";
-            this.gB_disassemblyScope.Size = new System.Drawing.Size(260, 86);
-            this.gB_disassemblyScope.TabIndex = 4;
-            this.gB_disassemblyScope.TabStop = false;
-            this.gB_disassemblyScope.Text = "Disassembly Scope";
+            this.rB_asmFromFolder.AutoSize = true;
+            this.rB_asmFromFolder.Location = new System.Drawing.Point(6, 42);
+            this.rB_asmFromFolder.Name = "rB_asmFromFolder";
+            this.rB_asmFromFolder.Size = new System.Drawing.Size(151, 17);
+            this.rB_asmFromFolder.TabIndex = 1;
+            this.rB_asmFromFolder.TabStop = true;
+            this.rB_asmFromFolder.Text = "Assemble from Workspace";
+            this.rB_asmFromFolder.UseVisualStyleBackColor = true;
             // 
             // rB_asmFromTabs
             // 
@@ -150,16 +149,39 @@
             this.rB_asmFromTabs.UseVisualStyleBackColor = true;
             this.rB_asmFromTabs.CheckedChanged += new System.EventHandler(this.rB_asmFromTabs_CheckedChanged);
             // 
-            // rB_asmFromFolder
+            // gB_disassemblyScope
             // 
-            this.rB_asmFromFolder.AutoSize = true;
-            this.rB_asmFromFolder.Location = new System.Drawing.Point(6, 42);
-            this.rB_asmFromFolder.Name = "rB_asmFromFolder";
-            this.rB_asmFromFolder.Size = new System.Drawing.Size(125, 17);
-            this.rB_asmFromFolder.TabIndex = 1;
-            this.rB_asmFromFolder.TabStop = true;
-            this.rB_asmFromFolder.Text = "Assemble from Folder";
-            this.rB_asmFromFolder.UseVisualStyleBackColor = true;
+            this.gB_disassemblyScope.Controls.Add(this.cB_disasmTreeAndTabs);
+            this.gB_disassemblyScope.Controls.Add(this.rB_disasmFromTree);
+            this.gB_disassemblyScope.Controls.Add(this.rB_disasmFromTabs);
+            this.gB_disassemblyScope.Location = new System.Drawing.Point(12, 154);
+            this.gB_disassemblyScope.Name = "gB_disassemblyScope";
+            this.gB_disassemblyScope.Size = new System.Drawing.Size(260, 86);
+            this.gB_disassemblyScope.TabIndex = 4;
+            this.gB_disassemblyScope.TabStop = false;
+            this.gB_disassemblyScope.Text = "Disassembly Scope";
+            // 
+            // cB_disasmTreeAndTabs
+            // 
+            this.cB_disasmTreeAndTabs.AutoSize = true;
+            this.cB_disasmTreeAndTabs.Location = new System.Drawing.Point(27, 63);
+            this.cB_disasmTreeAndTabs.Name = "cB_disasmTreeAndTabs";
+            this.cB_disasmTreeAndTabs.Size = new System.Drawing.Size(133, 17);
+            this.cB_disasmTreeAndTabs.TabIndex = 2;
+            this.cB_disasmTreeAndTabs.Text = "Include changed Tabs";
+            this.cB_disasmTreeAndTabs.UseVisualStyleBackColor = true;
+            this.cB_disasmTreeAndTabs.CheckedChanged += new System.EventHandler(this.cB_disasmTreeAndTabs_CheckedChanged);
+            // 
+            // rB_disasmFromTree
+            // 
+            this.rB_disasmFromTree.AutoSize = true;
+            this.rB_disasmFromTree.Location = new System.Drawing.Point(6, 42);
+            this.rB_disasmFromTree.Name = "rB_disasmFromTree";
+            this.rB_disasmFromTree.Size = new System.Drawing.Size(132, 17);
+            this.rB_disasmFromTree.TabIndex = 1;
+            this.rB_disasmFromTree.TabStop = true;
+            this.rB_disasmFromTree.Text = "Disassemble from Tree";
+            this.rB_disasmFromTree.UseVisualStyleBackColor = true;
             // 
             // rB_disasmFromTabs
             // 
@@ -172,17 +194,6 @@
             this.rB_disasmFromTabs.Text = "Disassemble from Tabs";
             this.rB_disasmFromTabs.UseVisualStyleBackColor = true;
             this.rB_disasmFromTabs.CheckedChanged += new System.EventHandler(this.rB_disasmFromTabs_CheckedChanged);
-            // 
-            // rB_disasmFromTree
-            // 
-            this.rB_disasmFromTree.AutoSize = true;
-            this.rB_disasmFromTree.Location = new System.Drawing.Point(6, 42);
-            this.rB_disasmFromTree.Name = "rB_disasmFromTree";
-            this.rB_disasmFromTree.Size = new System.Drawing.Size(132, 17);
-            this.rB_disasmFromTree.TabIndex = 1;
-            this.rB_disasmFromTree.TabStop = true;
-            this.rB_disasmFromTree.Text = "Disassemble from Tree";
-            this.rB_disasmFromTree.UseVisualStyleBackColor = true;
             // 
             // button_cancel
             // 
@@ -205,17 +216,6 @@
             this.button_accept.Text = "Accept";
             this.button_accept.UseVisualStyleBackColor = true;
             this.button_accept.Click += new System.EventHandler(this.button_accept_Click);
-            // 
-            // cB_disasmTreeAndTabs
-            // 
-            this.cB_disasmTreeAndTabs.AutoSize = true;
-            this.cB_disasmTreeAndTabs.Location = new System.Drawing.Point(27, 63);
-            this.cB_disasmTreeAndTabs.Name = "cB_disasmTreeAndTabs";
-            this.cB_disasmTreeAndTabs.Size = new System.Drawing.Size(133, 17);
-            this.cB_disasmTreeAndTabs.TabIndex = 2;
-            this.cB_disasmTreeAndTabs.Text = "Include changed Tabs";
-            this.cB_disasmTreeAndTabs.UseVisualStyleBackColor = true;
-            this.cB_disasmTreeAndTabs.CheckedChanged += new System.EventHandler(this.cB_disasmTreeAndTabs_CheckedChanged);
             // 
             // AssemblyDialog
             // 

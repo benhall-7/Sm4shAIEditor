@@ -12,37 +12,37 @@ namespace Sm4shAIEditor
 {
     public partial class AssemblyDialog : Form
     {
-        public enum asmOption_AsmChoice
+        public enum Type
         {
             Assemble,
             Disassemble
         }
-        public enum asmOption_AsmScope
+        public enum AsmScope
         {
             FromTabs,
             FromFolder
         }
-        public enum asmOption_DisasmScope
+        public enum DisasmScope
         {
             FromTabs,
             FromTree
         }
-        public asmOption_AsmChoice asmChoice { get; set; }
-        public asmOption_AsmScope asmScope { get; set; }
-        public asmOption_DisasmScope disasmScope { get; set; }
-        public bool asmOption_DisasmTreeAndTabs { get; set; }
-        public bool asmOption_ATKD { get; set; }
-        public bool asmOption_AIPD { get; set; }
-        public bool asmOption_Script { get; set; }
+        public Type asmChoice { get; set; }
+        public AsmScope asmScope { get; set; }
+        public DisasmScope disasmScope { get; set; }
+        public bool DisasmTreeAndTabs { get; set; }
+        public bool DoATKD { get; set; }
+        public bool DoAIPD { get; set; }
+        public bool DoScript { get; set; }
         public AssemblyDialog()
         {
-            asmChoice = asmOption_AsmChoice.Assemble;
-            asmScope = asmOption_AsmScope.FromTabs;
-            disasmScope = asmOption_DisasmScope.FromTree;
-            asmOption_DisasmTreeAndTabs = false;
-            asmOption_ATKD = false;
-            asmOption_AIPD = false;
-            asmOption_Script = false;
+            asmChoice = Type.Assemble;
+            asmScope = AsmScope.FromTabs;
+            disasmScope = DisasmScope.FromTree;
+            DisasmTreeAndTabs = false;
+            DoATKD = false;
+            DoAIPD = false;
+            DoScript = false;
             InitializeComponent();
         }
 
@@ -52,7 +52,7 @@ namespace Sm4shAIEditor
             rB_disasmFromTabs.Checked = true;
             cB_disasmTreeAndTabs.Enabled = false;
 
-            if (asmChoice == asmOption_AsmChoice.Assemble)
+            if (asmChoice == Type.Assemble)
             {
                 rB_assemble.Checked = true;
                 gB_assemblyScope.Enabled = true;
@@ -70,13 +70,13 @@ namespace Sm4shAIEditor
         {
             if (rB_assemble.Checked)
             {
-                asmChoice = asmOption_AsmChoice.Assemble;
+                asmChoice = Type.Assemble;
                 gB_assemblyScope.Enabled = true;
                 gB_disassemblyScope.Enabled = false;
             }
             else
             {
-                asmChoice = asmOption_AsmChoice.Disassemble;
+                asmChoice = Type.Disassemble;
                 gB_assemblyScope.Enabled = false;
                 gB_disassemblyScope.Enabled = true;
             }
@@ -85,21 +85,21 @@ namespace Sm4shAIEditor
         private void rB_asmFromTabs_CheckedChanged(object sender, EventArgs e)
         {
             if (rB_asmFromTabs.Checked)
-                asmScope = asmOption_AsmScope.FromTabs;
+                asmScope = AsmScope.FromTabs;
             else
-                asmScope = asmOption_AsmScope.FromFolder;
+                asmScope = AsmScope.FromFolder;
         }
 
         private void rB_disasmFromTabs_CheckedChanged(object sender, EventArgs e)
         {
             if (rB_disasmFromTabs.Checked)
             {
-                disasmScope = asmOption_DisasmScope.FromTabs;
+                disasmScope = DisasmScope.FromTabs;
                 cB_disasmTreeAndTabs.Enabled = false;
             }
             else
             {
-                disasmScope = asmOption_DisasmScope.FromTree;
+                disasmScope = DisasmScope.FromTree;
                 cB_disasmTreeAndTabs.Enabled = true;
             }
         }
@@ -107,19 +107,19 @@ namespace Sm4shAIEditor
         private void cB_disasmTreeAndTabs_CheckedChanged(object sender, EventArgs e)
         {
             if (cB_disasmTreeAndTabs.Checked)
-                asmOption_DisasmTreeAndTabs = true;
+                DisasmTreeAndTabs = true;
             else
-                asmOption_DisasmTreeAndTabs = false;
+                DisasmTreeAndTabs = false;
         }
 
         private void button_accept_Click(object sender, EventArgs e)
         {
-            button_accept.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
         }
 
         private void button_cancel_Click(object sender, EventArgs e)
         {
-            this.Dispose();
+            Close();
         }
     }
 }

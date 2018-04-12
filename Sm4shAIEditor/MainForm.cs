@@ -21,12 +21,16 @@ namespace Sm4shAIEditor
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
         public static string fighterDirectory = ConfigurationManager.AppSettings.Get("fighter_directory");
+        public static string workDirectory = ConfigurationManager.AppSettings.Get("work_directory");
 
         public MainForm()
         {
             InitializeComponent();
             this.Text = Properties.Resources.Title;
             this.Icon = Properties.Resources.FoxLogo;
+
+            if (workDirectory == "")
+                workDirectory = "Workspace";
         }
         
         private void LoadFiles(string[] fileDirectories)
@@ -359,7 +363,7 @@ namespace Sm4shAIEditor
             openFile.Multiselect = true;
             if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
                 openFile.InitialDirectory = fighterDirectory;
-            if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFile.ShowDialog() == DialogResult.OK)
             {
                 LoadFiles(openFile.FileNames);
             }
@@ -372,7 +376,7 @@ namespace Sm4shAIEditor
             FolderSelectDialog openFighter = new FolderSelectDialog(true);
             if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
                 openFighter.InitialDirectory = fighterDirectory;
-            if (openFighter.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFighter.ShowDialog() == DialogResult.OK)
             {
                 LoadFighters(openFighter.SelectedPaths);
             }
@@ -539,6 +543,47 @@ namespace Sm4shAIEditor
             }
         }
 
+        private void asmDialog_ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AssemblyDialog asmDialog = new AssemblyDialog();
+            if (asmDialog.ShowDialog() == DialogResult.OK)
+            {
+                if (asmDialog.asmChoice == AssemblyDialog.Type.Assemble)
+                    Assemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.asmScope);
+                else if (asmDialog.asmChoice == AssemblyDialog.Type.Disassemble)
+                {
+
+                }
+                asmDialog.Dispose();
+            }
+        }
+
+        private void Assemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.AsmScope scope)
+        {
+            if (scope == AssemblyDialog.AsmScope.FromTabs)
+            {
+                if (fileTabContainer.TabCount != 0)
+                {
+
+                }
+                else
+                {
+                    status_TB.Text += string.Format("There are no tabs open to assemble.") + "\r\n";
+                }
+            }
+            else if (scope == AssemblyDialog.AsmScope.FromFolder)
+            {
+                if (Directory.Exists(workDirectory))
+                {
+
+                }
+                else
+                {
+                    status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", workDirectory) + "\r\n";
+                }
+            }
+        }
+
         private void assembleATKD()
         {
 
@@ -552,17 +597,6 @@ namespace Sm4shAIEditor
         private void assembleScript()
         {
 
-        }
-
-        private void compilationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AssemblyDialog asmDialog = new AssemblyDialog();
-            if (asmDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                
-
-                asmDialog.Dispose();
-            }
         }
     }
 }

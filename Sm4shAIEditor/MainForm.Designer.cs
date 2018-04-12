@@ -38,10 +38,10 @@
             this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
-            this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,6 +125,13 @@
             this.compilationToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.compilationToolStripMenuItem.Text = "Assembly";
             // 
+            // assemblyDialogToolStripMenuItem
+            // 
+            this.assemblyDialogToolStripMenuItem.Name = "assemblyDialogToolStripMenuItem";
+            this.assemblyDialogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.assemblyDialogToolStripMenuItem.Text = "Assembly Dialog";
+            this.assemblyDialogToolStripMenuItem.Click += new System.EventHandler(this.asmDialog_ToolStripMenuItem_Click);
+            // 
             // treeView
             // 
             this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -163,13 +170,6 @@
             this.fileTabContainer.Visible = false;
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
-            // 
-            // assemblyDialogToolStripMenuItem
-            // 
-            this.assemblyDialogToolStripMenuItem.Name = "assemblyDialogToolStripMenuItem";
-            this.assemblyDialogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.assemblyDialogToolStripMenuItem.Text = "Assembly Dialog";
-            this.assemblyDialogToolStripMenuItem.Click += new System.EventHandler(this.compilationToolStripMenuItem_Click);
             // 
             // MainForm
             // 
