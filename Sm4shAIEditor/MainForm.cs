@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Configuration;
 using Sm4shAIEditor.Filetypes;
+using System.Globalization;
 
 namespace Sm4shAIEditor
 {
@@ -22,6 +23,7 @@ namespace Sm4shAIEditor
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
         public static string fighterDirectory = ConfigurationManager.AppSettings.Get("fighter_directory");
         public static string workDirectory = ConfigurationManager.AppSettings.Get("work_directory");
+        public static string exportDirectory = ConfigurationManager.AppSettings.Get("export_directory");
 
         public MainForm()
         {
@@ -30,7 +32,9 @@ namespace Sm4shAIEditor
             this.Icon = Properties.Resources.FoxLogo;
 
             if (workDirectory == "")
-                workDirectory = "Workspace";
+                workDirectory = "workspace";
+            if (exportDirectory == "")
+                exportDirectory = "export";
         }
         
         private void LoadFiles(string[] fileDirectories)
@@ -554,33 +558,105 @@ namespace Sm4shAIEditor
                 {
 
                 }
-                asmDialog.Dispose();
             }
+            asmDialog.Dispose();
         }
 
         private void Assemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.AsmScope scope)
         {
+            List<TabPage> ATKDTabs = new List<TabPage>();
+            List<TabPage> AIPDTabs = new List<TabPage>();
+            List<TabPage> ScriptTabs = new List<TabPage>();
+            if (!doATKD && !doAIPD && !doScript)
+            {
+                status_TB.Text += "Returned without assembling. No filetypes given" + "\r\n";
+                return;
+            }
             if (scope == AssemblyDialog.AsmScope.FromTabs)
             {
-                if (fileTabContainer.TabCount != 0)
+                //just a quick way to count the tabs for each file type
+                foreach (TabPage tab in fileTabContainer.TabPages)
                 {
-
+                    string fileName = task_helper.GetFileName(tab.Name);
+                    if (fileName == task_helper.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
+                    else if (fileName == task_helper.fileMagic.ElementAt(1).Key ||
+                        fileName == task_helper.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
+                    else if (fileName == task_helper.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
                 }
-                else
+                if (doATKD)
                 {
-                    status_TB.Text += string.Format("There are no tabs open to assemble.") + "\r\n";
+                    if (ATKDTabs.Count > 0 && doATKD)
+                    {
+                        assembleATKD();
+                    }
+                    else
+                        status_TB.Text += string.Format("No ATKD files to assemble.") + "\r\n";
+                }
+                if (doAIPD)
+                {
+                    if (AIPDTabs.Count > 0 && doAIPD)
+                    {
+                        assembleAIPD();
+                    }
+                    else
+                        status_TB.Text += string.Format("No AIPD files to assemble.") + "\r\n";
+                }
+                if (doScript)
+                {
+                    if (ScriptTabs.Count > 0 && doScript)
+                    {
+                        List<UInt32> actIDs = new List<uint>();
+                        List<string> actTexts = new List<string>();
+                        //get all the text stuff
+                        foreach (TabPage tab in ScriptTabs)
+                        {
+                            TabControl actContainer = ((TabControl)tab.Controls[0]);
+                            foreach (TabPage actTab in actContainer.TabPages)
+                            {
+                                actIDs.Add(UInt32.Parse(actTab.Text, NumberStyles.HexNumber));
+                                actTexts.Add(((RichTextBox)actTab.Controls[0]).Text);
+                            }
+                            assembleScript(actIDs, actTexts);
+                        }
+                    }
+                    else
+                        status_TB.Text += string.Format("No Script files to assemble.") + "\r\n";
                 }
             }
             else if (scope == AssemblyDialog.AsmScope.FromFolder)
             {
                 if (Directory.Exists(workDirectory))
                 {
+                    string ATKDDirectory = workDirectory + @"\atkd";
+                    string AIPDDirectory = workDirectory + @"\aipd";
+                    string scriptDirectory = workDirectory + @"\script";
+                    if (Directory.Exists(ATKDDirectory) && doATKD)
+                    {
+                        string[] dirs = Directory.EnumerateDirectories(ATKDDirectory).ToArray();
+                        foreach (string fitATKDFolder in dirs)
+                        {
 
+                        }
+                    }
+                    if (Directory.Exists(AIPDDirectory) && doAIPD)
+                    {
+                        string[] dirs = Directory.EnumerateDirectories(AIPDDirectory).ToArray();
+                        foreach (string fitAIPDFolder in dirs)
+                        {
+
+                        }
+                    }
+                    if (Directory.Exists(scriptDirectory) && doScript)
+                    {
+                        string[] dirs = Directory.EnumerateDirectories(scriptDirectory).ToArray();
+                        foreach (string fitScriptFolder in dirs)
+                        {
+                            
+                        }
+                    }
                 }
                 else
-                {
                     status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", workDirectory) + "\r\n";
-                }
             }
         }
 
@@ -594,9 +670,36 @@ namespace Sm4shAIEditor
 
         }
 
-        private void assembleScript()
+        private void assembleScript(List<UInt32> actIDs, List<string> actTexts)
         {
 
+        }
+
+        private void Disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
+        {
+            if (scope == AssemblyDialog.DisasmScope.FromTabs)
+            {
+                //basically just saves all your open tabs to file
+                if (fileTabContainer.TabCount != 0)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else if (scope == AssemblyDialog.DisasmScope.FromTree)
+            {
+                if (tree.aiFiles.Count != 0)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
         }
     }
 }

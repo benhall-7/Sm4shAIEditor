@@ -31,9 +31,9 @@
             this.rB_assemble = new System.Windows.Forms.RadioButton();
             this.rB_disassemble = new System.Windows.Forms.RadioButton();
             this.gB_filetypes = new System.Windows.Forms.GroupBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.cB_doScripts = new System.Windows.Forms.CheckBox();
+            this.cB_doAIPD = new System.Windows.Forms.CheckBox();
+            this.cB_doATKD = new System.Windows.Forms.CheckBox();
             this.gB_assemblyScope = new System.Windows.Forms.GroupBox();
             this.rB_asmFromFolder = new System.Windows.Forms.RadioButton();
             this.rB_asmFromTabs = new System.Windows.Forms.RadioButton();
@@ -75,9 +75,9 @@
             // 
             this.gB_filetypes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gB_filetypes.Controls.Add(this.checkBox3);
-            this.gB_filetypes.Controls.Add(this.checkBox2);
-            this.gB_filetypes.Controls.Add(this.checkBox1);
+            this.gB_filetypes.Controls.Add(this.cB_doScripts);
+            this.gB_filetypes.Controls.Add(this.cB_doAIPD);
+            this.gB_filetypes.Controls.Add(this.cB_doATKD);
             this.gB_filetypes.Location = new System.Drawing.Point(12, 35);
             this.gB_filetypes.Name = "gB_filetypes";
             this.gB_filetypes.Size = new System.Drawing.Size(260, 41);
@@ -85,35 +85,38 @@
             this.gB_filetypes.TabStop = false;
             this.gB_filetypes.Text = "File Types";
             // 
-            // checkBox3
+            // cB_doScripts
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(125, 20);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(58, 17);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "Scripts";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.cB_doScripts.AutoSize = true;
+            this.cB_doScripts.Location = new System.Drawing.Point(125, 20);
+            this.cB_doScripts.Name = "cB_doScripts";
+            this.cB_doScripts.Size = new System.Drawing.Size(58, 17);
+            this.cB_doScripts.TabIndex = 2;
+            this.cB_doScripts.Text = "Scripts";
+            this.cB_doScripts.UseVisualStyleBackColor = true;
+            this.cB_doScripts.CheckedChanged += new System.EventHandler(this.cB_doScripts_CheckedChanged);
             // 
-            // checkBox2
+            // cB_doAIPD
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(68, 20);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(51, 17);
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "AIPD";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.cB_doAIPD.AutoSize = true;
+            this.cB_doAIPD.Location = new System.Drawing.Point(68, 20);
+            this.cB_doAIPD.Name = "cB_doAIPD";
+            this.cB_doAIPD.Size = new System.Drawing.Size(51, 17);
+            this.cB_doAIPD.TabIndex = 1;
+            this.cB_doAIPD.Text = "AIPD";
+            this.cB_doAIPD.UseVisualStyleBackColor = true;
+            this.cB_doAIPD.CheckedChanged += new System.EventHandler(this.cB_doAIPD_CheckedChanged);
             // 
-            // checkBox1
+            // cB_doATKD
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(7, 20);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(55, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "ATKD";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cB_doATKD.AutoSize = true;
+            this.cB_doATKD.Location = new System.Drawing.Point(7, 20);
+            this.cB_doATKD.Name = "cB_doATKD";
+            this.cB_doATKD.Size = new System.Drawing.Size(55, 17);
+            this.cB_doATKD.TabIndex = 0;
+            this.cB_doATKD.Text = "ATKD";
+            this.cB_doATKD.UseVisualStyleBackColor = true;
+            this.cB_doATKD.CheckedChanged += new System.EventHandler(this.cB_doATKD_CheckedChanged);
             // 
             // gB_assemblyScope
             // 
@@ -249,9 +252,9 @@
         private System.Windows.Forms.RadioButton rB_assemble;
         private System.Windows.Forms.RadioButton rB_disassemble;
         private System.Windows.Forms.GroupBox gB_filetypes;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox cB_doScripts;
+        private System.Windows.Forms.CheckBox cB_doAIPD;
+        private System.Windows.Forms.CheckBox cB_doATKD;
         private System.Windows.Forms.GroupBox gB_assemblyScope;
         private System.Windows.Forms.GroupBox gB_disassemblyScope;
         private System.Windows.Forms.RadioButton rB_asmFromFolder;

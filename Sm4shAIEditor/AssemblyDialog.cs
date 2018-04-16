@@ -114,12 +114,36 @@ namespace Sm4shAIEditor
 
         private void button_accept_Click(object sender, EventArgs e)
         {
-            DialogResult = DialogResult.OK;
+            this.DialogResult = DialogResult.OK;
         }
 
         private void button_cancel_Click(object sender, EventArgs e)
         {
-            Close();
+            this.DialogResult = DialogResult.Cancel;
+        }
+
+        private void cB_doATKD_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cB_doATKD.Checked)
+                DoATKD = true;
+            else
+                DoATKD = false;
+        }
+
+        private void cB_doAIPD_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cB_doAIPD.Checked)
+                DoAIPD = true;
+            else
+                DoAIPD = false;
+        }
+
+        private void cB_doScripts_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cB_doScripts.Checked)
+                DoScript = true;
+            else
+                DoScript = false;
         }
     }
 }
