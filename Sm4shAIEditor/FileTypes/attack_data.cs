@@ -4,28 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Sm4shAIEditor.Filetypes;
-
-/*
-AI ATKD File Format
-Authors: Jam1garner, Ben Hall
-struct HEADER{
-    char magic[4];
-    int entryCount;
-    int firstSpecialSubactionIndex;
-    int specialSubactionCount;
-}
-struct ENTRY{
-    ushort subactionIndex;
-    ushort pad16;
-    ushort firstFrame;
-    ushort lastFrame;
-    float xmin;
-    float xmax;
-    float ymin;
-    float ymax;
-}
-*/
+using Sm4shAIEditor.Static;
 
 namespace Sm4shAIEditor
 {

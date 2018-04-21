@@ -69,8 +69,6 @@
     <Compile Include="AssemblyDialog.Designer.cs">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Filetypes\script_data.cs" />
-    <Compile Include="Filetypes\task_helper.cs" />
     <Compile Include="FolderSelectDialog.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -89,6 +87,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\script.cs" />
+    <Compile Include="Static\script_data.cs" />
+    <Compile Include="Static\task_helper.cs" />
     <EmbeddedResource Include="AssemblyDialog.resx">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </EmbeddedResource>

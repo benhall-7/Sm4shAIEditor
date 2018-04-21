@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Sm4shAIEditor.Filetypes;
+using Sm4shAIEditor.Static;
 
 /*
 Some assistance with the file format is credit to Sammi Husky. 

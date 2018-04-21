@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sm4shAIEditor.Filetypes
+namespace Sm4shAIEditor.Static
 {
     static class script_data
     {

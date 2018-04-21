@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Configuration;
-using Sm4shAIEditor.Filetypes;
+using Sm4shAIEditor.Static;
 using System.Globalization;
 
 namespace Sm4shAIEditor
@@ -53,6 +49,7 @@ namespace Sm4shAIEditor
             attack_data atkdFile = new attack_data(directory);
 
             TabPage atkdTab = new TabPage();
+            //SPECIAL DATA
             atkdTab.Name = directory;
             string fileName = task_helper.GetFileName(directory);
             atkdTab.Text = tree.aiFiles[directory]+"/"+fileName;
@@ -77,9 +74,11 @@ namespace Sm4shAIEditor
                 row.Cells[5].Value = atkdFile.attacks[row.Index].Y1;
                 row.Cells[6].Value = atkdFile.attacks[row.Index].Y2;
             }
+            //SPECIAL DATA
+            atkdTabData.Tag = new Tuple<UInt32, UInt32>(atkdFile.SpecialMoveIndex, atkdFile.SpecialIndexCount);
+
             atkdTabData.Parent = atkdTab;
             atkdTabData.Dock = DockStyle.Fill;
-            atkdTabData.ReadOnly = true;
             atkdTabData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             atkdTabData.AutoResizeColumns();
             fileTabContainer.TabPages.Add(atkdTab);
@@ -564,9 +563,6 @@ namespace Sm4shAIEditor
 
         private void Assemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.AsmScope scope)
         {
-            List<TabPage> ATKDTabs = new List<TabPage>();
-            List<TabPage> AIPDTabs = new List<TabPage>();
-            List<TabPage> ScriptTabs = new List<TabPage>();
             if (!doATKD && !doAIPD && !doScript)
             {
                 status_TB.Text += "Returned without assembling. No filetypes given" + "\r\n";
@@ -574,6 +570,9 @@ namespace Sm4shAIEditor
             }
             if (scope == AssemblyDialog.AsmScope.FromTabs)
             {
+                List<TabPage> ATKDTabs = new List<TabPage>();
+                List<TabPage> AIPDTabs = new List<TabPage>();
+                List<TabPage> ScriptTabs = new List<TabPage>();
                 //just a quick way to count the tabs for each file type
                 foreach (TabPage tab in fileTabContainer.TabPages)
                 {
@@ -587,7 +586,48 @@ namespace Sm4shAIEditor
                 {
                     if (ATKDTabs.Count > 0 && doATKD)
                     {
-                        assembleATKD();
+                        int exceptionCount = 0;
+                        foreach (TabPage tab in ATKDTabs)
+                        {
+                            try
+                            {
+                                DataGridView dataGrid = ((DataGridView)tab.Controls[0]);
+                                Tuple<UInt32, UInt32> dataTag = (Tuple<UInt32, UInt32>)dataGrid.Tag;
+                                UInt32 specialMoveIndex = dataTag.Item1;
+                                UInt32 specialIndexCount = dataTag.Item2;
+                                //tab.Name is the file's directory, and we can get the fighter from the ai tree
+                                string fighterName = tree.aiFiles[tab.Name];
+                                string fileType = task_helper.fileMagic.Keys.ElementAt(0);
+                                string folderDirectory = exportDirectory + @"\" + fighterName;
+                                if (!Directory.Exists(folderDirectory))
+                                    Directory.CreateDirectory(folderDirectory);
+                                string fileDirectory = folderDirectory + @"\" + fileType;
+
+                                BinaryWriter binWriter = new BinaryWriter(File.Create(fileDirectory));
+                                binWriter.Write(task_helper.fileMagic[fileType]);
+                                task_helper.WriteReverseUInt32(ref binWriter, (UInt32)dataGrid.RowCount);
+                                task_helper.WriteReverseUInt32(ref binWriter, specialMoveIndex);
+                                task_helper.WriteReverseUInt32(ref binWriter, specialIndexCount);
+                                foreach (DataGridViewRow attack in dataGrid.Rows)
+                                {
+                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[0].Value.ToString()));
+                                    task_helper.WriteReverseUInt16(ref binWriter, 0);//always 0
+                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[1].Value.ToString()));
+                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[2].Value.ToString()));
+                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[3].Value.ToString()));
+                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[4].Value.ToString()));
+                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[5].Value.ToString()));
+                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[6].Value.ToString()));
+                                }
+                                binWriter.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                exceptionCount++;
+                                status_TB.Text += string.Format("ERROR ({0}): {1}", tab.Text, e.Message) + "\r\n";
+                            }
+                        }
+                        status_TB.Text += string.Format("Assembled {0} ATKD files to '{1}' (encountered {2} exceptions)", ATKDTabs.Count - exceptionCount, exportDirectory, exceptionCount) + "\r\n";
                     }
                     else
                         status_TB.Text += string.Format("No ATKD files to assemble.") + "\r\n";
@@ -607,16 +647,24 @@ namespace Sm4shAIEditor
                     {
                         List<UInt32> actIDs = new List<uint>();
                         List<string> actTexts = new List<string>();
+                        
                         //get all the text stuff
                         foreach (TabPage tab in ScriptTabs)
                         {
+                            string fighterName = tree.aiFiles[tab.Name];
+                            string fileType = task_helper.fileMagic.Keys.ElementAt(3);
+                            string folderDirectory = exportDirectory + @"\" + fighterName;
+                            if (!Directory.Exists(folderDirectory))
+                                Directory.CreateDirectory(folderDirectory);
+                            string fileDirectory = folderDirectory + @"\" + fileType;
+
                             TabControl actContainer = ((TabControl)tab.Controls[0]);
                             foreach (TabPage actTab in actContainer.TabPages)
                             {
                                 actIDs.Add(UInt32.Parse(actTab.Text, NumberStyles.HexNumber));
                                 actTexts.Add(((RichTextBox)actTab.Controls[0]).Text);
                             }
-                            assembleScript(actIDs, actTexts);
+                            assembleScript(actIDs, actTexts, fileDirectory);
                         }
                     }
                     else
@@ -660,31 +708,58 @@ namespace Sm4shAIEditor
             }
         }
 
-        private void assembleATKD()
-        {
-
-        }
-
         private void assembleAIPD()
         {
 
         }
 
-        private void assembleScript(List<UInt32> actIDs, List<string> actTexts)
+        private void assembleScript(List<UInt32> actIDs, List<string> actTexts, string fileDirectory)
         {
-
+            BinaryWriter binWriter = new BinaryWriter(File.Create(fileDirectory));
+            //header data
+            binWriter.Write((UInt32)0);//pad
+            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)actIDs.Count);
+            binWriter.Write((UInt64)0);//pad
+            for (int i = 0; i < actTexts.Count; i++)
+            {
+                //GONNA WAIT ON THIS FOR A BIT
+                //StringReader sReader = new StringReader(actTexts[i]);
+                //List<float> scriptFloats = new List<float>();
+                //sReader.Dispose();
+            }
+            binWriter.Dispose();
         }
 
         private void Disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
         {
+            if (!doATKD && !doAIPD && !doScript)
+            {
+                status_TB.Text += "Returned without disassembling. No filetypes given" + "\r\n";
+                return;
+            }
             if (scope == AssemblyDialog.DisasmScope.FromTabs)
             {
-                //basically just saves all your open tabs to file
-                if (fileTabContainer.TabCount != 0)
+                List<TabPage> ATKDTabs = new List<TabPage>();
+                List<TabPage> AIPDTabs = new List<TabPage>();
+                List<TabPage> ScriptTabs = new List<TabPage>();
+                //just a quick way to count the tabs for each file type
+                foreach (TabPage tab in fileTabContainer.TabPages)
+                {
+                    string fileName = task_helper.GetFileName(tab.Name);
+                    if (fileName == task_helper.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
+                    else if (fileName == task_helper.fileMagic.ElementAt(1).Key ||
+                        fileName == task_helper.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
+                    else if (fileName == task_helper.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
+                }
+                if (doATKD)
                 {
 
                 }
-                else
+                if (doAIPD)
+                {
+
+                }
+                if (doScript)
                 {
 
                 }
