@@ -472,33 +472,6 @@ namespace Sm4shAIEditor
             Close();
         }
 
-        private void everyScriptToTXT_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            List<TreeNode> nodes = new List<TreeNode>();
-            RecursiveTreeArray(treeView.Nodes, "script.bin", ref nodes);
-            foreach (TreeNode node in nodes)
-            {
-                string path = @"script_disasm\";
-                string fileDirectory = (string)node.Tag;
-                string nodeParent = null;
-                if (node.Parent != null)
-                    nodeParent = node.Parent.Name;
-                else
-                    nodeParent = "any";
-                path += nodeParent + @"\";
-
-                script scriptFile = new script(fileDirectory);
-                foreach (script.Act act in scriptFile.acts.Keys)
-                {
-                    if (!Directory.Exists(path))
-                        Directory.CreateDirectory(path);
-                    string text = WriteScript(act);
-                    File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
-                }
-            }
-            status_TB.Text += "Disassembled scripts to folder" + "\r\n";
-        }
-
         private void everyATKDToCSV_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             List<TreeNode> nodes = new List<TreeNode>();
@@ -554,9 +527,7 @@ namespace Sm4shAIEditor
                 if (asmDialog.asmChoice == AssemblyDialog.Type.Assemble)
                     Assemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.asmScope);
                 else if (asmDialog.asmChoice == AssemblyDialog.Type.Disassemble)
-                {
-
-                }
+                    Disassemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.disasmScope);
             }
             asmDialog.Dispose();
         }
@@ -766,13 +737,36 @@ namespace Sm4shAIEditor
             }
             else if (scope == AssemblyDialog.DisasmScope.FromTree)
             {
-                if (tree.aiFiles.Count != 0)
+                if (tree.aiFiles.Count == 0)
                 {
-
+                    status_TB.Text += "Returned without disassembling. No files in tree" + "\r\n";
+                    return;
                 }
-                else
+                if (doScript)
                 {
+                    List<TreeNode> nodes = new List<TreeNode>();
+                    RecursiveTreeArray(treeView.Nodes, "script.bin", ref nodes);
+                    foreach (TreeNode node in nodes)
+                    {
+                        string path = workDirectory;
+                        string fileDirectory = (string)node.Tag;
+                        string nodeParent = null;
+                        if (node.Parent != null)
+                            nodeParent = node.Parent.Name;
+                        else
+                            nodeParent = "NoName";
+                        path += @"\" + nodeParent + @"\";
 
+                        script scriptFile = new script(fileDirectory);
+                        foreach (script.Act act in scriptFile.acts.Keys)
+                        {
+                            if (!Directory.Exists(path))
+                                Directory.CreateDirectory(path);
+                            string text = WriteScript(act);
+                            File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
+                        }
+                    }
+                    status_TB.Text += "Disassembled scripts to folder" + "\r\n";
                 }
             }
         }
