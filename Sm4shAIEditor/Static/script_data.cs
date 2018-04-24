@@ -84,12 +84,27 @@ namespace Sm4shAIEditor.Static
             new CmdInfo(0x39, "Unk_39", ""),
         };
 
-        public static Dictionary<UInt32, string> script_value_uniq = new Dictionary<UInt32, string>()
+        public static Dictionary<UInt32, string> script_value_special1 = new Dictionary<UInt32, string>()
         {
+            //0x1000 = par_work_update value. Range of some sort?
+            //0x1001 = next par_work_update value
+            {0x1002, "ai_lr" },
             {0x1003, "get_lr_tgt" },
-            {0x1004, "ai_position" },
-            {0x100E, "randf"}
+            {0x1004, "ai_pos_x" },
+            {0x1005, "tgt_pos_x" },
+            {0x1008, "ai_spd_x" },
+            {0x1009, "zero" },
+            {0x100a, "one" },
+            {0x100e, "randf"}
         };//maximum value = 0x103E
+
+        //not sure how to implement this correctly
+        public static Dictionary<UInt32, string> script_value_special2 = new Dictionary<UInt32, string>()
+        {
+            {0x1004, "ai_pos_y" },//begins at this
+            {0x1005, "tgt_pos_y" },
+            {0x1008, "ai_spd_y" }
+        };
 
         public static List<string> fighters = new List<string>()
         {

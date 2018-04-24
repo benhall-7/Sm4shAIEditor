@@ -8,8 +8,7 @@ using Sm4shAIEditor.Static;
 
 /*
 Some assistance with the file format is credit to Sammi Husky. 
-Preliminary commands names are credit to Bero.
-Otherwise the work here is mine alone.
+Preliminary commands names and some if_checks are credit to Bero.
 */
 
 namespace Sm4shAIEditor
@@ -130,8 +129,8 @@ namespace Sm4shAIEditor
                 else
                 {
                     string value;
-                    if (script_data.script_value_uniq.ContainsKey(paramID))
-                        value = script_data.script_value_uniq[paramID];
+                    if (script_data.script_value_special1.ContainsKey(paramID))
+                        value = script_data.script_value_special1[paramID];
                     else
                         value = "0x" + paramID.ToString("X4");
 
