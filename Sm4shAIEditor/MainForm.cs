@@ -755,16 +755,19 @@ namespace Sm4shAIEditor
                             nodeParent = node.Parent.Name;
                         else
                             nodeParent = "NoName";
-                        path += @"\" + nodeParent + @"\";
+                        path += @"\" + nodeParent + @"\script\";
+                        if (!Directory.Exists(path))
+                            Directory.CreateDirectory(path);
 
                         script scriptFile = new script(fileDirectory);
+                        StreamWriter streamWriter = new StreamWriter(File.Create(path + "acts.txt"));
                         foreach (script.Act act in scriptFile.acts.Keys)
                         {
-                            if (!Directory.Exists(path))
-                                Directory.CreateDirectory(path);
+                            streamWriter.WriteLine(act.ID.ToString("X4"));
                             string text = WriteScript(act);
                             File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
                         }
+                        streamWriter.Dispose();
                     }
                     status_TB.Text += "Disassembled scripts to folder" + "\r\n";
                 }
