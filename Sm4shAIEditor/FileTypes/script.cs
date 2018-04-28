@@ -120,6 +120,203 @@ namespace Sm4shAIEditor
                 }
             }
 
+            public string write_act()
+            {
+                string text = "";
+                byte lastCmdID = 0xff;
+                int ifNestLevel = 0;
+                byte relID = 0xFF;
+                for (int cmdIndex = 0; cmdIndex < CmdList.Count; cmdIndex++)
+                {
+                    script.Act.Cmd cmd = CmdList[cmdIndex];
+
+                    //control the nested level spaces
+                    string ifPadding = "";
+                    if (cmd.ID == 8 || cmd.ID == 9)
+                        ifNestLevel--;
+                    for (int i = 0; i < ifNestLevel; i++)
+                    {
+                        ifPadding += "\t";
+                    }
+                    //account for the "else if" statement, which messes up the nest level
+                    if (((cmd.ID == 6 || cmd.ID == 7) && lastCmdID != 8) || cmd.ID == 8)
+                        ifNestLevel++;
+
+                    string cmdString = "";
+                    string cmdParams = "";
+                    switch (cmd.ID)
+                    {
+                        case 0x01://SetVar, uses notation [varX = Y]
+                            cmdString += "var" + cmd.ParamList[0] + " = ";
+                            cmdParams += get_script_value(cmd.ParamList[1]);
+                            cmdString += cmdParams + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x02://SetVec, uses notation [vecX = Y]
+                            cmdString += "vec" + cmd.ParamList[0] + " = ";
+                            cmdParams += get_script_value(cmd.ParamList[1]);
+                            cmdString += cmdParams + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x06://If
+                        case 0x07://IfNot
+                            cmdString += script_data.CmdData[0x6].Name + "(";
+                            if (cmd.ID == 0x7)
+                                cmdString += "!";
+                            int cmdAfterIndex = 1;
+                            while (cmdIndex + cmdAfterIndex < CmdList.Count)
+                            {
+                                script.Act.Cmd cmdCurr = CmdList[cmdIndex + cmdAfterIndex - 1];
+                                cmdParams += "[" + get_if_chk(cmdCurr.ParamList.ToArray()) + "]";
+                                //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
+                                //believe it or not this next check is actually what the source code does
+                                relID = (byte)(CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
+                                if (relID <= 3)
+                                {
+                                    cmdParams += " ";
+                                    if (relID / 2 == 0)
+                                        cmdParams += "|| ";
+                                    else
+                                        cmdParams += "&& ";
+
+                                    if (relID % 2 != 0)
+                                        cmdParams += "!";
+                                    cmdAfterIndex++;
+                                }
+                                else
+                                {
+                                    cmdIndex += cmdAfterIndex - 1;
+                                    break;
+                                }
+                            }
+                            cmdString += cmdParams + ") {" + "\r\n";
+                            if (lastCmdID != 0x8)
+                                text += ifPadding;
+                            text += cmdString;
+                            break;
+                        case 0x08://Else
+                            cmdString += ifPadding + "}" + "\r\n" + ifPadding;
+                            //if next command is an "if" or "ifNot" don't put it on a separate line
+                            if (CmdList[cmdIndex + 1].ID == 0x6 || CmdList[cmdIndex + 1].ID == 0x7)
+                                cmdString += script_data.CmdData[cmd.ID].Name + " ";
+                            else
+                                cmdString += script_data.CmdData[cmd.ID].Name + " {" + "\r\n";
+                            text += cmdString;
+                            break;
+                        case 0x09://EndIf
+                            cmdString += "}" + "\r\n";//use the symbol instead of the name
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x0a://SetStickRel
+                        case 0x1f://SetStickAbs
+                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            for (int i = 0; i < cmd.paramCount; i++)
+                            {
+                                cmdParams += get_script_value(cmd.ParamList[i]);
+
+                                if (i != cmd.paramCount - 1)
+                                    cmdParams += ", ";
+                            }
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x0b://SetButton
+                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            List<string> cmdButtons = new List<string>();
+                            //generate buttons from command
+                            for (int i = 0; i < 4; i++)
+                            {
+                                int mask = 1 << i;
+                                if ((cmd.ParamList[0] & mask) == mask)
+                                {
+                                    cmdButtons.Add(script_data.buttons[i]);
+                                }
+                            }
+                            //write out button list
+                            for (int i = 0; i < cmdButtons.Count; i++)
+                            {
+                                if (i != 0)
+                                    cmdParams += "+";//surprisingly never used in vanilla smash 4 scripts, but we should support it
+                                cmdParams += cmdButtons[i];
+                            }
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x0c://var operators
+                        case 0x0d:
+                        case 0x0e:
+                        case 0x0f:
+                        case 0x10://vec operators
+                        case 0x11:
+                        case 0x12:
+                        case 0x13:
+                            relID = (byte)(cmd.ID - 0xc);
+                            if (relID < 4)
+                                cmdString += "var" + cmd.ParamList[0];
+                            else
+                                cmdString += "vec" + cmd.ParamList[0];
+
+                            if (relID % 4 == 0)
+                                cmdString += " += ";
+                            else if (relID % 4 == 1)
+                                cmdString += " -= ";
+                            else if (relID % 4 == 2)
+                                cmdString += " *= ";
+                            else
+                                cmdString += " /= ";
+
+                            for (int i = 1; i < cmd.paramCount; i++)
+                            {
+                                cmdParams += get_script_value(cmd.ParamList[i]);
+
+                                if (i != cmd.paramCount - 1)
+                                    cmdParams += ", ";
+                            }
+                            cmdString += cmdParams + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x1b://SetAct
+                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdParams += "0x" + cmd.ParamList[0].ToString("X");
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x1d://cliff vector stuff
+                        case 0x27:
+                        case 0x31:
+                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdParams += "vec" + cmd.ParamList[0].ToString();
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x2c://Norm = length of vector with given components
+                            cmdString += "var" + cmd.ParamList[0] + " = " + script_data.CmdData[cmd.ID].Name + "(";
+                            cmdParams += get_script_value(cmd.ParamList[1]) + ", " + get_script_value(cmd.ParamList[2]);
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        default:
+                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            for (int i = 0; i < cmd.paramCount; i++)
+                            {
+                                if (ScriptFloats.ContainsKey(cmd.ParamList[i]))
+                                    cmdParams += ScriptFloats[cmd.ParamList[i]];
+                                else
+                                    cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+
+                                if (i != cmd.paramCount - 1)
+                                    cmdParams += ", ";
+                            }
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                    }
+                    lastCmdID = cmd.ID;
+                }
+
+                return text;
+            }
+
             public string get_script_value(UInt32 paramID)
             {
                 if (paramID < 0x1000)
@@ -183,12 +380,18 @@ namespace Sm4shAIEditor
                     default:
                         for (int i = 0; i < cmdParams.Length; i++)
                         {
-                            //NOTE:
-                            //Don't use the "get_script_value" because normal integers can be used as arguments for some checks
-                            if (ScriptFloats.ContainsKey(cmdParams[i]))
-                                requirement += ScriptFloats[cmdParams[i]];
+                            //NOTE: Don't use the "get_script_value" because normal ints can be used as arguments for some checks
+                            if (i == 0)
+                            {
+                                requirement += "req_" + cmdParams[i].ToString("X");
+                            }
                             else
-                                requirement += "0x" + cmdParams[i].ToString("X");
+                            {
+                                if (ScriptFloats.ContainsKey(cmdParams[i]))
+                                    requirement += ScriptFloats[cmdParams[i]];
+                                else
+                                    requirement += "0x" + cmdParams[i].ToString("X");
+                            }
 
                             if (i != cmdParams.Length - 1)
                                 requirement += ", ";
