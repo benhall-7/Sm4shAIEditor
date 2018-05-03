@@ -277,7 +277,12 @@ namespace Sm4shAIEditor
                             break;
                         case 0x1b://SetAct
                             cmdString += script_data.CmdData[cmd.ID].Name + "(";
-                            cmdParams += "0x" + cmd.ParamList[0].ToString("X");
+                            if (cmd.paramCount != 0)
+                                cmdParams += "0x" + cmd.ParamList[0].ToString("X");
+                            else
+                            {
+                                cmdParams += "";
+                            }
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
@@ -326,8 +331,8 @@ namespace Sm4shAIEditor
                 else
                 {
                     string value;
-                    if (script_data.script_value_special1.ContainsKey(paramID))
-                        value = script_data.script_value_special1[paramID];
+                    if (script_data.script_value_special.ContainsKey(paramID))
+                        value = script_data.script_value_special[paramID];
                     else
                         value = "0x" + paramID.ToString("X4");
 
@@ -342,7 +347,7 @@ namespace Sm4shAIEditor
                 switch (reqID)
                 {
                     case 0x1002://Checks if execution frame is greater than provided argument
-                        requirement = "TimerPassed " + get_script_value(cmdParams[1]);
+                        requirement = "timer_passed " + get_script_value(cmdParams[1]);
                         break;
                     case 0x1005:
                         requirement = "ai_aerial";
@@ -363,7 +368,7 @@ namespace Sm4shAIEditor
                         requirement = "ai_off_stage";
                         break;
                     case 0x100f://action
-                        requirement = "ai_action == " + "0x" + cmdParams[1].ToString("X");
+                        requirement = "ai_action " + "0x" + cmdParams[1].ToString("X");
                         break;
                     case 0x101b:
                         requirement = "tgt_aerial";
@@ -375,7 +380,7 @@ namespace Sm4shAIEditor
                         requirement = "tgt_char " + script_data.fighters[(int)cmdParams[1]];
                         break;
                     case 0x1024://subaction
-                        requirement = "ai_subaction == " + "0x" + cmdParams[1].ToString("X");
+                        requirement = "ai_subaction " + "0x" + cmdParams[1].ToString("X");
                         break;
                     default:
                         for (int i = 0; i < cmdParams.Length; i++)

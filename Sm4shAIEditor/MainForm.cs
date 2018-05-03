@@ -42,8 +42,7 @@ namespace Sm4shAIEditor
         {
             tree.AddFighters(fighterDirectories, ref status_TB);
         }
-
-        //maybe turn these into delegates instead of using if/else statements
+        
         private void LoadATKD(string directory)
         {
             attack_data atkdFile = new attack_data(directory);
@@ -286,7 +285,7 @@ namespace Sm4shAIEditor
                     foreach (attack_data.attack_entry attack in atkdFile.attacks)
                     {
                         text += attack.SubactionID + ",";
-                        //leave out the second Uint16 because it's always 0 and probably never read; they only needed 3 ints
+                        //leave out the second Uint16 because it's always 0 and probably never read
                         text += attack.FirstFrame + ",";
                         text += attack.LastFrame + ",";
                         text += attack.X1 + ",";
@@ -323,7 +322,7 @@ namespace Sm4shAIEditor
                 if (asmDialog.asmChoice == AssemblyDialog.Type.Assemble)
                     Assemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.asmScope);
                 else if (asmDialog.asmChoice == AssemblyDialog.Type.Disassemble)
-                    Disassemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.disasmScope);
+                    disassemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.disasmScope);
             }
             asmDialog.Dispose();
         }
@@ -406,14 +405,13 @@ namespace Sm4shAIEditor
                         assembleAIPD();
                     }
                     else
-                        status_TB.Text += string.Format("No AIPD files to assemble.") + "\r\n";
+                        status_TB.Text += "No AIPD files to assemble." + "\r\n";
                 }
                 if (doScript)
                 {
                     if (ScriptTabs.Count > 0 && doScript)
                     {
-                        List<UInt32> actIDs = new List<uint>();
-                        List<string> actTexts = new List<string>();
+                        Dictionary<UInt32, string> acts = new Dictionary<uint, string>();
                         
                         //get all the text stuff
                         foreach (TabPage tab in ScriptTabs)
@@ -428,10 +426,11 @@ namespace Sm4shAIEditor
                             TabControl actContainer = ((TabControl)tab.Controls[0]);
                             foreach (TabPage actTab in actContainer.TabPages)
                             {
-                                actIDs.Add(UInt32.Parse(actTab.Text, NumberStyles.HexNumber));
-                                actTexts.Add(((RichTextBox)actTab.Controls[0]).Text);
+                                UInt32 id = UInt32.Parse(actTab.Text, NumberStyles.HexNumber);
+                                string text = ((RichTextBox)actTab.Controls[0]).Text;
+                                acts.Add(id, text);
                             }
-                            assembleScript(actIDs, actTexts, fileDirectory);
+                            assembleScript(acts, fileDirectory);
                         }
                     }
                     else
@@ -480,24 +479,24 @@ namespace Sm4shAIEditor
 
         }
 
-        private void assembleScript(List<UInt32> actIDs, List<string> actTexts, string fileDirectory)
+        private void assembleScript(Dictionary<UInt32, string> acts, string outDirectory)
         {
-            BinaryWriter binWriter = new BinaryWriter(File.Create(fileDirectory));
+            BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
-            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)actIDs.Count);
+            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)acts.Count);
             binWriter.Write((UInt64)0);//pad
-            for (int i = 0; i < actTexts.Count; i++)
+            byte[] actOffsetData = new byte[acts.Count];
+            foreach (UInt32 actID in acts.Keys)
             {
-                //GONNA WAIT ON THIS FOR A BIT
-                //StringReader sReader = new StringReader(actTexts[i]);
-                //List<float> scriptFloats = new List<float>();
-                //sReader.Dispose();
+                StringReader sReader = new StringReader(acts[actID]);
+                List<float> scriptFloats = new List<float>();
+                sReader.Dispose();
             }
             binWriter.Dispose();
         }
 
-        private void Disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
+        private void disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
         {
             if (!doATKD && !doAIPD && !doScript)
             {
