@@ -167,7 +167,7 @@ namespace Sm4shAIEditor
                             while (cmdIndex + cmdAfterIndex < CmdList.Count)
                             {
                                 script.Act.Cmd cmdCurr = CmdList[cmdIndex + cmdAfterIndex - 1];
-                                cmdParams += "[" + get_if_chk(cmdCurr.ParamList.ToArray()) + "]";
+                                cmdParams += get_if_chk(cmdCurr.ParamList.ToArray());
                                 //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                                 //believe it or not this next check is actually what the source code does
                                 relID = (byte)(CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
@@ -344,66 +344,44 @@ namespace Sm4shAIEditor
             {
                 UInt32 reqID = cmdParams[0];
                 string requirement = "";
-                switch (reqID)
+                if (script_data.if_chks.ContainsKey(reqID))
                 {
-                    case 0x1002://Checks if execution frame is greater than provided argument
-                        requirement = "timer_passed " + get_script_value(cmdParams[1]);
-                        break;
-                    case 0x1005:
-                        requirement = "ai_aerial";
-                        break;
-                    case 0x1007://Greater than
-                        requirement = get_script_value(cmdParams[1]) + " > " + get_script_value(cmdParams[2]);
-                        break;
-                    case 0x1008://Less than
-                        requirement = get_script_value(cmdParams[1]) + " < " + get_script_value(cmdParams[2]);
-                        break;
-                    case 0x1009://Greater than or Equal
-                        requirement = get_script_value(cmdParams[1]) + " >= " + get_script_value(cmdParams[2]);
-                        break;
-                    case 0x100a://Less than or Equal
-                        requirement = get_script_value(cmdParams[1]) + " <= " + get_script_value(cmdParams[2]);
-                        break;
-                    case 0x100d:
-                        requirement = "ai_off_stage";
-                        break;
-                    case 0x100f://action
-                        requirement = "ai_action " + "0x" + cmdParams[1].ToString("X");
-                        break;
-                    case 0x101b:
-                        requirement = "tgt_aerial";
-                        break;
-                    case 0x101E://ai character
-                        requirement = "ai_char " + script_data.fighters[(int)cmdParams[1]];
-                        break;
-                    case 0x101F://target character
-                        requirement = "tgt_char " + script_data.fighters[(int)cmdParams[1]];
-                        break;
-                    case 0x1024://subaction
-                        requirement = "ai_subaction " + "0x" + cmdParams[1].ToString("X");
-                        break;
-                    default:
-                        for (int i = 0; i < cmdParams.Length; i++)
-                        {
-                            //NOTE: Don't use the "get_script_value" because normal ints can be used as arguments for some checks
-                            if (i == 0)
-                            {
-                                requirement += "req_" + cmdParams[i].ToString("X");
-                            }
-                            else
-                            {
-                                if (ScriptFloats.ContainsKey(cmdParams[i]))
-                                    requirement += ScriptFloats[cmdParams[i]];
-                                else
-                                    requirement += "0x" + cmdParams[i].ToString("X");
-                            }
-
-                            if (i != cmdParams.Length - 1)
-                                requirement += ", ";
-                        }
-                        break;
+                    requirement += script_data.if_chks[reqID];
                 }
-                return requirement;
+                else
+                {
+                    requirement += reqID.ToString("X");
+                }
+                requirement += "(";
+                for (int i = 1; i < cmdParams.Length; i++)
+                {
+                    UInt32 currentParam = cmdParams[i];
+                    switch (reqID)
+                    {
+                        //known if_chks that use get_script_value
+                        case 0x1002:
+                        case 0x1007:
+                        case 0x1008:
+                        case 0x1009:
+                        case 0x100a:
+                        case 0x1022:
+                        case 0x102a:
+                            requirement += get_script_value(currentParam);
+                            break;
+                        //character IDs
+                        case 0x101e:
+                        case 0x101f:
+                            requirement += script_data.fighters[(int)currentParam];
+                            break;
+                        default:
+                            requirement += "0x" + currentParam.ToString("X");
+                            break;
+                    }
+                    //deal with adding commas for multiple args
+                    if (i != cmdParams.Length - 1)
+                        requirement += ", ";
+                }
+                return requirement + ")";
             }
         }//end of Act class
     }//end of Script class

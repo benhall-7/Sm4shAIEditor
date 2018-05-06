@@ -105,6 +105,27 @@ namespace Sm4shAIEditor.Static
             //0x1010 = distance from front ledge?
         };//maximum value = 0x103E
 
+        public static List<string> buttons = new List<string>
+        {
+            "attack", "special", "shield", "jump"
+        };
+
+        public static Dictionary<UInt32, string> if_chks = new Dictionary<UInt32, string>()
+        {
+            {0x1002, "timer_passed" },
+            {0x1005, "ai_aerial" },
+            {0x1007, "greater" },
+            {0x1008, "less" },
+            {0x1009, "geq" },
+            {0x100a, "leq" },
+            {0x100d, "ai_off_stage" },
+            {0x100f, "ai_action" },
+            {0x101b, "tgt_aerial" },
+            {0x101e, "ai_char" },
+            {0x101f, "tgt_char" },
+            {0x1024, "ai_subaction" }
+        };
+
         public static List<string> fighters = new List<string>()
         {
             "miifighter",
@@ -172,11 +193,6 @@ namespace Sm4shAIEditor.Static
             "miienemyf",
             "miienemys",
             "miienemyg"
-        };
-
-        public static List<string> buttons = new List<string>
-        {
-            "attack", "special", "shield", "jump"
         };
     }
 }

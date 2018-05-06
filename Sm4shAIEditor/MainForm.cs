@@ -13,10 +13,11 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
-        //runtime variable
+        //font
         public static Font scriptFont = new Font(
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
+        //directories
         public static string fighterDirectory = ConfigurationManager.AppSettings.Get("fighter_directory");
         public static string workDirectory = ConfigurationManager.AppSettings.Get("work_directory");
         public static string exportDirectory = ConfigurationManager.AppSettings.Get("export_directory");
@@ -486,7 +487,8 @@ namespace Sm4shAIEditor
             binWriter.Write((UInt32)0);//pad
             task_helper.WriteReverseUInt32(ref binWriter, (UInt32)acts.Count);
             binWriter.Write((UInt64)0);//pad
-            byte[] actOffsetData = new byte[acts.Count];
+            //offset data
+            byte[] actOffsetData = new byte[((acts.Count + 3) / 4) * 0x10];//maintain 0x10 alignment
             foreach (UInt32 actID in acts.Keys)
             {
                 StringReader sReader = new StringReader(acts[actID]);
