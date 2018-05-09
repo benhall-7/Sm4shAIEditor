@@ -107,7 +107,7 @@ namespace Sm4shAIEditor
 
                 RichTextBox act_TB = new RichTextBox();
                 
-                string text = act.write_act();
+                string text = act.decomp_act();
                 act_TB.Text = text;
                 act_TB.Font = scriptFont;
                 act_TB.Parent = actTab;
@@ -491,9 +491,7 @@ namespace Sm4shAIEditor
             byte[] actOffsetData = new byte[((acts.Count + 3) / 4) * 0x10];//maintain 0x10 alignment
             foreach (UInt32 actID in acts.Keys)
             {
-                StringReader sReader = new StringReader(acts[actID]);
-                List<float> scriptFloats = new List<float>();
-                sReader.Dispose();
+                script.Act act = new script.Act(actID, acts[actID]);
             }
             binWriter.Dispose();
         }
@@ -561,7 +559,7 @@ namespace Sm4shAIEditor
                         foreach (script.Act act in scriptFile.acts.Keys)
                         {
                             streamWriter.WriteLine(act.ID.ToString("X4"));
-                            string text = act.write_act();
+                            string text = act.decomp_act();
                             File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
                         }
                         streamWriter.Dispose();

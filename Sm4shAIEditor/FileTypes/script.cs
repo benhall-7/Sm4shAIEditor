@@ -80,16 +80,31 @@ namespace Sm4shAIEditor
 
                     relOffset += cmd.Size;
                 }
+                string test = "";
+            }
+            //larger half of compilation logic
+            public Act(UInt32 ID, string text)
+            {
+                int byteOffset = 0;
+                this.ID = ID;
+                CustomStringReader sReader = new CustomStringReader(text);
+                CustomStringReader lReader = new CustomStringReader("");
+                
+                while (!sReader.EndString)
+                {
+                    string str = sReader.ReadLine();
+                    if (str != null)
+                    {
+                        lReader.CharArray = str.ToCharArray();
+                    }
+                }
+                int endPosition = sReader.Position;
             }
 
             protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
             {
                 float scriptFloat;
-
                 Int32 binPosition = (Int32)binReader.BaseStream.Position;
-                if (cmdParam < 0x2000)
-                    throw new Exception("The command parameter is invalid");
-
                 cmdParam -= 0x2000;
                 binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
                 scriptFloat = task_helper.ReadReverseFloat(ref binReader);
@@ -120,7 +135,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public string write_act()
+            public string decomp_act()
             {
                 string text = "";
                 byte lastCmdID = 0xff;
@@ -350,7 +365,7 @@ namespace Sm4shAIEditor
                 }
                 else
                 {
-                    requirement += reqID.ToString("X");
+                    requirement += "req_" + reqID.ToString("X");
                 }
                 requirement += "(";
                 for (int i = 1; i < cmdParams.Length; i++)

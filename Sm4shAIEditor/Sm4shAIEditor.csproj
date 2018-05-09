@@ -69,6 +69,7 @@
     <Compile Include="AssemblyDialog.Designer.cs">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomStringReader.cs" />
     <Compile Include="FolderSelectDialog.cs">
       <SubType>Component</SubType>
     </Compile>
