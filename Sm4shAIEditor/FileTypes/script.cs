@@ -96,9 +96,17 @@ namespace Sm4shAIEditor
                     if (str != null)
                     {
                         lReader.CharArray = str.ToCharArray();
+                        string word = lReader.ReadWord();
+                        if (script_data.CmdNames.Contains(word))
+                        {
+                            Int32 index = script_data.CmdNames.IndexOf(word);
+                        }
+                        else
+                        {
+
+                        }
                     }
                 }
-                int endPosition = sReader.Position;
             }
 
             protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
@@ -175,7 +183,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x06://If
                         case 0x07://IfNot
-                            cmdString += script_data.CmdData[0x6].Name + "(";
+                            cmdString += script_data.CmdNames[0x6] + "(";
                             if (cmd.ID == 0x7)
                                 cmdString += "!";
                             int cmdAfterIndex = 1;
@@ -213,9 +221,9 @@ namespace Sm4shAIEditor
                             cmdString += ifPadding + "}" + "\r\n" + ifPadding;
                             //if next command is an "if" or "ifNot" don't put it on a separate line
                             if (CmdList[cmdIndex + 1].ID == 0x6 || CmdList[cmdIndex + 1].ID == 0x7)
-                                cmdString += script_data.CmdData[cmd.ID].Name + " ";
+                                cmdString += script_data.CmdNames[cmd.ID] + " ";
                             else
-                                cmdString += script_data.CmdData[cmd.ID].Name + " {" + "\r\n";
+                                cmdString += script_data.CmdNames[cmd.ID] + " {" + "\r\n";
                             text += cmdString;
                             break;
                         case 0x09://EndIf
@@ -224,7 +232,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x0a://SetStickRel
                         case 0x1f://SetStickAbs
-                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
                             for (int i = 0; i < cmd.paramCount; i++)
                             {
                                 cmdParams += get_script_value(cmd.ParamList[i]);
@@ -236,7 +244,7 @@ namespace Sm4shAIEditor
                             text += ifPadding + cmdString;
                             break;
                         case 0x0b://SetButton
-                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
                             List<string> cmdButtons = new List<string>();
                             //generate buttons from command
                             for (int i = 0; i < 4; i++)
@@ -291,7 +299,7 @@ namespace Sm4shAIEditor
                             text += ifPadding + cmdString;
                             break;
                         case 0x1b://SetAct
-                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
                             if (cmd.paramCount != 0)
                                 cmdParams += "0x" + cmd.ParamList[0].ToString("X");
                             else
@@ -304,19 +312,19 @@ namespace Sm4shAIEditor
                         case 0x1d://cliff vector stuff
                         case 0x27:
                         case 0x31:
-                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
                             cmdParams += "vec" + cmd.ParamList[0].ToString();
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
                         case 0x2c://Norm = length of vector with given components
-                            cmdString += "var" + cmd.ParamList[0] + " = " + script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += "var" + cmd.ParamList[0] + " = " + script_data.CmdNames[cmd.ID] + "(";
                             cmdParams += get_script_value(cmd.ParamList[1]) + ", " + get_script_value(cmd.ParamList[2]);
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
                         default:
-                            cmdString += script_data.CmdData[cmd.ID].Name + "(";
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
                             for (int i = 0; i < cmd.paramCount; i++)
                             {
                                 if (ScriptFloats.ContainsKey(cmd.ParamList[i]))
