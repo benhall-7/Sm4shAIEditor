@@ -13,23 +13,23 @@ namespace Sm4shAIEditor.Static
             "End",
             "SetVar",//syntax varX = item
             "SetVec2D",//syntax vecX = item
-            "Label", "",
-            "Return", "",
+            "Label",
+            "Return",
             "SearchLabel",
             "If",
-            "IfNot",
+            "IfNot",//special syntax, the "Not" portion is in the params
             "Else",
             "EndIf",//syntax }
             "SetStickRel",
             "SetButton",
-            "VarAdd",//syntax var +=
-            "VarSub",//syntax var -=
-            "VarMul",//syntax var *=
-            "VarDiv",//syntax var /=
-            "VecAdd",//syntax vec +=
-            "VecSub",//syntax vec -=
-            "VecMul",//syntax vec *=
-            "VecDiv",//syntax vec /=
+            "VarAdd",//syntax varX +=
+            "VarSub",//syntax varX -=
+            "VarMul",//syntax varX *=
+            "VarDiv",//syntax varX /=
+            "VecAdd",//syntax vecX +=
+            "VecSub",//syntax vecX -=
+            "VecMul",//syntax vecX *=
+            "VecDiv",//syntax vecX /=
             "GoToCurrentLabel",
             "SetVarRandf",
             "Or",//syntax ||

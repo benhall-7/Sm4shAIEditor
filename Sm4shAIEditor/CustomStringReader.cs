@@ -3,7 +3,7 @@
     class CustomStringReader
     {
         private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-        private static string validEqnChars = "+-*/&|=";
+        private static string validEqnChars = "=+-*/&|";
         private static string spaceCharacters = " \t";
         private static string newline = "\n";
 

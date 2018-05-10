@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Sm4shAIEditor.Static;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Sm4shAIEditor.Static;
 
 /*
 Some assistance with the file format is credit to Sammi Husky. 
@@ -86,6 +83,7 @@ namespace Sm4shAIEditor
             public Act(UInt32 ID, string text)
             {
                 int byteOffset = 0;
+                Int32 varCount = 0;
                 this.ID = ID;
                 CustomStringReader sReader = new CustomStringReader(text);
                 CustomStringReader lReader = new CustomStringReader("");
@@ -96,14 +94,57 @@ namespace Sm4shAIEditor
                     if (str != null)
                     {
                         lReader.CharArray = str.ToCharArray();
-                        string word = lReader.ReadWord();
-                        if (script_data.CmdNames.Contains(word))
+                        while (!lReader.EndString)//Each cmd must be on a separate line. Maybe this could change in the future
                         {
-                            Int32 index = script_data.CmdNames.IndexOf(word);
-                        }
-                        else
-                        {
+                            Int32 cmdID;
+                            List<UInt32> paramList = new List<uint>();
 
+                            string word = lReader.ReadWord();
+                            if (script_data.CmdNames.Contains(word))
+                            {
+                                cmdID = script_data.CmdNames.IndexOf(word);
+                            }
+                            else if (word.StartsWith("var") || word.StartsWith("vec"))
+                            {
+                                Int32 varID = Int32.Parse(word.Substring(3));//the numeric variable ID
+                                string op = lReader.ReadEqnSymbols();//operation
+                                string ident = word.Substring(0, 3);//identity
+                                bool IsVec;
+                                if (ident == "vec")
+                                    IsVec = true;
+                                else
+                                    IsVec = false;
+
+                                switch (op)//set command ID
+                                {
+                                    case "=":
+                                        cmdID = 1;
+                                        if (IsVec)
+                                            cmdID++;
+                                        break;
+                                    case "+=":
+                                        cmdID = 0xc;
+                                        if (IsVec)
+                                            cmdID += 4;
+                                        break;
+                                    case "-=":
+                                        cmdID = 0xd;
+                                        if (IsVec)
+                                            cmdID += 4;
+                                        break;
+                                    case "*=":
+                                        cmdID = 0xe;
+                                        if (IsVec)
+                                            cmdID += 4;
+                                        break;
+                                    case "/=":
+                                        cmdID = 0xf;
+                                        if (IsVec)
+                                            cmdID += 4;
+                                        break;
+                                }
+                            }
+                            //else if (word)
                         }
                     }
                 }
@@ -123,7 +164,7 @@ namespace Sm4shAIEditor
             public class Cmd
             {
                 public byte ID { get; set; }
-                public byte paramCount { get; set; }
+                public byte ParamCount { get; set; }
                 public UInt16 Size { get; set; }
 
                 public List<UInt32> ParamList { get; set; }
@@ -131,15 +172,22 @@ namespace Sm4shAIEditor
                 public Cmd(ref BinaryReader binReader)
                 {
                     ID = binReader.ReadByte();
-                    paramCount = binReader.ReadByte();
+                    ParamCount = binReader.ReadByte();
                     Size = task_helper.ReadReverseUInt16(ref binReader);
-                    ParamList = new List<UInt32>(paramCount);
+                    ParamList = new List<UInt32>(ParamCount);
                     int readParams = 0;
-                    while (readParams < paramCount)
+                    while (readParams < ParamCount)
                     {
                         ParamList.Add(task_helper.ReadReverseUInt32(ref binReader));
-                        readParams += 1;
+                        readParams++;
                     }
+                }
+                public Cmd(byte id, List<UInt32> paramList)
+                {
+                    ID = id;
+                    ParamList = paramList;
+                    ParamCount = (byte)paramList.Count;
+                    Size = (UInt16)(ParamCount * 4 + 4);
                 }
             }
 
@@ -233,11 +281,11 @@ namespace Sm4shAIEditor
                         case 0x0a://SetStickRel
                         case 0x1f://SetStickAbs
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            for (int i = 0; i < cmd.paramCount; i++)
+                            for (int i = 0; i < cmd.ParamCount; i++)
                             {
                                 cmdParams += get_script_value(cmd.ParamList[i]);
 
-                                if (i != cmd.paramCount - 1)
+                                if (i != cmd.ParamCount - 1)
                                     cmdParams += ", ";
                             }
                             cmdString += cmdParams + ")" + "\r\n";
@@ -288,11 +336,11 @@ namespace Sm4shAIEditor
                             else
                                 cmdString += " /= ";
 
-                            for (int i = 1; i < cmd.paramCount; i++)
+                            for (int i = 1; i < cmd.ParamCount; i++)
                             {
                                 cmdParams += get_script_value(cmd.ParamList[i]);
 
-                                if (i != cmd.paramCount - 1)
+                                if (i != cmd.ParamCount - 1)
                                     cmdParams += ", ";
                             }
                             cmdString += cmdParams + "\r\n";
@@ -300,7 +348,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x1b://SetAct
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            if (cmd.paramCount != 0)
+                            if (cmd.ParamCount != 0)
                                 cmdParams += "0x" + cmd.ParamList[0].ToString("X");
                             else
                             {
@@ -325,14 +373,14 @@ namespace Sm4shAIEditor
                             break;
                         default:
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            for (int i = 0; i < cmd.paramCount; i++)
+                            for (int i = 0; i < cmd.ParamCount; i++)
                             {
                                 if (ScriptFloats.ContainsKey(cmd.ParamList[i]))
                                     cmdParams += ScriptFloats[cmd.ParamList[i]];
                                 else
                                     cmdParams += "0x" + cmd.ParamList[i].ToString("X");
 
-                                if (i != cmd.paramCount - 1)
+                                if (i != cmd.ParamCount - 1)
                                     cmdParams += ", ";
                             }
                             cmdString += cmdParams + ")" + "\r\n";
