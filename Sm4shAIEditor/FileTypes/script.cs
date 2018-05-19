@@ -67,7 +67,7 @@ namespace Sm4shAIEditor
                     foreach (UInt32 cmdParam in cmd.ParamList)
                     {
                         if (cmdParam >= 0x2000 &&
-                            cmdParam < 0x3000 &&
+                            cmdParam < 0x2100 &&
                             !ScriptFloats.ContainsKey(cmdParam) &&
                             cmd.ID != 0x1b)
                         {
@@ -77,7 +77,6 @@ namespace Sm4shAIEditor
 
                     relOffset += cmd.Size;
                 }
-                string test = "";
             }
             //larger half of compilation logic
             public Act(UInt32 ID, string text)
@@ -85,68 +84,63 @@ namespace Sm4shAIEditor
                 int byteOffset = 0;
                 Int32 varCount = 0;
                 this.ID = ID;
+                List<UInt32> cmdList = new List<uint>();
+                Dictionary<UInt32, string> scriptFloats = new Dictionary<UInt32, string>();
                 CustomStringReader sReader = new CustomStringReader(text);
-                CustomStringReader lReader = new CustomStringReader("");
                 
                 while (!sReader.EndString)
                 {
-                    string str = sReader.ReadLine();
-                    if (str != null)
+                    byte cmdID = 0;
+                    List<UInt32> paramList = new List<UInt32>();
+                    List<string> variables = new List<string>();
+
+                    string word = sReader.ReadWord();
+                    if (script_data.CmdNames.Contains(word))
                     {
-                        lReader.CharArray = str.ToCharArray();
-                        while (!lReader.EndString)//Each cmd must be on a separate line. Maybe this could change in the future
+                        cmdID = (byte)script_data.CmdNames.IndexOf(word);
+                    }
+                    else if (word.StartsWith("var") || word.StartsWith("vec"))
+                    {
+                        Int32 varID = Int32.Parse(word.Substring(3));//the numeric variable ID
+                        string op = sReader.ReadEqnSymbols();//operation
+                        string ident = word.Substring(0, 3);//identity
+                        bool isVec;
+                        if (ident == "vec")
+                            isVec = true;
+                        else
+                            isVec = false;
+
+                        switch (op)//set command ID
                         {
-                            Int32 cmdID;
-                            List<UInt32> paramList = new List<uint>();
-
-                            string word = lReader.ReadWord();
-                            if (script_data.CmdNames.Contains(word))
-                            {
-                                cmdID = script_data.CmdNames.IndexOf(word);
-                            }
-                            else if (word.StartsWith("var") || word.StartsWith("vec"))
-                            {
-                                Int32 varID = Int32.Parse(word.Substring(3));//the numeric variable ID
-                                string op = lReader.ReadEqnSymbols();//operation
-                                string ident = word.Substring(0, 3);//identity
-                                bool IsVec;
-                                if (ident == "vec")
-                                    IsVec = true;
-                                else
-                                    IsVec = false;
-
-                                switch (op)//set command ID
-                                {
-                                    case "=":
-                                        cmdID = 1;
-                                        if (IsVec)
-                                            cmdID++;
-                                        break;
-                                    case "+=":
-                                        cmdID = 0xc;
-                                        if (IsVec)
-                                            cmdID += 4;
-                                        break;
-                                    case "-=":
-                                        cmdID = 0xd;
-                                        if (IsVec)
-                                            cmdID += 4;
-                                        break;
-                                    case "*=":
-                                        cmdID = 0xe;
-                                        if (IsVec)
-                                            cmdID += 4;
-                                        break;
-                                    case "/=":
-                                        cmdID = 0xf;
-                                        if (IsVec)
-                                            cmdID += 4;
-                                        break;
-                                }
-                            }
-                            //else if (word)
+                            case "=":
+                                cmdID = 1;
+                                if (isVec)
+                                    cmdID++;
+                                break;
+                            case "+=":
+                                cmdID = 0xc;
+                                if (isVec)
+                                    cmdID += 4;
+                                break;
+                            case "-=":
+                                cmdID = 0xd;
+                                if (isVec)
+                                    cmdID += 4;
+                                break;
+                            case "*=":
+                                cmdID = 0xe;
+                                if (isVec)
+                                    cmdID += 4;
+                                break;
+                            case "/=":
+                                cmdID = 0xf;
+                                if (isVec)
+                                    cmdID += 4;
+                                break;
                         }
                     }
+                    //else if (word)
+                    CmdList.Add(new Cmd(cmdID, paramList));
                 }
             }
 
@@ -159,6 +153,15 @@ namespace Sm4shAIEditor
                 scriptFloat = task_helper.ReadReverseFloat(ref binReader);
                 binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
                 return scriptFloat;
+            }
+
+            public void AddScriptFloat(float value)
+            {
+                if (!ScriptFloats.ContainsValue(value))
+                {
+                    UInt32 nextFloatID = (UInt32)(ScriptFloats.Keys.Count + 0x2000);
+                    ScriptFloats.Add(nextFloatID, value);
+                }
             }
 
             public class Cmd
@@ -357,17 +360,18 @@ namespace Sm4shAIEditor
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
-                        case 0x1d://cliff vector stuff
+                        case 0x1d://cliff vector
                         case 0x27:
                         case 0x31:
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            cmdParams += "vec" + cmd.ParamList[0].ToString();
+                            cmdParams += "vec" + cmd.ParamList[0];
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
-                        case 0x2c://Norm = length of vector with given components
-                            cmdString += "var" + cmd.ParamList[0] + " = " + script_data.CmdNames[cmd.ID] + "(";
-                            cmdParams += get_script_value(cmd.ParamList[1]) + ", " + get_script_value(cmd.ParamList[2]);
+                        case 0x2e://CalcArrivePosSec
+                            cmdString += script_data.CmdNames[cmd.ID] + "(";
+                            cmdParams += "var" + cmd.ParamList[0] + ", " + "var" + cmd.ParamList[1] + ", ";
+                            cmdParams += get_script_value(cmd.ParamList[2]);
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
@@ -430,6 +434,8 @@ namespace Sm4shAIEditor
                     switch (reqID)
                     {
                         //known if_chks that use get_script_value
+                        case 0x1000:
+                        case 0x1001:
                         case 0x1002:
                         case 0x1007:
                         case 0x1008:

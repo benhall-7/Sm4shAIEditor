@@ -3,7 +3,7 @@
     class CustomStringReader
     {
         private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-        private static string validEqnChars = "=+-*/&|";
+        private static string validEqnChars = "=+-*/";
         private static string spaceCharacters = " \t";
         private static string newline = "\n";
 
@@ -83,14 +83,28 @@
             }
             return s;
         }
-        public string ReadUntilAnyOfChars(string excludedChars)
+        public string ReadUntilAnyOfChars(string charsToEndAt, bool includeLastChar)
         {
             string s = null;
-            for (string c = ReadChar(); !EndString && !excludedChars.Contains(c); c = ReadChar())
+            if (includeLastChar)
             {
-                s += c;
+                bool readNext = true;
+                while (!EndString && readNext)
+                {
+                    string c = ReadChar();
+                    if (!charsToEndAt.Contains(c))
+                        readNext = false;
+                    s += c;
+                }
             }
-            Position--;
+            else
+            {
+                for (string c = ReadChar(); !EndString && !charsToEndAt.Contains(c); c = ReadChar())
+                {
+                    s += c;
+                }
+                Position--;
+            }
             return s;
         }
         public string ReadLine()

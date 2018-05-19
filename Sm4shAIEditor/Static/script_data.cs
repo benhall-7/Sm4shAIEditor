@@ -45,7 +45,7 @@ namespace Sm4shAIEditor.Static
             "Unk_20",
             "Unk_21",
             "SetWait",
-            "CliffCheck",
+            "Unk_23",//something with position and cliff
             "CalcArriveFrameX",
             "CalcArriveFrameY",
             "GetShieldHP",
@@ -56,7 +56,7 @@ namespace Sm4shAIEditor.Static
             "Unk_2b",
             "Norm",
             "Dot",
-            "CalcArrivePos_Sec",
+            "CalcArrivePosSec",
             "Unk_2f",
             "Unk_30",
             "GetNearestCliffAbs",
@@ -64,20 +64,55 @@ namespace Sm4shAIEditor.Static
             "Unk_33",//new to Smash 4
             "Unk_34",
             "Unk_35",
-            "Unk_36",//unused
+            "Unk_36",//this one is unused
             "Unk_37",
             "Unk_38",
             "Unk_39"
         };
 
+        //schema: for each possible overflow of each command passed through this, the outline of each int[] is as follows
+        //CmdID, arg0, arg1, arg2, etc. For each arg:
+        //0 = raw value
+        //1 = variable set
+        //2 = vector set
+        //3 = get_script_value
+        //if a command or its args aren't represented in the list it will go through a switch for special cases/default behavior
+        public static List<byte[]> CmdArgs = new List<byte[]>()
+        {
+            new byte[] {0x03, 0},//label
+            new byte[] {0x05, 0},//search label
+            new byte[] {0x10, 3},//set stick rel
+            new byte[] {0x10, 3, 3},
+            new byte[] {0x15, 1},//set var with randf 
+            new byte[] {0x15, 1, 3},
+            new byte[] {0x15, 1, 3, 3},//no overflow contains 4 args
+            new byte[] {0x15, 1, 3, 3, 3, 3},
+            new byte[] {0x1a, 3},//set act timer/set frame
+            new byte[] {0x1b, 0},//set act
+            new byte[] {0x1c, 0},//go to label
+            new byte[] {0x1d, 2},//vector (cliff position)
+            new byte[] {0x1f, 3},//set stick abs
+            new byte[] {0x1f, 3, 3},
+            new byte[] {0x22, 3},//set wait
+            new byte[] {0x24, 1, 3},//calcArriveFrameX
+            new byte[] {0x25, 1, 3},//calcArriveFrameY
+            new byte[] {0x16, 1},//gets shield hp
+            new byte[] {0x27, 2},//vector (random stage point)
+            new byte[] {0x28, 1, 3},//calcArrivePosX
+            new byte[] {0x29, 1, 3},//calcArrivePosY
+            new byte[] {0x2c, 1, 3, 3},//Norm
+            new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
+            new byte[] {0x31, 2},//vector (cliff position)
+        };
+
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
         {
-            //0x1000 = par_work_update value. Range of some sort?
+            //0x1000 = par_work_update value. Represents distance of some sort?
             //0x1001 = next par_work_update value
             {0x1002, "ai_lr" },
-            {0x1003, "get_lr_tgt" },
-            {0x1004, "ai_pos_xy" },//vector
-            {0x1005, "tgt_pos_xy" },//vector
+            {0x1003, "lr_tgt" },
+            {0x1004, "ai_pos" },//vector
+            {0x1005, "tgt_pos" },//vector
             //0x1006 = distance from ledge in direction of opponent?
             {0x1007, "timer" },
             {0x1008, "ai_spd_xy" },//vector
@@ -89,6 +124,7 @@ namespace Sm4shAIEditor.Static
             {0x100e, "randf"},
             //0x100f = {Ground = 2, Air = 1}
             //0x1010 = distance from front ledge?
+            {0x1011, "ai_rank" }
         };//maximum value = 0x103E
 
         public static List<string> buttons = new List<string>
