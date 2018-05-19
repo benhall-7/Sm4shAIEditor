@@ -107,7 +107,7 @@ namespace Sm4shAIEditor
 
                 RichTextBox act_TB = new RichTextBox();
                 
-                string text = act.DecompScript();
+                string text = act.DecompAct();
                 act_TB.Text = text;
                 act_TB.Font = scriptFont;
                 act_TB.Parent = actTab;
@@ -559,7 +559,7 @@ namespace Sm4shAIEditor
                         foreach (script.Act act in scriptFile.acts.Keys)
                         {
                             streamWriter.WriteLine(act.ID.ToString("X4"));
-                            string text = act.DecompScript();
+                            string text = act.DecompAct();
                             File.WriteAllText(path + act.ID.ToString("X4") + ".txt", text);
                         }
                         streamWriter.Dispose();

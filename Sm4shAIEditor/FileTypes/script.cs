@@ -194,7 +194,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public string DecompScript()
+            public string DecompAct()
             {
                 string text = "";
                 byte lastCmdID = 0xff;
