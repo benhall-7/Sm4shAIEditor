@@ -194,7 +194,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public string decomp_act()
+            public string DecompScript()
             {
                 string text = "";
                 byte lastCmdID = 0xff;
@@ -281,19 +281,6 @@ namespace Sm4shAIEditor
                             cmdString += "}" + "\r\n";//use the symbol instead of the name
                             text += ifPadding + cmdString;
                             break;
-                        case 0x0a://SetStickRel
-                        case 0x1f://SetStickAbs
-                            cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            for (int i = 0; i < cmd.ParamCount; i++)
-                            {
-                                cmdParams += get_script_value(cmd.ParamList[i]);
-
-                                if (i != cmd.ParamCount - 1)
-                                    cmdParams += ", ";
-                            }
-                            cmdString += cmdParams + ")" + "\r\n";
-                            text += ifPadding + cmdString;
-                            break;
                         case 0x0b://SetButton
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
                             List<string> cmdButtons = new List<string>();
@@ -349,43 +336,23 @@ namespace Sm4shAIEditor
                             cmdString += cmdParams + "\r\n";
                             text += ifPadding + cmdString;
                             break;
-                        case 0x1b://SetAct
-                            cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            if (cmd.ParamCount != 0)
-                                cmdParams += "0x" + cmd.ParamList[0].ToString("X");
-                            else
-                            {
-                                cmdParams += "";
-                            }
-                            cmdString += cmdParams + ")" + "\r\n";
-                            text += ifPadding + cmdString;
-                            break;
-                        case 0x1d://cliff vector
-                        case 0x27:
-                        case 0x31:
-                            cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            cmdParams += "vec" + cmd.ParamList[0];
-                            cmdString += cmdParams + ")" + "\r\n";
-                            text += ifPadding + cmdString;
-                            break;
-                        case 0x2e://CalcArrivePosSec
-                            cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            cmdParams += "var" + cmd.ParamList[0] + ", " + "var" + cmd.ParamList[1] + ", ";
-                            cmdParams += get_script_value(cmd.ParamList[2]);
-                            cmdString += cmdParams + ")" + "\r\n";
-                            text += ifPadding + cmdString;
-                            break;
                         default:
                             cmdString += script_data.CmdNames[cmd.ID] + "(";
-                            for (int i = 0; i < cmd.ParamCount; i++)
+                            string parsed = ParseParams(cmd);
+                            if (parsed != null)
                             {
-                                if (ScriptFloats.ContainsKey(cmd.ParamList[i]))
-                                    cmdParams += ScriptFloats[cmd.ParamList[i]];
-                                else
+                                cmdParams += parsed;
+                            }
+                            else
+                            {
+                                //hopefully I get to the point where this becomes obsolete
+                                for (int i = 0; i < cmd.ParamCount; i++)
+                                {
                                     cmdParams += "0x" + cmd.ParamList[i].ToString("X");
 
-                                if (i != cmd.ParamCount - 1)
-                                    cmdParams += ", ";
+                                    if (i != cmd.ParamCount - 1)
+                                        cmdParams += ", ";
+                                }
                             }
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
@@ -395,6 +362,53 @@ namespace Sm4shAIEditor
                 }
 
                 return text;
+            }
+
+            public string ParseParams(Cmd cmd)
+            {
+                int correctIndex = -1;
+                //can this be made faster?
+                for (int i = 0; i < script_data.CmdArgs.Count; i++)
+                {
+                    if (cmd.ID == script_data.CmdArgs[i][0])
+                    {
+                        if (cmd.ParamCount == script_data.CmdArgs[i].Length - 1)
+                        {
+                            correctIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (correctIndex == -1)
+                    return null;
+                else
+                {
+                    string cmdParams = "";
+                    for (int i = 0; i < cmd.ParamCount; i++)
+                    {
+                        byte type = script_data.CmdArgs[correctIndex][i + 1];
+                        switch (type)
+                        {
+                            case 0:
+                                cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+                                break;
+                            case 1:
+                                cmdParams += "var" + cmd.ParamList[i];
+                                break;
+                            case 2:
+                                cmdParams += "vec" + cmd.ParamList[i];
+                                break;
+                            case 3:
+                                cmdParams += get_script_value(cmd.ParamList[i]);
+                                break;
+                            default:
+                                break;
+                        }
+                        if (i != cmd.ParamCount - 1)
+                            cmdParams += ", ";
+                    }
+                    return cmdParams;
+                }
             }
 
             public string get_script_value(UInt32 paramID)

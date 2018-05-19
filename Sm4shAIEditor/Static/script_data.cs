@@ -81,11 +81,11 @@ namespace Sm4shAIEditor.Static
         {
             new byte[] {0x03, 0},//label
             new byte[] {0x05, 0},//search label
-            new byte[] {0x10, 3},//set stick rel
-            new byte[] {0x10, 3, 3},
-            new byte[] {0x15, 1},//set var with randf 
+            new byte[] {0x0a, 3},//set stick rel
+            new byte[] {0x0a, 3, 3},
+            new byte[] {0x15, 1},//set var with randf
             new byte[] {0x15, 1, 3},
-            new byte[] {0x15, 1, 3, 3},//no overflow contains 4 args
+            new byte[] {0x15, 1, 3, 3},
             new byte[] {0x15, 1, 3, 3, 3, 3},
             new byte[] {0x1a, 3},//set act timer/set frame
             new byte[] {0x1b, 0},//set act
