@@ -455,6 +455,8 @@ namespace Sm4shAIEditor
                         case 0x1008:
                         case 0x1009:
                         case 0x100a:
+                        case 0x1010:
+                        case 0x1021:
                         case 0x1022:
                         case 0x102a:
                             requirement += get_script_value(currentParam);

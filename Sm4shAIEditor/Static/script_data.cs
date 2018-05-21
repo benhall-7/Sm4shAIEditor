@@ -115,7 +115,7 @@ namespace Sm4shAIEditor.Static
             {0x1005, "tgt_pos" },//vector
             //0x1006 = distance from ledge in direction of opponent?
             {0x1007, "timer" },
-            {0x1008, "ai_spd_xy" },//vector
+            {0x1008, "ai_spd" },//vector
             {0x1009, "zero" },
             {0x100a, "one" },
             {0x100b, "ai_pos_y" },
@@ -124,7 +124,36 @@ namespace Sm4shAIEditor.Static
             {0x100e, "randf"},
             //0x100f = {Ground = 2, Air = 1}
             //0x1010 = distance from front ledge?
-            {0x1011, "ai_rank" }
+            {0x1011, "ai_rank" },
+            //{0x1012, "" }, some byte
+            //{0x1013, "" }, next byte
+            {0x1014, "ctrl_weapon_pos" },
+            {0x1015, "ctrl_weapon_pos_y" },
+            {0x1016, "tgt_spd" },
+            {0x1017, "tgt_spd_y" },
+            {0x1018, "ctrl_weapon_spd" },
+            {0x1019, "ctrl_weapon_spd_y" },
+            {0x101a, "ai_hipn_pos" },
+            {0x101b, "ai_hipn_pos_y" },
+            {0x101c, "tgt_hipn_pos" },
+            {0x101d, "tgt_hipn_pos" },
+            {0x101e, "ai_dmg" },
+            {0x101f, "tgt_dmg" },
+            //0x1020 is some ai param
+            {0x1021, "jump_height" },
+            {0x1022, "jump_length" },
+            {0x1023, "air_jump_height" },
+            {0x1024, "air_jump_length" },
+            {0x1025, "tgt_lr" },
+            {0x1026, "tgt_jumps_remain" },
+            //{0x1027, "height?" },
+            //{0x1028, "tgt_height?" },
+            //{0x1029, "edge_back_dist" },
+            {0x102a, "blastzone_bottom" },
+            {0x102b, "blastzone_top" },
+            {0x102c, "blastzone_left" },
+            {0x102d, "blastzone_right" },
+            {0x102e, "stage_length" },
         };//maximum value = 0x103E
 
         public static List<string> buttons = new List<string>
