@@ -34,11 +34,6 @@ namespace Sm4shAIEditor
                 exportDirectory = "export";
         }
         
-        private void LoadFiles(string[] fileDirectories)
-        {
-            tree.AddFiles(fileDirectories, ref status_TB);
-        }
-        
         private void LoadFighters(string[] fighterDirectories)
         {
             tree.AddFighters(fighterDirectories, ref status_TB);
@@ -153,21 +148,6 @@ namespace Sm4shAIEditor
                     fighterNode.Nodes.Add(child);
                 }
             }
-        }
-
-        private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = Properties.Resources.OpenFileFilter;
-            openFile.Multiselect = true;
-            if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
-                openFile.InitialDirectory = fighterDirectory;
-            if (openFile.ShowDialog() == DialogResult.OK)
-            {
-                LoadFiles(openFile.FileNames);
-            }
-
-            UpdateTreeView();
         }
 
         private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)

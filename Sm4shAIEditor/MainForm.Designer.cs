@@ -31,11 +31,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFighterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openAllFightersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAndCloseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,7 +59,6 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.saveAndCloseToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -70,19 +67,11 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openFileToolStripMenuItem,
             this.openFighterToolStripMenuItem,
             this.openAllFightersToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.openToolStripMenuItem.Text = "Open";
-            // 
-            // openFileToolStripMenuItem
-            // 
-            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.openFileToolStripMenuItem.Text = "Open File";
-            this.openFileToolStripMenuItem.Click += new System.EventHandler(this.openFileToolStripMenuItem_Click);
             // 
             // openFighterToolStripMenuItem
             // 
@@ -103,12 +92,6 @@
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.saveToolStripMenuItem.Text = "Save";
-            // 
-            // saveAndCloseToolStripMenuItem
-            // 
-            this.saveAndCloseToolStripMenuItem.Name = "saveAndCloseToolStripMenuItem";
-            this.saveAndCloseToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.saveAndCloseToolStripMenuItem.Text = "Save and Close";
             // 
             // closeToolStripMenuItem
             // 
@@ -197,9 +180,7 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFighterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAndCloseToolStripMenuItem;
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ToolStripMenuItem openAllFightersToolStripMenuItem;
         private System.Windows.Forms.RichTextBox status_TB;

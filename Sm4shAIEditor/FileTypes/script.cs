@@ -92,7 +92,6 @@ namespace Sm4shAIEditor
                 {
                     byte cmdID = 0;
                     List<UInt32> paramList = new List<UInt32>();
-                    List<string> variables = new List<string>();
 
                     string word = sReader.ReadWord();
                     if (script_data.CmdNames.Contains(word))

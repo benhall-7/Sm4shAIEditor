@@ -16,25 +16,6 @@ namespace Sm4shAIEditor.Static
             { "param_nfp.bin", 0x44504941 },
             { "script.bin", 0x00000000 }
         };
-        public static bool IsValidFile(string fileDirectory)
-        {
-            if (!File.Exists(fileDirectory))
-                throw new Exception("file directory does not exist!");
-
-            string fileName = GetFileName(fileDirectory);
-
-            if (!fileMagic.ContainsKey(fileName))
-                return false;
-
-            BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
-            Int32 magic = binReader.ReadInt32();
-            binReader.Close();
-
-            if (magic != fileMagic[fileName])
-                return false;
-
-            return true;
-        }
         public static string GetFileName(string directory)
         {
             string parent = Directory.GetParent(directory).FullName;

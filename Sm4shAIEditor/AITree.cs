@@ -57,39 +57,12 @@ namespace Sm4shAIEditor
                 string subDir = fighterDirectory + @"\script\ai\" + fileType;
                 if (File.Exists(subDir))
                 {
-                    bool canLoad = task_helper.IsValidFile(subDir);
-                    if (canLoad)
-                    {
-                        aiFiles.Add(subDir, fighterName);
-                        empty = false;
-                    }
+                    aiFiles.Add(subDir, fighterName);
+                    empty = false;
                 }
             }
             if (empty)
                 throw new ProgramException(Properties.Resources.FighterException2, fighterName);
-        }
-        
-        public void AddFiles(string[] directoryList, ref RichTextBox messageBox)
-        {
-            foreach (string fileDirectory in directoryList)
-            {
-                try
-                {
-                    //don't load the same file twice pls
-                    if (aiFiles.ContainsKey(fileDirectory))
-                        throw new ProgramException(Properties.Resources.FileException1, fileDirectory);
-
-                    bool canLoad = task_helper.IsValidFile(fileDirectory);
-                    if (canLoad)
-                        aiFiles.Add(fileDirectory, null);
-                    else
-                        throw new ProgramException(Properties.Resources.FileException2, fileDirectory);
-                }
-                catch (ProgramException exception)
-                {
-                    messageBox.Text += exception.Message + Environment.NewLine;
-                }
-            }
         }
     }
 }
