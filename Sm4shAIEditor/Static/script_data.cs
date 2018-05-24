@@ -8,7 +8,7 @@ namespace Sm4shAIEditor.Static
 {
     static class script_data
     {
-        public static List<string> CmdNames = new List<string>()
+        public static List<string> cmds = new List<string>()
         {
             "End",
             "SetVar",//syntax varX = item
@@ -77,7 +77,7 @@ namespace Sm4shAIEditor.Static
         //2 = vector set
         //3 = get_script_value
         //if a command or its args aren't represented in the list it will go through a switch for special cases/default behavior
-        public static List<byte[]> CmdArgs = new List<byte[]>()
+        public static List<byte[]> cmd_args = new List<byte[]>()
         {
             new byte[] {0x03, 0},//label
             new byte[] {0x05, 0},//search label
@@ -175,6 +175,28 @@ namespace Sm4shAIEditor.Static
             {0x101e, "ai_char" },
             {0x101f, "tgt_char" },
             {0x1024, "ai_subaction" }
+        };
+
+        //Key = ID, Value = type of arguments:
+        //0 = get_script_value
+        //1 = fighter name
+        //If an ID is not represented it is either treated as a special case or uses raw values
+        //A special case could be a check that uses multiple types of arguments but I haven't found one yet
+        public static Dictionary<UInt32, byte> if_chk_args = new Dictionary<uint, byte>()
+        {
+            {0x1000, 0},
+            {0x1001, 0},
+            {0x1002, 0},
+            {0x1007, 0},
+            {0x1008, 0},
+            {0x1009, 0},
+            {0x100a, 0},
+            {0x1010, 0},
+            {0x101e, 1},
+            {0x101f, 1},
+            {0x1021, 0},
+            {0x1022, 0},
+            {0x102a, 0},
         };
 
         public static List<string> fighters = new List<string>()

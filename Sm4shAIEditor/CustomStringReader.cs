@@ -4,6 +4,7 @@
     {
         private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
         private static string validEqnChars = "=+-*/";
+        private static string validIfChars = "&|";
         private static string spaceCharacters = " \t";
         private static string newline = "\n";
 
@@ -78,6 +79,15 @@
         {
             string s = null;
             for (string c = ReadChar(); !EndString && validEqnChars.Contains(c); c = ReadChar())
+            {
+                s += c;
+            }
+            return s;
+        }
+        public string ReadIfSymbols()
+        {
+            string s = null;
+            for (string c = ReadChar(); !EndString && validIfChars.Contains(c); c = ReadChar())
             {
                 s += c;
             }
