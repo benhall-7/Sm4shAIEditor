@@ -211,7 +211,7 @@ namespace Sm4shAIEditor
                                     ID = 8;//if next command is Else, then the command ID skips straight to Else
                                 canHaveArgs = false;
                             }
-                        }//might split this???
+                        }
                         else if (script_data.cmds.Contains(word))
                         {
                             ID = (byte)script_data.cmds.IndexOf(word);

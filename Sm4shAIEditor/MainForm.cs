@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Sm4shAIEditor.Static;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.IO;
-using System.Configuration;
-using Sm4shAIEditor.Static;
-using System.Globalization;
 
 namespace Sm4shAIEditor
 {
@@ -462,6 +463,9 @@ namespace Sm4shAIEditor
 
         private void assembleScript(Dictionary<UInt32, string> decompiledActs, string outDirectory)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
             BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
@@ -508,7 +512,8 @@ namespace Sm4shAIEditor
                 positionInHeader += 4;
             }
             binWriter.Dispose();
-            status_TB.Text += "Compiled scripts" + "/r/n";
+            status_TB.Text += string.Format("Compiled {0} acts in {1} milliseconds", acts.Count, timer.Elapsed.Milliseconds) + "\r\n";
+            timer.Stop();
         }
         
         private uint Align0x10(uint position)
