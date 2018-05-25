@@ -21,6 +21,11 @@ namespace Sm4shAIEditor.Static
             string parent = Directory.GetParent(directory).FullName;
             return directory.Remove(0, parent.Length + 1);
         }
+        public static void WriteReverseByteArray(ref BinaryWriter binWriter, byte[] bytes)
+        {
+            Array.Reverse(bytes);
+            binWriter.Write(bytes);
+        }
         public static float ReadReverseFloat(ref BinaryReader binReader)
         {
             byte[] bytes = binReader.ReadBytes(4);

@@ -81,14 +81,14 @@ namespace Sm4shAIEditor
             //for compiling
             public Act(UInt32 ID, string text)
             {
-                int byteOffset = 0;
-                UInt32 varCount = 0;
                 this.ID = ID;
+                ScriptOffset = 0x10;//since every act and header is 0x10 aligned this is guaranteed to be 0x10
+                ScriptFloatOffset = ScriptOffset;//just temporary, each command increases this to be placed properly
                 CmdList = new List<Cmd>();
                 ScriptFloats = new Dictionary<uint, float>();
+
                 CustomStringReader sReader = new CustomStringReader(text);
                 bool isIfArg = false;
-
                 while (!sReader.EndString)
                 {
                     Cmd cmd = new Cmd(ref sReader, ref isIfArg, this);
@@ -96,8 +96,8 @@ namespace Sm4shAIEditor
                     cmd.Size = (UInt16)(4 + (4 * cmd.ParamCount));
                     CmdList.Add(cmd);
                     sReader.SkipWhiteSpace();
+                    ScriptFloatOffset += cmd.Size;
                 }
-                sReader.ReadChar();
             }
 
             protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
@@ -239,10 +239,8 @@ namespace Sm4shAIEditor
                             bool isVec;
                             if (word.Substring(0, 3) == "vec")
                                 isVec = true;
-                            else if (word.Substring(0, 3) == "var")
-                                isVec = false;
                             else
-                                throw new Exception();//add exception text here. REMOVE THIS, IT CANT HAPPEN
+                                isVec = false;
 
                             switch (op)//set command ID
                             {
@@ -271,6 +269,7 @@ namespace Sm4shAIEditor
                                 else
                                     ID++;
                             }
+                            parent.UpdateVarCount(uint.Parse(word.Substring(3)), isVec);
                         }
                         if (!isIfArg && canHaveArgs)
                             ConvertCmdParams(ref sReader);
@@ -659,6 +658,7 @@ namespace Sm4shAIEditor
                         if (!param.StartsWith("var") && !param.StartsWith("vec"))
                             throw new Exception();//expected variable or vector ID
                         id = UInt32.Parse(param.Substring(3));
+                        UpdateVarCount(id, param.StartsWith("vec"));
                         break;
                     case 3:
                         id = get_script_value_id(param);
@@ -779,6 +779,16 @@ namespace Sm4shAIEditor
                         requirement += ", ";
                 }
                 return requirement + ")";
+            }
+
+            public void UpdateVarCount(uint varID, bool isVec)
+            {
+                if (isVec)
+                    varID++;
+                if (varID > 24)
+                    throw new Exception();//add exception text here
+                if (varID > VarCount)
+                    VarCount = (ushort)varID;
             }
         }//end of Act class
     }//end of Script class

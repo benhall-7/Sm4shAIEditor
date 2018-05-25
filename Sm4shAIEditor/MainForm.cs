@@ -460,20 +460,59 @@ namespace Sm4shAIEditor
 
         }
 
-        private void assembleScript(Dictionary<UInt32, string> acts, string outDirectory)
+        private void assembleScript(Dictionary<UInt32, string> decompiledActs, string outDirectory)
         {
             BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
-            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)acts.Count);
+            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)decompiledActs.Count);
             binWriter.Write((UInt64)0);//pad
-            //offset data
-            byte[] actOffsetData = new byte[((acts.Count + 3) / 4) * 0x10];//maintain 0x10 alignment
-            foreach (UInt32 actID in acts.Keys)
+
+            List<script.Act> acts = new List<script.Act>();
+            foreach (UInt32 actID in decompiledActs.Keys)
             {
-                script.Act act = new script.Act(actID, acts[actID]);
+                acts.Add(new script.Act(actID, decompiledActs[actID]));
+            }
+            int positionInHeader = 0x10;
+            for (int i = 0; i < acts.Count; i++)
+            {
+                uint actOffset = (((uint)acts.Count + 3) / 4) * 0x10 + 0x10;
+                if (i > 0)
+                    actOffset = (uint)binWriter.BaseStream.Length;
+                actOffset = Align0x10(actOffset);
+                binWriter.BaseStream.Seek(positionInHeader, SeekOrigin.Begin);
+                task_helper.WriteReverseUInt32(ref binWriter, actOffset);
+                //start writing the actual script here
+                binWriter.BaseStream.Seek(actOffset, SeekOrigin.Begin);
+                //act header data
+                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ID);
+                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ScriptOffset);
+                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ScriptFloatOffset);
+                task_helper.WriteReverseUInt16(ref binWriter, acts[i].VarCount);
+                task_helper.WriteReverseUInt16(ref binWriter, 0);//padding. We could have done this via 0x10 alignment but it doesn't matter
+                //act commands data
+                foreach (script.Act.Cmd cmd in acts[i].CmdList)
+                {
+                    binWriter.Write(cmd.ID);
+                    binWriter.Write(cmd.ParamCount);
+                    task_helper.WriteReverseUInt16(ref binWriter, cmd.Size);
+                    foreach (UInt32 param in cmd.ParamList)
+                    {
+                        task_helper.WriteReverseUInt32(ref binWriter, param);
+                    }
+                }
+                foreach (float value in acts[i].ScriptFloats.Values)
+                {
+                    task_helper.WriteReverseFloat(ref binWriter, value);
+                }
+                positionInHeader += 4;
             }
             binWriter.Dispose();
+        }
+        
+        private uint Align0x10(uint position)
+        {
+            return ((position + 0xf) / 0x10) * 0x10;
         }
 
         private void disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
