@@ -199,10 +199,19 @@ namespace Sm4shAIEditor
                             string nextChar = sReader.ReadChar();
                             if (nextChar == "}")
                             {
-                                ID = 9;
+                                sReader.SkipWhiteSpace();
+                                int tempPosition = sReader.Position;
+                                word = sReader.ReadWord();
+                                if (word != script_data.cmds[8])//if next command isn't Else
+                                {
+                                    ID = 9;//then the } represents an Endif command
+                                    sReader.Position = tempPosition;//move the position back so the next loop reads the next command
+                                }
+                                else
+                                    ID = 8;//if next command is Else, then the command ID skips straight to Else
                                 canHaveArgs = false;
                             }
-                        }
+                        }//might split this???
                         else if (script_data.cmds.Contains(word))
                         {
                             ID = (byte)script_data.cmds.IndexOf(word);
@@ -788,7 +797,7 @@ namespace Sm4shAIEditor
                 if (varID > 24)
                     throw new Exception();//add exception text here
                 if (varID > VarCount)
-                    VarCount = (ushort)varID;
+                    VarCount = (ushort)(varID + 1);
             }
         }//end of Act class
     }//end of Script class

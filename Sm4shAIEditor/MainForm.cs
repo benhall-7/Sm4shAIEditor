@@ -508,6 +508,7 @@ namespace Sm4shAIEditor
                 positionInHeader += 4;
             }
             binWriter.Dispose();
+            status_TB.Text += "Compiled scripts" + "/r/n";
         }
         
         private uint Align0x10(uint position)
