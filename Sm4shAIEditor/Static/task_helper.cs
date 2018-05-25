@@ -18,8 +18,8 @@ namespace Sm4shAIEditor.Static
         };
         public static string GetFileName(string directory)
         {
-            string parent = Directory.GetParent(directory).FullName;
-            return directory.Remove(0, parent.Length + 1);
+            int index = directory.LastIndexOf('\\');
+            return directory.Remove(0, index + 1);
         }
         public static void WriteReverseByteArray(ref BinaryWriter binWriter, byte[] bytes)
         {

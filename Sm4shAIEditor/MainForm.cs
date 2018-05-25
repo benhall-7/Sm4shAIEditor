@@ -393,17 +393,15 @@ namespace Sm4shAIEditor
                 {
                     if (ScriptTabs.Count > 0 && doScript)
                     {
-                        Dictionary<UInt32, string> acts = new Dictionary<uint, string>();
-                        
                         //get all the text stuff
                         foreach (TabPage tab in ScriptTabs)
                         {
+                            Dictionary<UInt32, string> acts = new Dictionary<uint, string>();
                             string fighterName = tree.aiFiles[tab.Name];
-                            string fileType = task_helper.fileMagic.Keys.ElementAt(3);
                             string folderDirectory = exportDirectory + @"\" + fighterName;
                             if (!Directory.Exists(folderDirectory))
                                 Directory.CreateDirectory(folderDirectory);
-                            string fileDirectory = folderDirectory + @"\" + fileType;
+                            string fileDirectory = folderDirectory + @"\" + task_helper.fileMagic.Keys.ElementAt(3);
 
                             TabControl actContainer = ((TabControl)tab.Controls[0]);
                             foreach (TabPage actTab in actContainer.TabPages)
@@ -423,31 +421,39 @@ namespace Sm4shAIEditor
             {
                 if (Directory.Exists(workDirectory))
                 {
-                    string ATKDDirectory = workDirectory + @"\atkd";
-                    string AIPDDirectory = workDirectory + @"\aipd";
-                    string scriptDirectory = workDirectory + @"\script";
-                    if (Directory.Exists(ATKDDirectory) && doATKD)
+                    foreach (string fighterFolder in Directory.EnumerateDirectories(workDirectory).ToArray())
                     {
-                        string[] dirs = Directory.EnumerateDirectories(ATKDDirectory).ToArray();
-                        foreach (string fitATKDFolder in dirs)
+                        if (doATKD)
                         {
+                            if (Directory.Exists(fighterFolder + @"\atkd"))
+                            {
 
+                            }
                         }
-                    }
-                    if (Directory.Exists(AIPDDirectory) && doAIPD)
-                    {
-                        string[] dirs = Directory.EnumerateDirectories(AIPDDirectory).ToArray();
-                        foreach (string fitAIPDFolder in dirs)
+                        if (doAIPD)
                         {
+                            if (Directory.Exists(fighterFolder + @"\aipd"))
+                            {
 
+                            }
                         }
-                    }
-                    if (Directory.Exists(scriptDirectory) && doScript)
-                    {
-                        string[] dirs = Directory.EnumerateDirectories(scriptDirectory).ToArray();
-                        foreach (string fitScriptFolder in dirs)
+                        if (doScript)
                         {
-                            
+                            if (Directory.Exists(fighterFolder + @"\script"))
+                            {
+                                string[] actIDs = File.ReadAllLines(fighterFolder + @"\script\acts.txt");
+                                Dictionary<uint, string> actData = new Dictionary<uint, string>();
+                                foreach (string actID in actIDs)
+                                {
+                                    uint id = uint.Parse(actID, NumberStyles.HexNumber);
+                                    actData.Add(id, File.ReadAllText(fighterFolder + @"\script\" + actID + ".txt"));
+                                }
+                                string outDir = exportDirectory + @"\" + task_helper.GetFileName(fighterFolder);
+                                if (!Directory.Exists(outDir))
+                                    Directory.CreateDirectory(outDir);
+                                outDir += @"\script";
+                                assembleScript(actData, outDir);
+                            }
                         }
                     }
                 }
