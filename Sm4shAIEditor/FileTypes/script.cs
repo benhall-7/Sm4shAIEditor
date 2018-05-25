@@ -82,19 +82,22 @@ namespace Sm4shAIEditor
             public Act(UInt32 ID, string text)
             {
                 int byteOffset = 0;
-                Int32 varCount = 0;
+                UInt32 varCount = 0;
                 this.ID = ID;
-                List<UInt32> cmdList = new List<uint>();
-                Dictionary<UInt32, float> scriptFloats = new Dictionary<UInt32, float>();
+                CmdList = new List<Cmd>();
+                ScriptFloats = new Dictionary<uint, float>();
                 CustomStringReader sReader = new CustomStringReader(text);
-                
+                bool isIfArg = false;
+
                 while (!sReader.EndString)
                 {
-                    bool isIfArg = false;
-
                     Cmd cmd = new Cmd(ref sReader, ref isIfArg, this);
+                    cmd.ParamCount = (byte)cmd.ParamList.Count;
+                    cmd.Size = (UInt16)(4 + (4 * cmd.ParamCount));
                     CmdList.Add(cmd);
+                    sReader.SkipWhiteSpace();
                 }
+                sReader.ReadChar();
             }
 
             protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
@@ -150,33 +153,88 @@ namespace Sm4shAIEditor
                 public Cmd(ref CustomStringReader sReader, ref bool isIfArg, Act parent)
                 {
                     this.parent = parent;
-                    byte cmdID = 0;
+                    ParamList = new List<uint>();
                     string word;
+                    bool canHaveArgs = true;
+                    if (isIfArg)//parsing the if statements for their args
+                    {
+                        word = sReader.ReadIfSymbols();
+                        if (word == "||")
+                            ID = 0x16;
+                        else if (word == "&&")
+                            ID = 0x18;
+                        else if (word == null)
+                        {
+                            string nextChar = sReader.ReadChar();
+                            if (nextChar == ")")
+                                isIfArg = false;
+                            else
+                                throw new Exception();//syntax error: expected '&&', '||', or ')'
+                        }
+
+                        if (isIfArg)
+                        {
+                            sReader.SkipWhiteSpace();
+                            if (sReader.ReadChar() == "!")
+                                ID++;
+                            else
+                                sReader.Position--;
+
+                            ConvertIfParams(ref sReader);
+                        }
+                        else
+                            sReader.ReadUntilAnyOfChars("{", true);
+                    }
                     if (!isIfArg)
                     {
-                        word = sReader.ReadWord();
-                        if (script_data.cmds.Contains(word))
+                        if (parent.CmdList.Count > 0 && parent.CmdList[parent.CmdList.Count - 1].ID == 8)//if last command was Else
                         {
-                            cmdID = (byte)script_data.cmds.IndexOf(word);
-                            if (cmdID == 6)//if statement
+                            sReader.SkipWhiteSpace();
+                            if (sReader.ReadChar() != "{")//basically we just want to skip to past the { sign so we can read more commands
+                                sReader.Position--;//if Else is followed by a real command, don't skip the first letter
+                        }
+                        word = sReader.ReadWord();
+                        if (word == null)
+                        {
+                            string nextChar = sReader.ReadChar();
+                            if (nextChar == "}")
+                            {
+                                ID = 9;
+                                canHaveArgs = false;
+                            }
+                        }
+                        else if (script_data.cmds.Contains(word))
+                        {
+                            ID = (byte)script_data.cmds.IndexOf(word);
+                            if (ID == 6)//if statement
                             {
                                 sReader.ReadUntilAnyOfChars("(", true);
                                 if (sReader.ReadChar() == "!")
-                                    cmdID++;//IfNot
+                                    ID++;//IfNot
                                 else
                                     sReader.Position--;
 
                                 ConvertIfParams(ref sReader);
+                                sReader.SkipWhiteSpace();
                                 string nextChar = sReader.ReadChar();
-                                if (nextChar == ",")
+                                if (nextChar != ")")
+                                {
+                                    sReader.Position--;
                                     isIfArg = true;
-                                else if (nextChar != ")")
-                                    throw new Exception();//add exception text here
+                                }
+                                else
+                                {
+                                    isIfArg = false;
+                                    canHaveArgs = false;
+                                    sReader.ReadUntilAnyOfChars("{", true);
+                                }
                             }
+                            else if (ID == 8 || ID == 9)
+                                canHaveArgs = false;
                         }
                         else if (word.StartsWith("var") || word.StartsWith("vec"))
                         {
-                            Int32 varID = Int32.Parse(word.Substring(3));//the numeric variable ID
+                            ParamList.Add(UInt32.Parse(word.Substring(3)));//the numeric ID is the first arg
                             string op = sReader.ReadEqnSymbols();//operation
                             bool isVec;
                             if (word.Substring(0, 3) == "vec")
@@ -184,57 +242,134 @@ namespace Sm4shAIEditor
                             else if (word.Substring(0, 3) == "var")
                                 isVec = false;
                             else
-                                throw new Exception();//add exception text here
+                                throw new Exception();//add exception text here. REMOVE THIS, IT CANT HAPPEN
 
                             switch (op)//set command ID
                             {
                                 case "=":
-                                    cmdID = 1;
+                                    ID = 1;
                                     break;
                                 case "+=":
-                                    cmdID = 0xc;
+                                    ID = 0xc;
                                     break;
                                 case "-=":
-                                    cmdID = 0xd;
+                                    ID = 0xd;
                                     break;
                                 case "*=":
-                                    cmdID = 0xe;
+                                    ID = 0xe;
                                     break;
                                 case "/=":
-                                    cmdID = 0xf;
+                                    ID = 0xf;
                                     break;
                                 default:
                                     throw new Exception();//add exception text here; unrecognized variable assignment
                             }
                             if (isVec)
                             {
-                                if (cmdID >= 0xc)
-                                    cmdID += 4;
+                                if (ID >= 0xc)
+                                    ID += 4;
                                 else
-                                    cmdID++;
+                                    ID++;
                             }
                         }
-                    }
-                    else//parsing the if statements for their args
-                    {
-                        word = sReader.ReadIfSymbols();
-                        if (word == "||")
-                            cmdID = 0x16;
-                        else if (word == "&&")
-                            cmdID = 0x18;
-                        else
-                            throw new Exception();//add exception text here
-
-                        if (sReader.ReadChar() == "!")
-                            cmdID++;
-                        else
-                            sReader.Position--;
-
-                        ConvertIfParams(ref sReader);
+                        if (!isIfArg && canHaveArgs)
+                            ConvertCmdParams(ref sReader);
                     }
                 }
 
-                public void ConvertIfParams(ref CustomStringReader sReader)
+                private void ConvertCmdParams(ref CustomStringReader sReader)
+                {
+                    bool readNextArg = true;
+                    switch (ID)
+                    {
+                        case 0x01:
+                        case 0x02:
+                            ParamList.Add(parent.get_script_value_id(sReader.ReadWord()));
+                            break;
+                        case 0x0b://button
+                            uint arg = 0;
+                            while (readNextArg)
+                            {
+                                sReader.ReadUntilAnyOfChars("(", true);
+                                string word = sReader.ReadWord();
+                                sReader.SkipWhiteSpace();
+                                string append = sReader.ReadChar();
+                                if (word == null)
+                                    throw new Exception();//add exception text here
+                                if (!script_data.buttons.Contains(word))
+                                    throw new Exception();//add exception text here
+                                uint buttonID = (uint)(1 << script_data.buttons.IndexOf(word));
+                                arg |= buttonID;
+                                if (append != "+" && append != "," && append != ")")
+                                    throw new Exception();//add exception text here
+                                if (append == ")")
+                                    readNextArg = false;
+                            }
+                            ParamList.Add(arg);
+                            break;
+                        case 0x0c://assignment for vars and vecs
+                        case 0x0d:
+                        case 0x0e:
+                        case 0x0f:
+                        case 0x10:
+                        case 0x11:
+                        case 0x12:
+                        case 0x13:
+                            while (readNextArg)
+                            {
+                                string word = sReader.ReadWord();
+                                sReader.SkipWhiteSpace();
+                                string append = sReader.ReadChar();
+                                if (word == null)
+                                    throw new Exception();//add exception text here
+                                ParamList.Add(parent.get_script_value_id(word));
+                                if (append != ",")
+                                {
+                                    readNextArg = false;
+                                    sReader.Position--;
+                                }
+                            }
+                            break;
+                        default:
+                            sReader.ReadUntilAnyOfChars("(", true);
+                            int readParams = 0;
+                            while (readNextArg)
+                            {
+                                string word = sReader.ReadWord();
+                                string append = sReader.ReadChar();
+                                if (word == null)
+                                {
+                                    if (append == ",")
+                                        throw new Exception();//add exception text here
+                                    else if (append != ")")
+                                        throw new Exception();//add exception text here
+                                }
+                                else
+                                {
+                                    int listIndex = parent.get_correct_cmd_arg_list_index(ID);
+                                    int argNumber = readParams + 1;
+                                    int type = 0;
+                                    if (listIndex == -1)
+                                    {
+                                        type = 0;
+                                    }
+                                    else if (argNumber < script_data.cmd_args[listIndex].Length)
+                                    {
+                                        type = script_data.cmd_args[listIndex][argNumber];
+                                    }
+                                    ParamList.Add(parent.get_param_id_from_type(word, type));
+                                    
+                                    readParams++;
+                                }
+
+                                if (append == ")")
+                                    readNextArg = false;
+                            }
+                            break;
+                    }
+                }
+
+                private void ConvertIfParams(ref CustomStringReader sReader)
                 {
                     string word = sReader.ReadWord();
                     UInt32 reqID = 0;
@@ -278,11 +413,20 @@ namespace Sm4shAIEditor
                             }
                         }
                         else
-                            ParamList.Add(uint.Parse(word));
+                        {
+                            if (word != null)
+                            {
+                                if (word.StartsWith("0x"))
+                                    ParamList.Add(uint.Parse(word.Substring(2), System.Globalization.NumberStyles.HexNumber));
+                                else
+                                    ParamList.Add(uint.Parse(word));
+                            }
+                        }
 
-                        if (sReader.ReadChar() == ")")
+                        string nextChar = sReader.ReadChar();
+                        if (nextChar == ")")
                             readNextArg = false;
-                        else if (sReader.ReadChar() != ",")
+                        else if (nextChar != ",")
                             throw new Exception();//add exception text here
                     }
                 }
@@ -460,19 +604,7 @@ namespace Sm4shAIEditor
 
             public string ParseCmdParams(Cmd cmd)
             {
-                int correctIndex = -1;
-                //can this be made faster?
-                for (int i = 0; i < script_data.cmd_args.Count; i++)
-                {
-                    if (cmd.ID == script_data.cmd_args[i][0])
-                    {
-                        if (cmd.ParamCount == script_data.cmd_args[i].Length - 1)
-                        {
-                            correctIndex = i;
-                            break;
-                        }
-                    }
-                }
+                int correctIndex = get_correct_cmd_arg_list_index(cmd.ID);
                 if (correctIndex == -1)
                     return null;
                 else
@@ -480,7 +612,13 @@ namespace Sm4shAIEditor
                     string cmdParams = "";
                     for (int i = 0; i < cmd.ParamCount; i++)
                     {
-                        byte type = script_data.cmd_args[correctIndex][i + 1];
+                        int argIndex = i + 1;
+                        byte type;
+                        if (argIndex < script_data.cmd_args[correctIndex].Length)
+                            type = script_data.cmd_args[correctIndex][argIndex];
+                        else
+                            type = 0;
+
                         switch (type)
                         {
                             case 0:
@@ -503,6 +641,47 @@ namespace Sm4shAIEditor
                     }
                     return cmdParams;
                 }
+            }
+
+            public UInt32 get_param_id_from_type(string param, int type)
+            {
+                UInt32 id;
+                switch (type)
+                {
+                    case 0:
+                        if (param.StartsWith("0x"))
+                            id = UInt32.Parse(param.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                        else
+                            id = UInt32.Parse(param);
+                        break;
+                    case 1:
+                    case 2:
+                        if (!param.StartsWith("var") && !param.StartsWith("vec"))
+                            throw new Exception();//expected variable or vector ID
+                        id = UInt32.Parse(param.Substring(3));
+                        break;
+                    case 3:
+                        id = get_script_value_id(param);
+                        break;
+                    default:
+                        throw new Exception();//add exception text here
+                }
+                return id;
+            }
+
+            public int get_correct_cmd_arg_list_index(int cmdID)
+            {
+                int correctIndex = -1;
+                //can this be made faster?
+                for (int i = 0; i < script_data.cmd_args.Count; i++)
+                {
+                    if (cmdID == script_data.cmd_args[i][0])
+                    {
+                        correctIndex = i;
+                        break;
+                    }
+                }
+                return correctIndex;
             }
 
             public string get_script_value(UInt32 paramID)

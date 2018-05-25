@@ -12,7 +12,7 @@ namespace Sm4shAIEditor.Static
         {
             "End",
             "SetVar",//syntax varX = item
-            "SetVec2D",//syntax vecX = item
+            "SetVec",//syntax vecX = item
             "Label",
             "Return",
             "SearchLabel",
@@ -81,22 +81,17 @@ namespace Sm4shAIEditor.Static
         {
             new byte[] {0x03, 0},//label
             new byte[] {0x05, 0},//search label
-            new byte[] {0x0a, 3},//set stick rel
-            new byte[] {0x0a, 3, 3},
-            new byte[] {0x15, 1},//set var with randf
-            new byte[] {0x15, 1, 3},
-            new byte[] {0x15, 1, 3, 3},
-            new byte[] {0x15, 1, 3, 3, 3, 3},
+            new byte[] {0x0a, 3, 3},//set stick rel
+            new byte[] {0x15, 1, 3, 3, 3, 3},//set var with randf
             new byte[] {0x1a, 3},//set act timer/set frame
             new byte[] {0x1b, 0},//set act
             new byte[] {0x1c, 0},//go to label
             new byte[] {0x1d, 2},//vector (cliff position)
-            new byte[] {0x1f, 3},//set stick abs
-            new byte[] {0x1f, 3, 3},
+            new byte[] {0x1f, 3, 3},//set stick abs
             new byte[] {0x22, 3},//set wait
             new byte[] {0x24, 1, 3},//calcArriveFrameX
             new byte[] {0x25, 1, 3},//calcArriveFrameY
-            new byte[] {0x16, 1},//gets shield hp
+            new byte[] {0x26, 1},//gets shield hp
             new byte[] {0x27, 2},//vector (random stage point)
             new byte[] {0x28, 1, 3},//calcArrivePosX
             new byte[] {0x29, 1, 3},//calcArrivePosY

@@ -2,11 +2,10 @@
 {
     class CustomStringReader
     {
-        private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+        private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.";
         private static string validEqnChars = "=+-*/";
         private static string validIfChars = "&|";
-        private static string spaceCharacters = " \t";
-        private static string newline = "\n";
+        private static string spaceCharacters = " \t\r\n";
 
         public int Position { get; set; }
         private char[] charArray { get; set; }
@@ -42,33 +41,27 @@
         public string ReadChar()
         {
             string c = null;
-            while (!EndString)
+            if (!EndString)
             {
-                string c2 = CharArray[Position].ToString();
-                if (spaceCharacters.Contains(c2))
-                {
-                    Position++;
-                }
-                else
-                {
-                    c = c2;
-                    Position++;
-                    break;
-                }
+                c = CharArray[Position].ToString();
+                Position++;
             }
             return c;
         }
-        public string PeekChar()
+        public void SkipWhiteSpace()
         {
-            string c = null;
-            if (!EndString)
-                c = CharArray[Position].ToString();
-            return c;
+            while (!EndString)
+            {
+                if (spaceCharacters.Contains(CharArray[Position].ToString()))
+                    Position++;
+                else break;
+            }
         }
         public string ReadWord()
         {
+            SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); !EndString && validWordChars.Contains(c); c = ReadChar())
+            for (string c = ReadChar(); c != null && validWordChars.Contains(c); c = ReadChar())
             {
                 s += c;
             }
@@ -77,24 +70,29 @@
         }
         public string ReadEqnSymbols()
         {
+            SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); !EndString && validEqnChars.Contains(c); c = ReadChar())
+            for (string c = ReadChar(); c != null && validEqnChars.Contains(c); c = ReadChar())
             {
                 s += c;
             }
+            Position--;
             return s;
         }
         public string ReadIfSymbols()
         {
+            SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); !EndString && validIfChars.Contains(c); c = ReadChar())
+            for (string c = ReadChar(); c != null && validIfChars.Contains(c); c = ReadChar())
             {
                 s += c;
             }
+            Position--;
             return s;
         }
         public string ReadUntilAnyOfChars(string charsToEndAt, bool includeLastChar)
         {
+            SkipWhiteSpace();
             string s = null;
             if (includeLastChar)
             {
@@ -102,27 +100,18 @@
                 while (!EndString && readNext)
                 {
                     string c = ReadChar();
-                    if (!charsToEndAt.Contains(c))
+                    if (charsToEndAt.Contains(c))
                         readNext = false;
                     s += c;
                 }
             }
             else
             {
-                for (string c = ReadChar(); !EndString && !charsToEndAt.Contains(c); c = ReadChar())
+                for (string c = ReadChar(); c != null && !charsToEndAt.Contains(c); c = ReadChar())
                 {
                     s += c;
                 }
                 Position--;
-            }
-            return s;
-        }
-        public string ReadLine()
-        {
-            string s = null;
-            for (string c = ReadChar(); !EndString && c != newline; c = ReadChar())
-            {
-                s += c;
             }
             return s;
         }
