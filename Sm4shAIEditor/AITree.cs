@@ -29,18 +29,18 @@ namespace Sm4shAIEditor
                 try
                 {
                     if (!Directory.Exists(fighterDirectory))
-                        throw new ProgramException(Properties.Resources.FighterException3, fighterDirectory);
+                        throw new Exception(string.Format("Attempt to load file info from non-existant fighter '{0}'", fighterDirectory));
 
                     string fighterName = task_helper.GetFileName(fighterDirectory);
                     string[] currentNames = fighters.ToArray();
                     if (currentNames.Contains(fighterName))
-                        throw new ProgramException(Properties.Resources.FighterException1, fighterName);
+                        throw new Exception(string.Format("Fighter '{0}' not loaded; it is already a member of the tree", fighterName));
 
                     AddFighterFiles(fighterDirectory);
                     fighters.Add(fighterName);
                     fighters.Sort();
                 }
-                catch (ProgramException exception)
+                catch (Exception exception)
                 {
                     messageBox.Text += exception.Message + Environment.NewLine;
                 }
@@ -62,7 +62,7 @@ namespace Sm4shAIEditor
                 }
             }
             if (empty)
-                throw new ProgramException(Properties.Resources.FighterException2, fighterName);
+                throw new Exception(string.Format("Fighter '{0}' not loaded; could not find AI files", fighterName));
         }
     }
 }
