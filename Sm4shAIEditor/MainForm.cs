@@ -466,7 +466,7 @@ namespace Sm4shAIEditor
                                 }
                                 catch (Exception e)
                                 {
-                                    status_TB.Text += string.Format("ERROR in {0}: {2}", fighterName, e.Message) + "\r\n";
+                                    status_TB.Text += string.Format("ERROR in {0}: {1}", fighterName, e.Message) + "\r\n";
                                 }
                             }
                         }
