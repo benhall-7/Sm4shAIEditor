@@ -23,6 +23,8 @@ namespace Sm4shAIEditor
         public static string workDirectory = ConfigurationManager.AppSettings.Get("work_directory");
         public static string exportDirectory = ConfigurationManager.AppSettings.Get("export_directory");
 
+        public static Stopwatch timer = new Stopwatch();
+
         public MainForm()
         {
             InitializeComponent();
@@ -318,6 +320,8 @@ namespace Sm4shAIEditor
             }
             if (scope == AssemblyDialog.AsmScope.FromTabs)
             {
+                timer.Start();
+
                 List<TabPage> ATKDTabs = new List<TabPage>();
                 List<TabPage> AIPDTabs = new List<TabPage>();
                 List<TabPage> ScriptTabs = new List<TabPage>();
@@ -416,18 +420,22 @@ namespace Sm4shAIEditor
                     else
                         status_TB.Text += string.Format("No Script files to assemble.") + "\r\n";
                 }
+                status_TB.Text += string.Format("Operation ended in {0} milliseconds", timer.Elapsed.Milliseconds) + "\r\n";
+                timer.Stop();
             }
             else if (scope == AssemblyDialog.AsmScope.FromFolder)
             {
                 if (Directory.Exists(workDirectory))
                 {
+                    timer.Start();
                     foreach (string fighterFolder in Directory.EnumerateDirectories(workDirectory).ToArray())
                     {
+                        string fighterName = task_helper.GetFileName(fighterFolder);
                         if (doATKD)
                         {
                             if (Directory.Exists(fighterFolder + @"\atkd"))
                             {
-
+                                status_TB.Text += "I still need to add ATKD reassembly through folders" + "\r\n";
                             }
                         }
                         if (doAIPD)
@@ -441,21 +449,30 @@ namespace Sm4shAIEditor
                         {
                             if (Directory.Exists(fighterFolder + @"\script"))
                             {
-                                string[] actIDs = File.ReadAllLines(fighterFolder + @"\script\acts.txt");
-                                Dictionary<uint, string> actData = new Dictionary<uint, string>();
-                                foreach (string actID in actIDs)
+                                try
                                 {
-                                    uint id = uint.Parse(actID, NumberStyles.HexNumber);
-                                    actData.Add(id, File.ReadAllText(fighterFolder + @"\script\" + actID + ".txt"));
+                                    string[] actIDs = File.ReadAllLines(fighterFolder + @"\script\acts.txt");
+                                    Dictionary<uint, string> actData = new Dictionary<uint, string>();
+                                    foreach (string actID in actIDs)
+                                    {
+                                        uint id = uint.Parse(actID, NumberStyles.HexNumber);
+                                        actData.Add(id, File.ReadAllText(fighterFolder + @"\script\" + actID + ".txt"));
+                                    }
+                                    string outDir = exportDirectory + @"\" + task_helper.GetFileName(fighterFolder);
+                                    if (!Directory.Exists(outDir))
+                                        Directory.CreateDirectory(outDir);
+                                    outDir += @"\script";
+                                    assembleScript(actData, outDir);
                                 }
-                                string outDir = exportDirectory + @"\" + task_helper.GetFileName(fighterFolder);
-                                if (!Directory.Exists(outDir))
-                                    Directory.CreateDirectory(outDir);
-                                outDir += @"\script";
-                                assembleScript(actData, outDir);
+                                catch (Exception e)
+                                {
+                                    status_TB.Text += string.Format("ERROR in {0}: {2}", fighterName, e.Message) + "\r\n";
+                                }
                             }
                         }
                     }
+                    status_TB.Text += string.Format("Operation ended in {0} milliseconds", timer.Elapsed.Milliseconds) + "\r\n";
+                    timer.Stop();
                 }
                 else
                     status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", workDirectory) + "\r\n";
@@ -469,9 +486,6 @@ namespace Sm4shAIEditor
 
         private void assembleScript(Dictionary<UInt32, string> decompiledActs, string outDirectory)
         {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-
             BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
@@ -518,8 +532,6 @@ namespace Sm4shAIEditor
                 positionInHeader += 4;
             }
             binWriter.Dispose();
-            status_TB.Text += string.Format("Compiled {0} acts in {1} milliseconds", acts.Count, timer.Elapsed.Milliseconds) + "\r\n";
-            timer.Stop();
         }
         
         private uint Align0x10(uint position)

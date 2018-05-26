@@ -269,7 +269,7 @@ namespace Sm4shAIEditor
                                     ID = 0xf;
                                     break;
                                 default:
-                                    throw new Exception();//add exception text here; unrecognized variable assignment
+                                    throw new Exception(string.Format("unrecognized variable assignment operator {0}", op));
                             }
                             if (isVec)
                             {
@@ -303,13 +303,13 @@ namespace Sm4shAIEditor
                                 sReader.SkipWhiteSpace();
                                 string append = sReader.ReadChar();
                                 if (word == null)
-                                    throw new Exception();//add exception text here
+                                    throw new Exception("SetButton argument cannot be null");
                                 if (!script_data.buttons.Contains(word))
-                                    throw new Exception();//add exception text here
+                                    throw new Exception(string.Format("unrecognized button {0}", word));
                                 uint buttonID = (uint)(1 << script_data.buttons.IndexOf(word));
                                 arg |= buttonID;
                                 if (append != "+" && append != "," && append != ")")
-                                    throw new Exception();//add exception text here
+                                    throw new Exception(string.Format("syntax error in SetButton args: {0}", append));
                                 if (append == ")")
                                     readNextArg = false;
                             }
@@ -329,7 +329,7 @@ namespace Sm4shAIEditor
                                 sReader.SkipWhiteSpace();
                                 string append = sReader.ReadChar();
                                 if (word == null)
-                                    throw new Exception();//add exception text here
+                                    throw new Exception("variable assignment argument cannot be null");
                                 ParamList.Add(parent.get_script_value_id(word));
                                 if (append != ",")
                                 {
@@ -348,9 +348,9 @@ namespace Sm4shAIEditor
                                 if (word == null)
                                 {
                                     if (append == ",")
-                                        throw new Exception();//add exception text here
+                                        throw new Exception(string.Format("null argument in {0}", script_data.cmds[ID]));
                                     else if (append != ")")
-                                        throw new Exception();//add exception text here
+                                        throw new Exception(string.Format("syntax error in {0} args: {1}", script_data.cmds[ID], append));
                                 }
                                 else
                                 {
@@ -398,11 +398,11 @@ namespace Sm4shAIEditor
                         }
                     }
                     else
-                        throw new Exception();//add exception text here: unrecognized 'requirement' parameter
+                        throw new Exception(string.Format("unrecognized 'requirement' {0}", word));
 
                     ParamList.Add(reqID);
                     if (sReader.ReadChar() != "(")
-                        throw new Exception();//add exception text here; syntax error: requirement ID must be followed by ()
+                        throw new Exception("syntax error: requirement ID must be followed by parentheses");
 
                     bool readNextArg = true;
                     while (readNextArg)
@@ -435,7 +435,7 @@ namespace Sm4shAIEditor
                         if (nextChar == ")")
                             readNextArg = false;
                         else if (nextChar != ",")
-                            throw new Exception();//add exception text here
+                            throw new Exception(string.Format("invalid syntax in If command: {0}", nextChar));
                     }
                 }
             }
@@ -665,7 +665,7 @@ namespace Sm4shAIEditor
                     case 1:
                     case 2:
                         if (!param.StartsWith("var") && !param.StartsWith("vec"))
-                            throw new Exception();//expected variable or vector ID
+                            throw new Exception(string.Format("param type {0} was neither a variable nor a vector", param));
                         id = UInt32.Parse(param.Substring(3));
                         UpdateVarCount(id, param.StartsWith("vec"));
                         break;
@@ -673,7 +673,7 @@ namespace Sm4shAIEditor
                         id = get_script_value_id(param);
                         break;
                     default:
-                        throw new Exception();//add exception text here
+                        throw new Exception("this should never happen");
                 }
                 return id;
             }
@@ -746,7 +746,7 @@ namespace Sm4shAIEditor
                     }
                 }
                 else
-                    throw new Exception();//add exception text here
+                    throw new Exception(string.Format("unrecognized script_value {0}", param));
 
                 return ID;
             }
@@ -795,7 +795,7 @@ namespace Sm4shAIEditor
                 if (isVec)
                     varID++;
                 if (varID > 24)
-                    throw new Exception();//add exception text here
+                    throw new Exception("variable count exceeded maximum");
                 if (varID > VarCount)
                     VarCount = (ushort)(varID + 1);
             }
