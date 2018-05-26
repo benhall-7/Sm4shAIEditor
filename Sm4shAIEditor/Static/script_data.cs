@@ -105,7 +105,7 @@ namespace Sm4shAIEditor.Static
             {0x1003, "lr_tgt" },
             {0x1004, "ai_pos" },//vector
             {0x1005, "tgt_pos" },//vector
-            //0x1006 = distance from ledge in direction of opponent?
+            {0x1006, "edge_dist_toward_tgt" },
             {0x1007, "timer" },
             {0x1008, "ai_spd" },//vector
             {0x1009, "zero" },
@@ -114,8 +114,8 @@ namespace Sm4shAIEditor.Static
             {0x100c, "tgt_pos_y" },
             {0x100d, "ai_spd_y" },
             {0x100e, "randf"},
-            //0x100f = {Ground = 2, Air = 1}
-            //0x1010 = distance from front ledge?
+            //0x100f = {Ground = 2, Air = 1}? Based on usage this may have changed in Smash 4
+            {0x1010, "edge_dist_front" },
             {0x1011, "ai_rank" },
             //{0x1012, "" }, some byte
             //{0x1013, "" }, next byte
@@ -138,9 +138,9 @@ namespace Sm4shAIEditor.Static
             {0x1024, "air_jump_length" },
             {0x1025, "tgt_lr" },
             {0x1026, "tgt_jumps_remain" },
-            //{0x1027, "height?" },
-            //{0x1028, "tgt_height?" },
-            //{0x1029, "edge_back_dist" },
+            {0x1027, "ecb_height" },//not 100% sure but is definitely related
+            {0x1028, "tgt_ecb_height" },//not 100% sure but is definitely related
+            {0x1029, "edge_dist_back" },
             {0x102a, "blastzone_bottom" },
             {0x102b, "blastzone_top" },
             {0x102c, "blastzone_left" },
