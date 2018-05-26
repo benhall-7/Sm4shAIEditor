@@ -41,7 +41,7 @@ namespace Sm4shAIEditor.Static
             "SetStickAbs",
             "Unk_20",
             "Unk_21",
-            "SetWait",
+            "SetMaxWaitTime",
             "Unk_23",//something with position and cliff
             "CalcArriveFrameX",
             "CalcArriveFrameY",
@@ -101,22 +101,22 @@ namespace Sm4shAIEditor.Static
         {
             //0x1000 = par_work_update value. Represents distance of some sort?
             //0x1001 = next par_work_update value
-            {0x1002, "ai_lr" },
+            {0x1002, "lr" },
             {0x1003, "lr_tgt" },
-            {0x1004, "ai_pos" },//vector
+            {0x1004, "pos" },//vector
             {0x1005, "tgt_pos" },//vector
-            {0x1006, "edge_dist_toward_tgt" },
+            {0x1006, "edge_dist_lr_tgt" },
             {0x1007, "timer" },
-            {0x1008, "ai_spd" },//vector
+            {0x1008, "spd" },//vector
             {0x1009, "zero" },
             {0x100a, "one" },
-            {0x100b, "ai_pos_y" },
+            {0x100b, "pos_y" },
             {0x100c, "tgt_pos_y" },
-            {0x100d, "ai_spd_y" },
+            {0x100d, "spd_y" },
             {0x100e, "randf"},
             //0x100f = {Ground = 2, Air = 1}? Based on usage this may have changed in Smash 4
             {0x1010, "edge_dist_front" },
-            {0x1011, "ai_rank" },
+            {0x1011, "rank" },
             //{0x1012, "" }, some byte
             //{0x1013, "" }, next byte
             {0x1014, "ctrl_weapon_pos" },
@@ -125,11 +125,11 @@ namespace Sm4shAIEditor.Static
             {0x1017, "tgt_spd_y" },
             {0x1018, "ctrl_weapon_spd" },
             {0x1019, "ctrl_weapon_spd_y" },
-            {0x101a, "ai_hipn_pos" },
-            {0x101b, "ai_hipn_pos_y" },
+            {0x101a, "hipn_pos" },
+            {0x101b, "hipn_pos_y" },
             {0x101c, "tgt_hipn_pos" },
             {0x101d, "tgt_hipn_pos" },
-            {0x101e, "ai_dmg" },
+            {0x101e, "dmg" },
             {0x101f, "tgt_dmg" },
             //0x1020 is some ai param
             {0x1021, "jump_height" },
@@ -155,18 +155,26 @@ namespace Sm4shAIEditor.Static
 
         public static Dictionary<UInt32, string> if_chks = new Dictionary<UInt32, string>()
         {
+            //{0x1000, "tgt_dist" },?
+            //{0x1001, "tgt_dist_x" },?
             {0x1002, "timer_passed" },
-            {0x1005, "ai_aerial" },
+            {0x1003, "ground_free" },
+            {0x1004, "dashing" },
+            {0x1005, "aerial" },
             {0x1007, "greater" },
             {0x1008, "less" },
             {0x1009, "geq" },
             {0x100a, "leq" },
-            {0x100d, "ai_off_stage" },
-            {0x100f, "ai_action" },
+            {0x100d, "off_stage" },
+            {0x100f, "action" },
+            //{0x1010, "" },? related to tgt_dist
+            {0x1012, "air_free" },
+            //{0x1016, "" },? related to tgt_dist
             {0x101b, "tgt_aerial" },
-            {0x101e, "ai_char" },
+            {0x101c, "tgt_grabbed" },
+            {0x101e, "char" },
             {0x101f, "tgt_char" },
-            {0x1024, "ai_subaction" }
+            {0x1024, "subaction" }
         };
 
         //Key = ID, Value = type of arguments:
