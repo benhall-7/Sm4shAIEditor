@@ -199,12 +199,20 @@ namespace Sm4shAIEditor.Static
             {0x100a, 0},
             {0x1010, 0},
             {0x1016, 0},
+            {0x1017, 0},
             {0x101e, 1},
             {0x101f, 1},
+            {0x1020, 0},
             {0x1021, 0},
             {0x1022, 0},
+            {0x1023, 0},
+            {0x1026, 0},
             {0x1027, 0},
             {0x102a, 0},
+            {0x102b, 0},
+            {0x102c, 0},
+            {0x1047, 0},
+            {0x1054, 0},
         };
 
         public static List<string> fighters = new List<string>()
