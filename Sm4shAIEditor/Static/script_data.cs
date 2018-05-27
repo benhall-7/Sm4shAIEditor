@@ -64,7 +64,7 @@ namespace Sm4shAIEditor.Static
             "Unk_36",//this one is unused
             "Unk_37",
             "Unk_38",
-            "Unk_39"
+            "Unk_39"//only used once in Common script E040
         };
 
         //schema: for each possible overflow of each command passed through this, the outline of each int[] is as follows
@@ -86,6 +86,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x1d, 2},//vector (cliff position)
             new byte[] {0x1f, 3, 3},//set stick abs
             new byte[] {0x22, 3},//set wait
+            new byte[] {0x23, 3},//unk
             new byte[] {0x24, 1, 3},//calcArriveFrameX
             new byte[] {0x25, 1, 3},//calcArriveFrameY
             new byte[] {0x26, 1},//gets shield hp
@@ -96,6 +97,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
             new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
+            new byte[] {0x33, 3, 3},//unk
         };
 
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
@@ -170,9 +172,12 @@ namespace Sm4shAIEditor.Static
             {0x100f, "action" },
             //{0x1010, "" },? related to tgt_dist
             {0x1012, "air_free" },
+            {0x1014, "catch_hold" },
             //{0x1016, "" },? related to tgt_dist
+            {0x1019, "hitbox_active" },
+            {0x101a, "tgt_try_catch" },
             {0x101b, "tgt_aerial" },
-            {0x101c, "tgt_grabbed" },
+            {0x101c, "tgt_caught" },
             {0x101e, "char" },
             {0x101f, "tgt_char" },
             {0x1024, "subaction" }
@@ -193,6 +198,7 @@ namespace Sm4shAIEditor.Static
             {0x1009, 0},
             {0x100a, 0},
             {0x1010, 0},
+            {0x1016, 0},
             {0x101e, 1},
             {0x101f, 1},
             {0x1021, 0},
