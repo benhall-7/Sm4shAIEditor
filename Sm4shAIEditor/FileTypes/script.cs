@@ -338,6 +338,27 @@ namespace Sm4shAIEditor
                                 }
                             }
                             break;
+                        case 0x1e:
+                            while (readNextArg)
+                            {
+                                sReader.ReadUntilAnyOfChars("(", true);
+                                string word = sReader.ReadWord();
+                                sReader.SkipWhiteSpace();
+                                string append = sReader.ReadChar();
+                                if (word == null || !word.StartsWith("var"))
+                                    throw new Exception(string.Format("invalid argument in VarAbs command: {0}", word));
+                                uint varID = uint.Parse(word.Substring(3));
+                                ParamList.Add(varID);
+                                parent.UpdateVarCount(varID, false);
+                                if (append != ",")
+                                {
+                                    if (append == ")")
+                                        readNextArg = false;
+                                    else
+                                        throw new Exception(string.Format("syntax error in VarAbs args: {0}", append));
+                                }
+                            }
+                            break;
                         default:
                             sReader.ReadUntilAnyOfChars("(", true);
                             int readParams = 0;
@@ -357,11 +378,7 @@ namespace Sm4shAIEditor
                                     int listIndex = parent.get_correct_cmd_arg_list_index(ID);
                                     int argNumber = readParams + 1;
                                     int type = 0;
-                                    if (listIndex == -1)
-                                    {
-                                        type = 0;
-                                    }
-                                    else if (argNumber < script_data.cmd_args[listIndex].Length)
+                                    if (listIndex != -1 && argNumber < script_data.cmd_args[listIndex].Length)
                                     {
                                         type = script_data.cmd_args[listIndex][argNumber];
                                     }
@@ -580,6 +597,18 @@ namespace Sm4shAIEditor
                                     cmdParams += ", ";
                             }
                             cmdString += cmdParams + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
+                        case 0x1e://VarAbs, which supports arbitrary number of args
+                            cmdString += script_data.cmds[cmd.ID] + "(";
+                            for (int i = 0; i < cmd.ParamCount; i++)
+                            {
+                                cmdParams += "var" + cmd.ParamList[i];
+
+                                if (i != cmd.ParamCount - 1)
+                                    cmdParams += ", ";
+                            }
+                            cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
                         default:

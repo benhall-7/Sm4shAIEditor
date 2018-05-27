@@ -94,6 +94,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x29, 1, 3},//calcArrivePosY
             new byte[] {0x2c, 1, 3, 3},//Norm
             new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
+            new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
         };
 
@@ -196,6 +197,7 @@ namespace Sm4shAIEditor.Static
             {0x101f, 1},
             {0x1021, 0},
             {0x1022, 0},
+            {0x1027, 0},
             {0x102a, 0},
         };
 
