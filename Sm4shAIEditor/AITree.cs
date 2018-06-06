@@ -10,9 +10,8 @@ namespace Sm4shAIEditor
     public class AITree
     {
         public Dictionary<string, string> aiFiles { get; } //Key = file directory; Value = owner
-        public List<string> fighters { get; } //this list only generated as a convenience. Equivalent to the owner Value list
+        public List<string> fighters { get; } //this list used to generate the tree parent nodes
         
-        //initialization nation
         public AITree()
         {
             aiFiles = new Dictionary<string, string>();
@@ -31,11 +30,10 @@ namespace Sm4shAIEditor
 
                     string fighterName = task_helper.GetFileName(fighterDirectory);
                     string[] currentNames = fighters.ToArray();
-                    if (currentNames.Contains(fighterName))
-                        throw new Exception(string.Format("Fighter '{0}' not loaded; it is already a member of the tree", fighterName));
 
-                    AddFighterFiles(fighterDirectory);
-                    fighters.Add(fighterName);
+                    LoadFighterFilesSource(fighterDirectory);
+                    if (!fighters.Contains(fighterName))
+                        fighters.Add(fighterName);
                     fighters.Sort();
                 }
                 catch (Exception exception)
@@ -45,22 +43,24 @@ namespace Sm4shAIEditor
             }
         }
 
-        private void AddFighterFiles(string fighterDirectory)
+        private void LoadFighterFilesSource(string fighterDirectory)
         {
-            string fighterParent = Directory.GetParent(fighterDirectory).FullName;
-            string fighterName = fighterDirectory.Remove(0, fighterParent.Length + 1);
-            bool empty = true;
+            string fighterName = task_helper.GetFileName(fighterDirectory);
             foreach (string fileType in task_helper.fileMagic.Keys)
             {
                 string subDir = fighterDirectory + @"\script\ai\" + fileType;
-                if (File.Exists(subDir))
-                {
+                if (File.Exists(subDir) && !aiFiles.Keys.Contains(subDir))
                     aiFiles.Add(subDir, fighterName);
-                    empty = false;
-                }
             }
-            if (empty)
-                throw new Exception(string.Format("Fighter '{0}' not loaded; could not find AI files", fighterName));
+        }
+
+        public void LoadFighterFilesWorkspace(string fighterDirectory)
+        {
+            string fighterName = task_helper.GetFileName(fighterDirectory);
+            foreach (string subDir in new string[] {"atkd", "aipd", "script"})
+            {
+
+            }
         }
     }
 }

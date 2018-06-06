@@ -6,6 +6,7 @@
         private static string validEqnChars = "=+-*/";
         private static string validIfChars = "&|";
         private static string spaceCharacters = " \t\r\n";
+        private static char CommentChar = '#';
 
         public int Position { get; set; }
         private char[] charArray { get; set; }
@@ -53,6 +54,20 @@
             while (!EndString)
             {
                 if (spaceCharacters.Contains(CharArray[Position].ToString()))
+                    Position++;
+                else if (CharArray[Position] == CommentChar)
+                {
+                    Position++;
+                    SkipToEndLine();
+                }
+                else break;
+            }
+        }
+        private void SkipToEndLine()
+        {
+            while (!EndString)
+            {
+                if (CharArray[Position] != '\n')
                     Position++;
                 else break;
             }

@@ -141,8 +141,8 @@ namespace Sm4shAIEditor.Static
             {0x1024, "air_jump_length" },
             {0x1025, "tgt_lr" },
             {0x1026, "tgt_jumps_remain" },
-            {0x1027, "ecb_height" },//not 100% sure but is definitely related
-            {0x1028, "tgt_ecb_height" },//not 100% sure but is definitely related
+            {0x1027, "ecb_height" },
+            {0x1028, "tgt_ecb_height" },
             {0x1029, "edge_dist_back" },
             {0x102a, "blastzone_bottom" },
             {0x102b, "blastzone_top" },
@@ -186,6 +186,7 @@ namespace Sm4shAIEditor.Static
         //Key = ID, Value = type of arguments:
         //0 = get_script_value
         //1 = fighter name
+        //I could make more if need be
         //If an ID is not represented it is either treated as a special case or uses raw values
         //A special case could be a check that uses multiple types of arguments but I haven't found one yet
         public static Dictionary<UInt32, byte> if_chk_args = new Dictionary<uint, byte>()

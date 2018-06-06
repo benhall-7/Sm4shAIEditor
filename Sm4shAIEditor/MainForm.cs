@@ -37,11 +37,6 @@ namespace Sm4shAIEditor
                 exportDirectory = "export";
         }
         
-        private void LoadFighters(string[] fighterDirectories)
-        {
-            tree.AddFighters(fighterDirectories, ref status_TB);
-        }
-        
         private void LoadATKD(string directory)
         {
             attack_data atkdFile = new attack_data(directory);
@@ -160,10 +155,9 @@ namespace Sm4shAIEditor
                 openFighter.InitialDirectory = fighterDirectory;
             if (openFighter.ShowDialog() == DialogResult.OK)
             {
-                LoadFighters(openFighter.SelectedPaths);
+                tree.AddFighters(openFighter.SelectedPaths, ref status_TB);
+                UpdateTreeView();
             }
-
-            UpdateTreeView();
         }
 
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
@@ -172,15 +166,30 @@ namespace Sm4shAIEditor
             if (Directory.Exists(fighterDirectory) && fighterDirectory != "")
             {
                 string[] fighterDirectories = Directory.EnumerateDirectories(fighterDirectory).ToArray();
-                LoadFighters(fighterDirectories);
+                tree.AddFighters(fighterDirectories, ref status_TB);
+                UpdateTreeView();
             }
             else if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string[] fighterDirectories = Directory.EnumerateDirectories(openAllFighters.SelectedPath).ToArray();
-                LoadFighters(fighterDirectories);
+                tree.AddFighters(fighterDirectories, ref status_TB);
+                UpdateTreeView();
             }
-
-            UpdateTreeView();
+        }
+        
+        private void openWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(workDirectory))
+            {
+                string[] fighters = Directory.EnumerateDirectories(workDirectory).ToArray();
+                foreach (string fighter in fighters)
+                {
+                    
+                }
+                UpdateTreeView();
+            }
+            else
+                status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", workDirectory) + "\r\n";
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -189,7 +198,6 @@ namespace Sm4shAIEditor
             string nodeDirectory = (string)treeView.SelectedNode.Tag;
             if (nodeDirectory != null && !fileTabContainer.TabPages.ContainsKey(nodeDirectory))
             {
-                //later on I might choose to make this into a dictionary
                 string nodeFileName = task_helper.GetFileName(nodeDirectory);
                 if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
                     LoadATKD(nodeDirectory);
@@ -560,17 +568,17 @@ namespace Sm4shAIEditor
                         fileName == task_helper.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
                     else if (fileName == task_helper.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
                 }
-                if (doATKD)
+                if (doATKD && ATKDTabs.Count > 0)
                 {
 
                 }
-                if (doAIPD)
+                if (doAIPD && AIPDTabs.Count > 0)
                 {
 
                 }
-                if (doScript)
+                if (doScript && ScriptTabs.Count > 0)
                 {
-
+                    
                 }
             }
             else if (scope == AssemblyDialog.DisasmScope.FromTree)
@@ -588,12 +596,7 @@ namespace Sm4shAIEditor
                     {
                         string path = workDirectory;
                         string fileDirectory = (string)node.Tag;
-                        string nodeParent = null;
-                        if (node.Parent != null)
-                            nodeParent = node.Parent.Name;
-                        else
-                            nodeParent = "NoName";
-                        path += @"\" + nodeParent + @"\script\";
+                        path += @"\" + node.Parent.Name + @"\script\";
                         if (!Directory.Exists(path))
                             Directory.CreateDirectory(path);
 
@@ -607,7 +610,7 @@ namespace Sm4shAIEditor
                         }
                         streamWriter.Dispose();
                     }
-                    status_TB.Text += "Disassembled scripts to folder" + "\r\n";
+                    status_TB.Text += string.Format("Disassembled scripts from tree to {0}", workDirectory) + "\r\n";
                 }
             }
         }

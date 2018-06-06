@@ -40,6 +40,7 @@
             this.treeView = new System.Windows.Forms.TreeView();
             this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
+            this.openWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,10 +68,11 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openWorkspaceToolStripMenuItem,
             this.openFighterToolStripMenuItem,
             this.openAllFightersToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openFighterToolStripMenuItem
@@ -90,13 +92,13 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -154,6 +156,13 @@
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
             // 
+            // openWorkspaceToolStripMenuItem
+            // 
+            this.openWorkspaceToolStripMenuItem.Name = "openWorkspaceToolStripMenuItem";
+            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openWorkspaceToolStripMenuItem.Text = "Open Workspace";
+            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.openWorkspaceToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -188,6 +197,7 @@
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compilationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem assemblyDialogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openWorkspaceToolStripMenuItem;
     }
 }
 

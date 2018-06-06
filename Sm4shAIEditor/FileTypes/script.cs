@@ -3,10 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-/*
-Some assistance with the file format is credit to Sammi Husky. 
-Preliminary commands names and some if_checks are credit to Bero.
-*/
+//Some assistance with the file format is credit to Sammi Husky
 
 namespace Sm4shAIEditor
 {
