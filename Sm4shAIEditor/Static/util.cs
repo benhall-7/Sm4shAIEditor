@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Sm4shAIEditor.Static
 {
-    public static class task_helper
+    public static class util
     {
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
         {

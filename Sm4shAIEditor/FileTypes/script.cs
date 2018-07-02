@@ -18,11 +18,11 @@ namespace Sm4shAIEditor
 
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
             binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
-            actScriptCount = task_helper.ReadReverseUInt32(ref binReader);
+            actScriptCount = util.ReadReverseUInt32(ref binReader);
             for (int i = 0; i < actScriptCount; i++)
             {
                 binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
-                UInt32 actOffset = task_helper.ReadReverseUInt32(ref binReader);
+                UInt32 actOffset = util.ReadReverseUInt32(ref binReader);
                 Act act = new Act(ref binReader, actOffset);
 
                 acts.Add(act, actOffset);
@@ -44,10 +44,10 @@ namespace Sm4shAIEditor
             public Act(ref BinaryReader binReader, UInt32 actPosition)
             {
                 binReader.BaseStream.Seek(actPosition, SeekOrigin.Begin);
-                ID = task_helper.ReadReverseUInt32(ref binReader);
-                ScriptOffset = task_helper.ReadReverseUInt32(ref binReader);
-                ScriptFloatOffset = task_helper.ReadReverseUInt32(ref binReader);
-                VarCount = task_helper.ReadReverseUInt16(ref binReader);
+                ID = util.ReadReverseUInt32(ref binReader);
+                ScriptOffset = util.ReadReverseUInt32(ref binReader);
+                ScriptFloatOffset = util.ReadReverseUInt32(ref binReader);
+                VarCount = util.ReadReverseUInt16(ref binReader);
                 binReader.BaseStream.Seek(ScriptOffset + actPosition, SeekOrigin.Begin);
 
                 ScriptFloats = new Dictionary<uint, float>();
@@ -103,7 +103,7 @@ namespace Sm4shAIEditor
                 Int32 binPosition = (Int32)binReader.BaseStream.Position;
                 cmdParam -= 0x2000;
                 binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
-                scriptFloat = task_helper.ReadReverseFloat(ref binReader);
+                scriptFloat = util.ReadReverseFloat(ref binReader);
                 binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
                 return scriptFloat;
             }
@@ -131,12 +131,12 @@ namespace Sm4shAIEditor
                 {
                     ID = binReader.ReadByte();
                     ParamCount = binReader.ReadByte();
-                    Size = task_helper.ReadReverseUInt16(ref binReader);
+                    Size = util.ReadReverseUInt16(ref binReader);
                     ParamList = new List<UInt32>(ParamCount);
                     int readParams = 0;
                     while (readParams < ParamCount)
                     {
-                        ParamList.Add(task_helper.ReadReverseUInt32(ref binReader));
+                        ParamList.Add(util.ReadReverseUInt32(ref binReader));
                         readParams++;
                     }
                 }
@@ -422,7 +422,7 @@ namespace Sm4shAIEditor
                     while (readNextArg)
                     {
                         word = sReader.ReadWord();
-                        if (script_data.if_chk_args.ContainsKey(reqID))
+                        if (script_data.if_chk_args.ContainsKey(reqID) && word != null)
                         {
                             switch (script_data.if_chk_args[reqID])
                             {
@@ -820,8 +820,8 @@ namespace Sm4shAIEditor
             {
                 if (isVec)
                     varID++;
-                if (varID > 24)
-                    throw new Exception("variable count exceeded maximum");
+                //if (varID > 24)
+                //    throw new Exception("variable count exceeded maximum");
                 if (varID > VarCount)
                     VarCount = (ushort)(varID + 1);
             }

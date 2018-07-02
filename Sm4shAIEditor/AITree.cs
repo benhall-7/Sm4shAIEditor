@@ -28,7 +28,7 @@ namespace Sm4shAIEditor
                     if (!Directory.Exists(fighterDirectory))
                         throw new Exception(string.Format("Attempt to load file info from non-existant fighter '{0}'", fighterDirectory));
 
-                    string fighterName = task_helper.GetFileName(fighterDirectory);
+                    string fighterName = util.GetFileName(fighterDirectory);
                     string[] currentNames = fighters.ToArray();
 
                     LoadFighterFilesSource(fighterDirectory);
@@ -45,8 +45,8 @@ namespace Sm4shAIEditor
 
         private void LoadFighterFilesSource(string fighterDirectory)
         {
-            string fighterName = task_helper.GetFileName(fighterDirectory);
-            foreach (string fileType in task_helper.fileMagic.Keys)
+            string fighterName = util.GetFileName(fighterDirectory);
+            foreach (string fileType in util.fileMagic.Keys)
             {
                 string subDir = fighterDirectory + @"\script\ai\" + fileType;
                 if (File.Exists(subDir) && !aiFiles.Keys.Contains(subDir))
@@ -56,7 +56,7 @@ namespace Sm4shAIEditor
 
         public void LoadFighterFilesWorkspace(string fighterDirectory)
         {
-            string fighterName = task_helper.GetFileName(fighterDirectory);
+            string fighterName = util.GetFileName(fighterDirectory);
             foreach (string subDir in new string[] {"atkd", "aipd", "script"})
             {
 

@@ -50,7 +50,7 @@ namespace Sm4shAIEditor.Static
             "CalcArrivePosX",
             "CalcArrivePosY",
             "AtkdDiceRoll",
-            "Unk_2b",
+            "Unk_2b",//does nothing. Does any other command reference this???
             "Norm",
             "Dot",
             "CalcArrivePosSec",
@@ -149,7 +149,7 @@ namespace Sm4shAIEditor.Static
             {0x102c, "blastzone_left" },
             {0x102d, "blastzone_right" },
             {0x102e, "stage_length" },
-        };//maximum value = 0x103E
+        };//maximum value = 0x1044
 
         public static List<string> buttons = new List<string>
         {

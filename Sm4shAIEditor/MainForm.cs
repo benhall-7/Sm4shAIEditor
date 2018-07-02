@@ -44,7 +44,7 @@ namespace Sm4shAIEditor
             TabPage atkdTab = new TabPage();
             //SPECIAL DATA
             atkdTab.Name = directory;
-            string fileName = task_helper.GetFileName(directory);
+            string fileName = util.GetFileName(directory);
             atkdTab.Text = tree.aiFiles[directory]+"/"+fileName;
 
             DataGridView atkdTabData = new DataGridView();
@@ -88,7 +88,7 @@ namespace Sm4shAIEditor
 
             TabPage entireScript = new TabPage();
             entireScript.Name = directory;
-            string fileName = task_helper.GetFileName(directory);
+            string fileName = util.GetFileName(directory);
             entireScript.Text = tree.aiFiles[directory] + "/" + fileName;
 
             TabControl actTabContainer = new TabControl();
@@ -140,7 +140,7 @@ namespace Sm4shAIEditor
                 else
                 {
                     TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
-                    nodeName = task_helper.GetFileName(key);
+                    nodeName = util.GetFileName(key);
                     TreeNode child = new TreeNode(nodeName);
                     child.Tag = nodeTag;
                     fighterNode.Nodes.Add(child);
@@ -198,13 +198,13 @@ namespace Sm4shAIEditor
             string nodeDirectory = (string)treeView.SelectedNode.Tag;
             if (nodeDirectory != null && !fileTabContainer.TabPages.ContainsKey(nodeDirectory))
             {
-                string nodeFileName = task_helper.GetFileName(nodeDirectory);
-                if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
+                string nodeFileName = util.GetFileName(nodeDirectory);
+                if (nodeFileName == util.fileMagic.ElementAt(0).Key)
                     LoadATKD(nodeDirectory);
-                else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key ||
-                    nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
+                else if (nodeFileName == util.fileMagic.ElementAt(1).Key ||
+                    nodeFileName == util.fileMagic.ElementAt(2).Key)
                     LoadAIPD(nodeDirectory);
-                else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
+                else if (nodeFileName == util.fileMagic.ElementAt(3).Key)
                     LoadScript(nodeDirectory);
             }
             if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
@@ -225,13 +225,13 @@ namespace Sm4shAIEditor
                     string subNodeDir = (string)subNode.Tag;
                     if (subNodeDir != null && !fileTabContainer.TabPages.ContainsKey(subNodeDir))
                     {
-                        string nodeFileName = task_helper.GetFileName(subNodeDir);
-                        if (nodeFileName == task_helper.fileMagic.ElementAt(0).Key)
+                        string nodeFileName = util.GetFileName(subNodeDir);
+                        if (nodeFileName == util.fileMagic.ElementAt(0).Key)
                             LoadATKD(subNodeDir);
-                        else if (nodeFileName == task_helper.fileMagic.ElementAt(1).Key ||
-                            nodeFileName == task_helper.fileMagic.ElementAt(2).Key)
+                        else if (nodeFileName == util.fileMagic.ElementAt(1).Key ||
+                            nodeFileName == util.fileMagic.ElementAt(2).Key)
                             LoadAIPD(subNodeDir);
-                        else if (nodeFileName == task_helper.fileMagic.ElementAt(3).Key)
+                        else if (nodeFileName == util.fileMagic.ElementAt(3).Key)
                             LoadScript(subNodeDir);
                     }
                     if (i == selectedNode.Nodes.Count - 1)
@@ -298,7 +298,7 @@ namespace Sm4shAIEditor
             {
                 if (node.Tag != null)
                 {
-                    if (task_helper.GetFileName((string)node.Tag) == fileName)
+                    if (util.GetFileName((string)node.Tag) == fileName)
                         collection_added_to.Add(node);
                 }
                 if (node.Nodes.Count != 0)
@@ -314,7 +314,7 @@ namespace Sm4shAIEditor
                 if (asmDialog.asmChoice == AssemblyDialog.Type.Assemble)
                     Assemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.asmScope);
                 else if (asmDialog.asmChoice == AssemblyDialog.Type.Disassemble)
-                    disassemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.disasmScope);
+                    Disassemble(asmDialog.DoATKD, asmDialog.DoAIPD, asmDialog.DoScript, asmDialog.disasmScope);
             }
             asmDialog.Dispose();
         }
@@ -336,11 +336,11 @@ namespace Sm4shAIEditor
                 //just a quick way to count the tabs for each file type
                 foreach (TabPage tab in fileTabContainer.TabPages)
                 {
-                    string fileName = task_helper.GetFileName(tab.Name);
-                    if (fileName == task_helper.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
-                    else if (fileName == task_helper.fileMagic.ElementAt(1).Key ||
-                        fileName == task_helper.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
-                    else if (fileName == task_helper.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
+                    string fileName = util.GetFileName(tab.Name);
+                    if (fileName == util.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
+                    else if (fileName == util.fileMagic.ElementAt(1).Key ||
+                        fileName == util.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
+                    else if (fileName == util.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
                 }
                 if (doATKD)
                 {
@@ -357,27 +357,27 @@ namespace Sm4shAIEditor
                                 UInt32 specialIndexCount = dataTag.Item2;
                                 //tab.Name is the file's directory, and we can get the fighter from the ai tree
                                 string fighterName = tree.aiFiles[tab.Name];
-                                string fileType = task_helper.fileMagic.Keys.ElementAt(0);
+                                string fileType = util.fileMagic.Keys.ElementAt(0);
                                 string folderDirectory = exportDirectory + @"\" + fighterName;
                                 if (!Directory.Exists(folderDirectory))
                                     Directory.CreateDirectory(folderDirectory);
                                 string fileDirectory = folderDirectory + @"\" + fileType;
 
                                 BinaryWriter binWriter = new BinaryWriter(File.Create(fileDirectory));
-                                binWriter.Write(task_helper.fileMagic[fileType]);
-                                task_helper.WriteReverseUInt32(ref binWriter, (UInt32)dataGrid.RowCount);
-                                task_helper.WriteReverseUInt32(ref binWriter, specialMoveIndex);
-                                task_helper.WriteReverseUInt32(ref binWriter, specialIndexCount);
+                                binWriter.Write(util.fileMagic[fileType]);
+                                util.WriteReverseUInt32(ref binWriter, (UInt32)dataGrid.RowCount);
+                                util.WriteReverseUInt32(ref binWriter, specialMoveIndex);
+                                util.WriteReverseUInt32(ref binWriter, specialIndexCount);
                                 foreach (DataGridViewRow attack in dataGrid.Rows)
                                 {
-                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[0].Value.ToString()));
-                                    task_helper.WriteReverseUInt16(ref binWriter, 0);//always 0
-                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[1].Value.ToString()));
-                                    task_helper.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[2].Value.ToString()));
-                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[3].Value.ToString()));
-                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[4].Value.ToString()));
-                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[5].Value.ToString()));
-                                    task_helper.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[6].Value.ToString()));
+                                    util.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[0].Value.ToString()));
+                                    util.WriteReverseUInt16(ref binWriter, 0);//always 0
+                                    util.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[1].Value.ToString()));
+                                    util.WriteReverseUInt16(ref binWriter, UInt16.Parse(attack.Cells[2].Value.ToString()));
+                                    util.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[3].Value.ToString()));
+                                    util.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[4].Value.ToString()));
+                                    util.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[5].Value.ToString()));
+                                    util.WriteReverseFloat(ref binWriter, float.Parse(attack.Cells[6].Value.ToString()));
                                 }
                                 binWriter.Dispose();
                             }
@@ -413,7 +413,7 @@ namespace Sm4shAIEditor
                             string folderDirectory = exportDirectory + @"\" + fighterName;
                             if (!Directory.Exists(folderDirectory))
                                 Directory.CreateDirectory(folderDirectory);
-                            string fileDirectory = folderDirectory + @"\" + task_helper.fileMagic.Keys.ElementAt(3);
+                            string fileDirectory = folderDirectory + @"\" + util.fileMagic.Keys.ElementAt(3);
 
                             TabControl actContainer = ((TabControl)tab.Controls[0]);
                             foreach (TabPage actTab in actContainer.TabPages)
@@ -438,7 +438,7 @@ namespace Sm4shAIEditor
                     timer.Start();
                     foreach (string fighterFolder in Directory.EnumerateDirectories(workDirectory).ToArray())
                     {
-                        string fighterName = task_helper.GetFileName(fighterFolder);
+                        string fighterName = util.GetFileName(fighterFolder);
                         if (doATKD)
                         {
                             if (Directory.Exists(fighterFolder + @"\atkd"))
@@ -457,8 +457,8 @@ namespace Sm4shAIEditor
                         {
                             if (Directory.Exists(fighterFolder + @"\script"))
                             {
-                                try
-                                {
+                                //try
+                                //{
                                     string[] actIDs = File.ReadAllLines(fighterFolder + @"\script\acts.txt");
                                     Dictionary<uint, string> actData = new Dictionary<uint, string>();
                                     foreach (string actID in actIDs)
@@ -466,16 +466,16 @@ namespace Sm4shAIEditor
                                         uint id = uint.Parse(actID, NumberStyles.HexNumber);
                                         actData.Add(id, File.ReadAllText(fighterFolder + @"\script\" + actID + ".txt"));
                                     }
-                                    string outDir = exportDirectory + @"\" + task_helper.GetFileName(fighterFolder);
+                                    string outDir = exportDirectory + @"\" + util.GetFileName(fighterFolder);
                                     if (!Directory.Exists(outDir))
                                         Directory.CreateDirectory(outDir);
-                                    outDir += @"\script";
+                                    outDir += @"\script.bin";
                                     assembleScript(actData, outDir);
-                                }
-                                catch (Exception e)
-                                {
-                                    status_TB.Text += string.Format("ERROR in {0}: {1}", fighterName, e.Message) + "\r\n";
-                                }
+                                //}
+                                //catch (Exception e)
+                                //{
+                                //    status_TB.Text += string.Format("ERROR in {0}: {1}", fighterName, e.Message) + "\r\n";
+                                //}
                             }
                         }
                     }
@@ -497,7 +497,7 @@ namespace Sm4shAIEditor
             BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
-            task_helper.WriteReverseUInt32(ref binWriter, (UInt32)decompiledActs.Count);
+            util.WriteReverseUInt32(ref binWriter, (UInt32)decompiledActs.Count);
             binWriter.Write((UInt64)0);//pad
 
             List<script.Act> acts = new List<script.Act>();
@@ -513,29 +513,29 @@ namespace Sm4shAIEditor
                     actOffset = (uint)binWriter.BaseStream.Length;
                 actOffset = Align0x10(actOffset);
                 binWriter.BaseStream.Seek(positionInHeader, SeekOrigin.Begin);
-                task_helper.WriteReverseUInt32(ref binWriter, actOffset);
+                util.WriteReverseUInt32(ref binWriter, actOffset);
                 //start writing the actual script here
                 binWriter.BaseStream.Seek(actOffset, SeekOrigin.Begin);
                 //act header data
-                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ID);
-                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ScriptOffset);
-                task_helper.WriteReverseUInt32(ref binWriter, acts[i].ScriptFloatOffset);
-                task_helper.WriteReverseUInt16(ref binWriter, acts[i].VarCount);
-                task_helper.WriteReverseUInt16(ref binWriter, 0);//padding. We could have done this via 0x10 alignment but it doesn't matter
+                util.WriteReverseUInt32(ref binWriter, acts[i].ID);
+                util.WriteReverseUInt32(ref binWriter, acts[i].ScriptOffset);
+                util.WriteReverseUInt32(ref binWriter, acts[i].ScriptFloatOffset);
+                util.WriteReverseUInt16(ref binWriter, acts[i].VarCount);
+                util.WriteReverseUInt16(ref binWriter, 0);//padding. We could have done this via 0x10 alignment but it doesn't matter
                 //act commands data
                 foreach (script.Act.Cmd cmd in acts[i].CmdList)
                 {
                     binWriter.Write(cmd.ID);
                     binWriter.Write(cmd.ParamCount);
-                    task_helper.WriteReverseUInt16(ref binWriter, cmd.Size);
+                    util.WriteReverseUInt16(ref binWriter, cmd.Size);
                     foreach (UInt32 param in cmd.ParamList)
                     {
-                        task_helper.WriteReverseUInt32(ref binWriter, param);
+                        util.WriteReverseUInt32(ref binWriter, param);
                     }
                 }
                 foreach (float value in acts[i].ScriptFloats.Values)
                 {
-                    task_helper.WriteReverseFloat(ref binWriter, value);
+                    util.WriteReverseFloat(ref binWriter, value);
                 }
                 positionInHeader += 4;
             }
@@ -547,7 +547,7 @@ namespace Sm4shAIEditor
             return ((position + 0xf) / 0x10) * 0x10;
         }
 
-        private void disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
+        private void Disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
         {
             if (!doATKD && !doAIPD && !doScript)
             {
@@ -562,15 +562,18 @@ namespace Sm4shAIEditor
                 //just a quick way to count the tabs for each file type
                 foreach (TabPage tab in fileTabContainer.TabPages)
                 {
-                    string fileName = task_helper.GetFileName(tab.Name);
-                    if (fileName == task_helper.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
-                    else if (fileName == task_helper.fileMagic.ElementAt(1).Key ||
-                        fileName == task_helper.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
-                    else if (fileName == task_helper.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
+                    string fileName = util.GetFileName(tab.Name);
+                    if (fileName == util.fileMagic.ElementAt(0).Key) { ATKDTabs.Add(tab); }
+                    else if (fileName == util.fileMagic.ElementAt(1).Key ||
+                        fileName == util.fileMagic.ElementAt(2).Key) { AIPDTabs.Add(tab); }
+                    else if (fileName == util.fileMagic.ElementAt(3).Key) { ScriptTabs.Add(tab); }
                 }
                 if (doATKD && ATKDTabs.Count > 0)
                 {
+                    foreach(TabPage tab in ATKDTabs)
+                    {
 
+                    }
                 }
                 if (doAIPD && AIPDTabs.Count > 0)
                 {
