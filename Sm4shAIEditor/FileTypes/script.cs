@@ -321,30 +321,31 @@ namespace Sm4shAIEditor
                             while (true)
                             {
                                 string word = sReader.ReadWord();
-                                sReader.SkipWhiteSpace();
-                                string append = sReader.ReadChar();
-                                if (word == null)
-                                    throw new Exception("variable assignment argument cannot be null");
+                                if (word == null) throw new Exception("variable assignment argument cannot be null");
                                 ParamList.Add(parent.get_script_value_id(word));
+
+                                sReader.SkipWhiteSpace();//spaces won't cause exceptions here /shrug
+
+                                string append = sReader.ReadChar();
                                 if (append != ",")
                                 {
-                                    sReader.Position--;
+                                    if (append != null) sReader.Position--;
                                     break;
                                 }
                             }
                             break;
                         case 0x1e:
+                            sReader.ReadUntilAnyOfChars("(", true);
                             while (true)
                             {
-                                sReader.ReadUntilAnyOfChars("(", true);
                                 string word = sReader.ReadWord();
                                 sReader.SkipWhiteSpace();
-                                string append = sReader.ReadChar();
                                 if (word == null || !word.StartsWith("var"))
                                     throw new Exception(string.Format("invalid argument in VarAbs command: {0}", word));
                                 uint varID = uint.Parse(word.Substring(3));
                                 ParamList.Add(varID);
                                 parent.UpdateVarCount(varID, false);
+                                string append = sReader.ReadChar();
                                 if (append != ",")
                                 {
                                     if (append == ")")
