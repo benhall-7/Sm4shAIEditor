@@ -284,7 +284,6 @@ namespace Sm4shAIEditor
 
                 private void ConvertCmdParams(ref CustomStringReader sReader)
                 {
-                    bool readNextArg = true;
                     switch (ID)
                     {
                         case 0x01:
@@ -293,7 +292,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x0b://button
                             uint arg = 0;
-                            while (readNextArg)
+                            while (true)
                             {
                                 sReader.ReadUntilAnyOfChars("(", true);
                                 string word = sReader.ReadWord();
@@ -307,8 +306,7 @@ namespace Sm4shAIEditor
                                 arg |= buttonID;
                                 if (append != "+" && append != "," && append != ")")
                                     throw new Exception(string.Format("syntax error in SetButton args: {0}", append));
-                                if (append == ")")
-                                    readNextArg = false;
+                                if (append == ")") break;
                             }
                             ParamList.Add(arg);
                             break;
@@ -320,7 +318,7 @@ namespace Sm4shAIEditor
                         case 0x11:
                         case 0x12:
                         case 0x13:
-                            while (readNextArg)
+                            while (true)
                             {
                                 string word = sReader.ReadWord();
                                 sReader.SkipWhiteSpace();
@@ -330,13 +328,13 @@ namespace Sm4shAIEditor
                                 ParamList.Add(parent.get_script_value_id(word));
                                 if (append != ",")
                                 {
-                                    readNextArg = false;
                                     sReader.Position--;
+                                    break;
                                 }
                             }
                             break;
                         case 0x1e:
-                            while (readNextArg)
+                            while (true)
                             {
                                 sReader.ReadUntilAnyOfChars("(", true);
                                 string word = sReader.ReadWord();
@@ -350,7 +348,7 @@ namespace Sm4shAIEditor
                                 if (append != ",")
                                 {
                                     if (append == ")")
-                                        readNextArg = false;
+                                        break;
                                     else
                                         throw new Exception(string.Format("syntax error in VarAbs args: {0}", append));
                                 }
@@ -359,7 +357,7 @@ namespace Sm4shAIEditor
                         default:
                             sReader.ReadUntilAnyOfChars("(", true);
                             int readParams = 0;
-                            while (readNextArg)
+                            while (true)
                             {
                                 string word = sReader.ReadWord();
                                 string append = sReader.ReadChar();
@@ -384,8 +382,7 @@ namespace Sm4shAIEditor
                                     readParams++;
                                 }
 
-                                if (append == ")")
-                                    readNextArg = false;
+                                if (append == ")") break;
                             }
                             break;
                     }

@@ -76,33 +76,51 @@
         {
             SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); c != null && validWordChars.Contains(c); c = ReadChar())
+            while (true)
             {
+                string c = ReadChar();
+                if (c == null) break;
+                if (!validWordChars.Contains(c))
+                {
+                    Position--;
+                    break;
+                }
                 s += c;
             }
-            Position--;
             return s;
         }
         public string ReadEqnSymbols()
         {
             SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); c != null && validEqnChars.Contains(c); c = ReadChar())
+            while (true)
             {
+                string c = ReadChar();
+                if (c == null) break;
+                if (!validEqnChars.Contains(c))
+                {
+                    Position--;
+                    break;
+                }
                 s += c;
             }
-            Position--;
             return s;
         }
         public string ReadIfSymbols()
         {
             SkipWhiteSpace();
             string s = null;
-            for (string c = ReadChar(); c != null && validIfChars.Contains(c); c = ReadChar())
+            while (true)
             {
+                string c = ReadChar();
+                if (c == null) break;
+                if (!validIfChars.Contains(c))
+                {
+                    Position--;
+                    break;
+                }
                 s += c;
             }
-            Position--;
             return s;
         }
         public string ReadUntilAnyOfChars(string charsToEndAt, bool includeLastChar)
