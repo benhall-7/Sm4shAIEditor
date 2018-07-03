@@ -288,7 +288,7 @@ namespace Sm4shAIEditor
                     {
                         case 0x01:
                         case 0x02:
-                            ParamList.Add(parent.get_script_value_id(sReader.ReadWord()));
+                            ParamList.Add(parent.GetScriptValueID(sReader.ReadWord()));
                             break;
                         case 0x0b://button
                             uint arg = 0;
@@ -322,7 +322,7 @@ namespace Sm4shAIEditor
                             {
                                 string word = sReader.ReadWord();
                                 if (word == null) throw new Exception("variable assignment argument cannot be null");
-                                ParamList.Add(parent.get_script_value_id(word));
+                                ParamList.Add(parent.GetScriptValueID(word));
 
                                 sReader.SkipWhiteSpace();//spaces won't cause exceptions here /shrug
 
@@ -348,10 +348,8 @@ namespace Sm4shAIEditor
                                 string append = sReader.ReadChar();
                                 if (append != ",")
                                 {
-                                    if (append == ")")
-                                        break;
-                                    else
-                                        throw new Exception(string.Format("syntax error in VarAbs args: {0}", append));
+                                    if (append == ")") break;
+                                    else throw new Exception(string.Format("syntax error in VarAbs args: {0}", append));
                                 }
                             }
                             break;
@@ -371,14 +369,14 @@ namespace Sm4shAIEditor
                                 }
                                 else
                                 {
-                                    int listIndex = parent.get_correct_cmd_arg_list_index(ID);
+                                    int listIndex = parent.GetCorrectCmdArgIndex(ID);
                                     int argNumber = readParams + 1;
                                     int type = 0;
                                     if (listIndex != -1 && argNumber < script_data.cmd_args[listIndex].Length)
                                     {
                                         type = script_data.cmd_args[listIndex][argNumber];
                                     }
-                                    ParamList.Add(parent.get_param_id_from_type(word, type));
+                                    ParamList.Add(parent.GetParamIDFromType(word, type));
                                     
                                     readParams++;
                                 }
@@ -425,7 +423,7 @@ namespace Sm4shAIEditor
                             switch (script_data.if_chk_args[reqID])
                             {
                                 case 0:
-                                    ParamList.Add(parent.get_script_value_id(word));
+                                    ParamList.Add(parent.GetScriptValueID(word));
                                     break;
                                 case 1:
                                     ParamList.Add((uint)script_data.fighters.IndexOf(word));
@@ -480,13 +478,13 @@ namespace Sm4shAIEditor
                     {
                         case 0x01://SetVar, uses notation [varX = Y]
                             cmdString += "var" + cmd.ParamList[0] + " = ";
-                            cmdParams += get_script_value(cmd.ParamList[1]);
+                            cmdParams += GetScriptValue(cmd.ParamList[1]);
                             cmdString += cmdParams + "\r\n";
                             text += ifPadding + cmdString;
                             break;
                         case 0x02://SetVec, uses notation [vecX = Y]
                             cmdString += "vec" + cmd.ParamList[0] + " = ";
-                            cmdParams += get_script_value(cmd.ParamList[1]);
+                            cmdParams += GetScriptValue(cmd.ParamList[1]);
                             cmdString += cmdParams + "\r\n";
                             text += ifPadding + cmdString;
                             break;
@@ -499,7 +497,7 @@ namespace Sm4shAIEditor
                             while (cmdIndex + cmdAfterIndex < CmdList.Count)
                             {
                                 script.Act.Cmd cmdCurr = CmdList[cmdIndex + cmdAfterIndex - 1];
-                                cmdParams += get_if_chk(cmdCurr.ParamList.ToArray());
+                                cmdParams += GetIfChk(cmdCurr.ParamList.ToArray());
                                 //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                                 //believe it or not this next check is actually what the source code does
                                 relID = (byte)(CmdList[cmdIndex + cmdAfterIndex].ID - 0x16);
@@ -586,7 +584,7 @@ namespace Sm4shAIEditor
 
                             for (int i = 1; i < cmd.ParamCount; i++)
                             {
-                                cmdParams += get_script_value(cmd.ParamList[i]);
+                                cmdParams += GetScriptValue(cmd.ParamList[i]);
 
                                 if (i != cmd.ParamCount - 1)
                                     cmdParams += ", ";
@@ -636,7 +634,7 @@ namespace Sm4shAIEditor
 
             public string ParseCmdParams(Cmd cmd)
             {
-                int correctIndex = get_correct_cmd_arg_list_index(cmd.ID);
+                int correctIndex = GetCorrectCmdArgIndex(cmd.ID);
                 if (correctIndex == -1)
                     return null;
                 else
@@ -663,7 +661,7 @@ namespace Sm4shAIEditor
                                 cmdParams += "vec" + cmd.ParamList[i];
                                 break;
                             case 3:
-                                cmdParams += get_script_value(cmd.ParamList[i]);
+                                cmdParams += GetScriptValue(cmd.ParamList[i]);
                                 break;
                             default:
                                 break;
@@ -675,7 +673,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public UInt32 get_param_id_from_type(string param, int type)
+            public UInt32 GetParamIDFromType(string param, int type)
             {
                 UInt32 id;
                 switch (type)
@@ -694,7 +692,7 @@ namespace Sm4shAIEditor
                         UpdateVarCount(id, param.StartsWith("vec"));
                         break;
                     case 3:
-                        id = get_script_value_id(param);
+                        id = GetScriptValueID(param);
                         break;
                     default:
                         throw new Exception("this should never happen");
@@ -702,7 +700,7 @@ namespace Sm4shAIEditor
                 return id;
             }
 
-            public int get_correct_cmd_arg_list_index(int cmdID)
+            public int GetCorrectCmdArgIndex(int cmdID)
             {
                 int correctIndex = -1;
                 //can this be made faster?
@@ -717,7 +715,7 @@ namespace Sm4shAIEditor
                 return correctIndex;
             }
 
-            public string get_script_value(UInt32 paramID)
+            public string GetScriptValue(UInt32 paramID)
             {
                 if (paramID < 0x1000)
                     return "var" + paramID;
@@ -735,7 +733,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public UInt32 get_script_value_id(string param)
+            public UInt32 GetScriptValueID(string param)
             {
                 UInt32 ID = 0;
                 if (param.StartsWith("0x"))
@@ -775,7 +773,7 @@ namespace Sm4shAIEditor
                 return ID;
             }
 
-            public string get_if_chk(UInt32[] cmdParams)
+            public string GetIfChk(UInt32[] cmdParams)
             {
                 UInt32 reqID = cmdParams[0];
                 string requirement = "";
@@ -796,7 +794,7 @@ namespace Sm4shAIEditor
                         switch (script_data.if_chk_args[reqID])
                         {
                             case 0:
-                                requirement += get_script_value(currentParam);
+                                requirement += GetScriptValue(currentParam);
                                 break;
                             case 1:
                                 requirement += script_data.fighters[(int)currentParam];
