@@ -19,7 +19,7 @@ namespace Sm4shAIEditor
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
         //directories
-        public static string fighterDirectory = ConfigurationManager.AppSettings.Get("fighter_directory");
+        public static string fighterDirectory = ConfigurationManager.AppSettings.Get("game_fighter_directory");
         public static string workDirectory = ConfigurationManager.AppSettings.Get("work_directory");
         public static string exportDirectory = ConfigurationManager.AppSettings.Get("export_directory");
 
@@ -32,7 +32,7 @@ namespace Sm4shAIEditor
             this.Icon = Properties.Resources.FoxLogo;
 
             if (workDirectory == "")
-                workDirectory = "workspace";
+                workDirectory = "project";
             if (exportDirectory == "")
                 exportDirectory = "export";
         }

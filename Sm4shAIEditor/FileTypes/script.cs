@@ -369,7 +369,7 @@ namespace Sm4shAIEditor
                                 }
                                 else
                                 {
-                                    int listIndex = parent.GetCorrectCmdArgIndex(ID);
+                                    int listIndex = parent.GetCorrectIndexToCmdArgList(ID);
                                     int argNumber = readParams + 1;
                                     int type = 0;
                                     if (listIndex != -1 && argNumber < script_data.cmd_args[listIndex].Length)
@@ -634,7 +634,7 @@ namespace Sm4shAIEditor
 
             public string ParseCmdParams(Cmd cmd)
             {
-                int correctIndex = GetCorrectCmdArgIndex(cmd.ID);
+                int correctIndex = GetCorrectIndexToCmdArgList(cmd.ID);
                 if (correctIndex == -1)
                     return null;
                 else
@@ -695,12 +695,12 @@ namespace Sm4shAIEditor
                         id = GetScriptValueID(param);
                         break;
                     default:
-                        throw new Exception("this should never happen");
+                        throw new Exception("Invalid param type");
                 }
                 return id;
             }
 
-            public int GetCorrectCmdArgIndex(int cmdID)
+            public int GetCorrectIndexToCmdArgList(int cmdID)
             {
                 int correctIndex = -1;
                 //can this be made faster?

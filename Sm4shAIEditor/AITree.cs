@@ -9,7 +9,50 @@ namespace Sm4shAIEditor
 {
     public class AITree
     {
-        public Dictionary<string, string> aiFiles { get; } //Key = file directory; Value = owner
+        static string workDirectory { get; set; }
+        static string compileDirectory { get; set; }
+        static string gameFighterDirectory { get; set; }
+
+        List<AIFighter> fighters = new List<AIFighter>();
+
+        public class AIFighter
+        {
+            string name { get; set; }
+            List<AIFile> files = new List<AIFile>();
+
+            public class AIFile
+            {
+                //enums
+                public enum Type { attack_data, param, param_nfp, script }
+                public enum Source { work, compiled, game_file }
+
+                //properties
+                public AIFighter parent { get; private set; }
+
+                public Type type { get; private set; }
+                public Source source { get; private set; }
+                public string folder_address
+                {
+                    get
+                    {
+                        if (source == Source.work)
+                        {
+                            string subDirectory = "";
+                            if (type == Type.attack_data) subDirectory = @"atkd\";
+                            else if (type == Type.param || type == Type.param_nfp) subDirectory = @"aipd\";
+                            else if (type == Type.script) subDirectory = @"script\";
+                            else throw new Exception("invalid AI File type");
+
+                            return workDirectory + parent.name + @"\" + subDirectory;
+                        }
+                        else if (source == Source.compiled) return compileDirectory + parent.name + @"\";
+                        else if (source == Source.game_file) return gameFighterDirectory + parent.name + @"\script\ai\";
+                        else throw new Exception("invalid AI File source");
+                    }
+                }
+            }
+        }
+        /*public Dictionary<string, string> aiFiles { get; } //Key = file directory; Value = owner
         public List<string> fighters { get; } //this list used to generate the tree parent nodes
         
         public AITree()
@@ -61,6 +104,6 @@ namespace Sm4shAIEditor
             {
 
             }
-        }
+        }*/
     }
 }
