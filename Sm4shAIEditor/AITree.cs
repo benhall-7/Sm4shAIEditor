@@ -9,11 +9,12 @@ namespace Sm4shAIEditor
 {
     public class AITree
     {
-        static string workDirectory { get; set; }
-        static string compileDirectory { get; set; }
-        static string gameFighterDirectory { get; set; }
-
         List<AIFighter> fighters = new List<AIFighter>();
+
+        public AITree(string workDir, string compileDir, string fighterDir, string fighterList)
+        {
+
+        }
 
         public class AIFighter
         {
@@ -43,10 +44,10 @@ namespace Sm4shAIEditor
                             else if (type == Type.script) subDirectory = @"script\";
                             else throw new Exception("invalid AI File type");
 
-                            return workDirectory + parent.name + @"\" + subDirectory;
+                            return util.workDirectory + parent.name + @"\" + subDirectory;
                         }
-                        else if (source == Source.compiled) return compileDirectory + parent.name + @"\";
-                        else if (source == Source.game_file) return gameFighterDirectory + parent.name + @"\script\ai\";
+                        else if (source == Source.compiled) return util.compileDirectory + parent.name + @"\";
+                        else if (source == Source.game_file) return util.gameFighterDirectory + parent.name + @"\script\ai\";
                         else throw new Exception("invalid AI File source");
                     }
                 }

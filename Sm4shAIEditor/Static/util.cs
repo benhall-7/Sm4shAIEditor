@@ -1,11 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Configuration;
 
 namespace Sm4shAIEditor.Static
 {
     public static class util
     {
+        public static string workDirectory
+        {
+            get
+            {
+                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
+                if (temp == "") return "project";
+                return temp;
+            }
+            set
+            {
+                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
+            }
+        }
+        public static string compileDirectory
+        {
+            get
+            {
+                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
+                if (temp == "") return "export";
+                return temp;
+            }
+            set
+            {
+                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
+            }
+        }
+        public static string gameFighterDirectory
+        {
+            get
+            {
+                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
+                if (temp == "") throw new Exception("game fighter directory must be set!");
+                return temp;
+            }
+            set
+            {
+                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
+            }
+        }
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
         {
             { "attack_data.bin", 0x444b5441 },
