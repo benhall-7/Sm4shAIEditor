@@ -11,27 +11,21 @@ namespace Sm4shAIEditor.Static
         {
             get
             {
-                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
+                string temp = ConfigurationManager.AppSettings.Get("work_directory");
                 if (temp == "") return "project";
                 return temp;
             }
-            set
-            {
-                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
-            }
+            set { ConfigurationManager.AppSettings.Set("work_directory", value); }
         }
         public static string compileDirectory
         {
             get
             {
-                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
+                string temp = ConfigurationManager.AppSettings.Get("export_directory");
                 if (temp == "") return "export";
                 return temp;
             }
-            set
-            {
-                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
-            }
+            set { ConfigurationManager.AppSettings.Set("export_directory", value); }
         }
         public static string gameFighterDirectory
         {
@@ -41,10 +35,7 @@ namespace Sm4shAIEditor.Static
                 if (temp == "") throw new Exception("game fighter directory must be set!");
                 return temp;
             }
-            set
-            {
-                ConfigurationManager.AppSettings.Set("game_fighter_directory", value);
-            }
+            set { ConfigurationManager.AppSettings.Set("game_fighter_directory", value); }
         }
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
         {

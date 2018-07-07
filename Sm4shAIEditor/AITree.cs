@@ -9,17 +9,17 @@ namespace Sm4shAIEditor
 {
     public class AITree
     {
-        List<AIFighter> fighters = new List<AIFighter>();
+        public List<AIFighter> fighters = new List<AIFighter>();
 
-        public AITree(string workDir, string compileDir, string fighterDir, string fighterList)
+        public AITree(string[] fighters)
         {
 
         }
 
         public class AIFighter
         {
-            string name { get; set; }
-            List<AIFile> files = new List<AIFile>();
+            public string name { get; set; }
+            public List<AIFile> files = new List<AIFile>();
 
             public class AIFile
             {
@@ -42,16 +42,32 @@ namespace Sm4shAIEditor
                             if (type == Type.attack_data) subDirectory = @"atkd\";
                             else if (type == Type.param || type == Type.param_nfp) subDirectory = @"aipd\";
                             else if (type == Type.script) subDirectory = @"script\";
-                            else throw new Exception("invalid AI File type");
+                            else throw new Exception("invalid AI file type");
 
                             return util.workDirectory + parent.name + @"\" + subDirectory;
                         }
                         else if (source == Source.compiled) return util.compileDirectory + parent.name + @"\";
                         else if (source == Source.game_file) return util.gameFighterDirectory + parent.name + @"\script\ai\";
-                        else throw new Exception("invalid AI File source");
+                        else throw new Exception("invalid AI file source");
                     }
                 }
+
+                //constructors
+                public AIFile(AIFighter parent)
+                {
+                    this.parent = parent;
+                    //INCOMPLETE:
+                    //I need to think of a good method to parse workspace, compile, and game directories into the ai tree instance
+                }
+
+                //methods
             }
+        }
+
+        public void Sort()
+        {
+            //sorting the custom class, thanks to https://stackoverflow.com/a/3163963
+            fighters.Sort(delegate (AITree.AIFighter ft1, AITree.AIFighter ft2) { return ft1.name.CompareTo(ft2.name); });
         }
         /*public Dictionary<string, string> aiFiles { get; } //Key = file directory; Value = owner
         public List<string> fighters { get; } //this list used to generate the tree parent nodes
