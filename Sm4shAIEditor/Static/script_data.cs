@@ -50,7 +50,7 @@ namespace Sm4shAIEditor.Static
             "CalcArrivePosX",
             "CalcArrivePosY",
             "AtkdDiceRoll",
-            "Unk_2b",//does nothing. Does any other command reference this???
+            "Null_2b",
             "Norm",
             "Dot",
             "CalcArrivePosSec",
@@ -59,11 +59,11 @@ namespace Sm4shAIEditor.Static
             "GetNearestCliffAbs",
             "ClearStick",
             "Unk_33",//new to Smash 4
-            "Unk_34",
-            "Unk_35",
+            "Null_34",
+            "Null_35",
             "Unk_36",//this one is unused
             "Unk_37",
-            "Unk_38",
+            "ACos",
             "Unk_39"//only used once in Common script E040
         };
 
@@ -98,6 +98,9 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
             new byte[] {0x33, 3, 3},//unk
+            new byte[] {0x36, 3},//unk
+			new byte[] {0x37, 3},//unk
+            new byte[] {0x38, 1},//ACos
         };
 
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
