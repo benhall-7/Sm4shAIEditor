@@ -45,7 +45,7 @@ namespace Sm4shAIEditor.Static
             "Unk_23",//something with position and cliff
             "CalcArriveFrameX",
             "CalcArriveFrameY",
-            "GetShieldHP",
+            "SetVarShieldHP",
             "StagePtRand",
             "CalcArrivePosX",
             "CalcArrivePosY",
@@ -55,9 +55,9 @@ namespace Sm4shAIEditor.Static
             "Dot",
             "CalcArrivePosSec",
             "Unk_2f",
-            "Unk_30",
+            "SwingChkSet",//when the AI hits an opponent with this set, affects the float 0x1bc8 more -> affects the AI act ratio
             "GetNearestCliffAbs",
-            "ClearStick",
+            "ClearStick",//if no argument, reset stickX and stickY. If arg is 0x0, reset X. Else, reset Y
             "Unk_33",//new to Smash 4
             "Null_34",
             "Null_35",
@@ -97,6 +97,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
             new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
+            new byte[] {0x32, 0},//clear stick
             new byte[] {0x33, 3, 3},//unk
             new byte[] {0x36, 3},//unk
 			new byte[] {0x37, 3},//unk
