@@ -107,6 +107,13 @@ namespace Sm4shAIEditor
             }
         }
 
+        public void onDecomp()
+        {
+            //convert the files with game_file source to workspace sources
+            fighters.Clear();
+            InitOpenProject();
+        }
+
         public void AddGameFiles(string[] fighters, AIType[] types)
         {
             //TODO

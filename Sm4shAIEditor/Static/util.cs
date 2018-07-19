@@ -90,5 +90,9 @@ namespace Sm4shAIEditor.Static
             Array.Reverse(bytes);
             binWriter.Write(bytes);
         }
+        public static uint Align0x10(uint position)
+        {
+            return ((position + 0xf) / 0x10) * 0x10;
+        }
     }
 }

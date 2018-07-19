@@ -70,12 +70,6 @@
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="CustomStringReader.cs" />
-    <Compile Include="FolderSelectDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FolderSelectDialog.designer.cs">
-      <DependentUpon>FolderSelectDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Filetypes\attack_data.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

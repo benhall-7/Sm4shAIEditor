@@ -12,13 +12,13 @@ namespace Sm4shAIEditor.Static
             "SetVec",//syntax vecX = item
             "Label",
             "Return",
-            "SearchLabel",
+            "Search",
             "If",
             "IfNot",//special syntax, the "Not" portion is in the params
             "Else",
             "EndIf",//syntax }
-            "SetStickRel",
-            "SetButton",
+            "StickRel",
+            "Button",
             "VarAdd",//syntax varX +=
             "VarSub",//syntax varX -=
             "VarMul",//syntax varX *=
@@ -35,10 +35,10 @@ namespace Sm4shAIEditor.Static
             "AndNot",//syntax && !
             "SetFrame",
             "SetAct",
-            "GoToLabel",
+            "Jump",
             "GetNearestCliffRel",
             "VarAbs",
-            "SetStickAbs",
+            "StickAbs",
             "Unk_20",
             "Unk_21",
             "SetMaxWaitTime",

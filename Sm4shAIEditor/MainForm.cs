@@ -28,7 +28,7 @@ namespace Sm4shAIEditor
             this.Icon = Properties.Resources.FoxLogo;
         }
         
-        private void LoadATKD(string directory)
+        /*private void LoadATKD(string directory)
         {
             attack_data atkdFile = new attack_data(directory);
 
@@ -101,136 +101,45 @@ namespace Sm4shAIEditor
             actTabContainer.Parent = entireScript;
             actTabContainer.Dock = DockStyle.Fill;
             fileTabContainer.TabPages.Add(entireScript);
-        }
+        }*/
 
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
-            string nodeName;
-            string nodeTag;
-
-            string[] fileDirs = tree.aiFiles.Keys.ToArray();
-            string[] fighters = tree.fighters.ToArray();
-            foreach (string fighter in fighters)
+            foreach (AITree.AIFighter ft in tree.fighters)
             {
-                nodeName = fighter;
-                treeView.Nodes.Add(nodeName, nodeName);//given key is the fighter name, which allows the search method below
-            }
-
-            foreach (string key in fileDirs)
-            {
-                string owner = tree.aiFiles[key];
-                nodeTag = key;
-                if (owner == null)
+                TreeNode ftNode = new TreeNode(ft.name);
+                foreach (AITree.AIFighter.AIFile file in ft.files)
                 {
-                    nodeName = key;
-                    TreeNode node = new TreeNode(nodeName);
-                    node.Tag = nodeTag;
-                    treeView.Nodes.Add(node);
+                    ftNode.Nodes.Add(AITree.AITypeToString[file.type]);
                 }
-                else
-                {
-                    TreeNode fighterNode = treeView.Nodes.Find(owner, false)[0];//returns array, but should only have 1 element
-                    nodeName = util.GetFileName(key);
-                    TreeNode child = new TreeNode(nodeName);
-                    child.Tag = nodeTag;
-                    fighterNode.Nodes.Add(child);
-                }
+                treeView.Nodes.Add(ftNode);
             }
         }
 
         private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderSelectDialog openFighter = new FolderSelectDialog(true);
-            if (Directory.Exists(util.gameFighterDirectory) && util.gameFighterDirectory != "")
-                openFighter.InitialDirectory = util.gameFighterDirectory;
-            if (openFighter.ShowDialog() == DialogResult.OK)
-            {
-                tree.AddFighters(openFighter.SelectedPaths, ref status_TB);
-                UpdateTreeView();
-            }
+            
         }
 
         private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderSelectDialog openAllFighters = new FolderSelectDialog(false);
-            if (Directory.Exists(util.gameFighterDirectory) && util.gameFighterDirectory != "")
-            {
-                string[] fighterDirectories = Directory.EnumerateDirectories(util.gameFighterDirectory).ToArray();
-                tree.AddFighters(fighterDirectories, ref status_TB);
-                UpdateTreeView();
-            }
-            else if (openAllFighters.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                string[] fighterDirectories = Directory.EnumerateDirectories(openAllFighters.SelectedPath).ToArray();
-                tree.AddFighters(fighterDirectories, ref status_TB);
-                UpdateTreeView();
-            }
+            
         }
         
         private void openWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Directory.Exists(util.workDirectory))
-            {
-                string[] fighters = Directory.EnumerateDirectories(util.workDirectory).ToArray();
-                foreach (string fighter in fighters)
-                {
-                    
-                }
-                UpdateTreeView();
-            }
-            else
-                status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", util.workDirectory) + "\r\n";
+            
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //only the main files have a tag attribute; it stores the file directory and uses it as a unique identifier
-            string nodeDirectory = (string)treeView.SelectedNode.Tag;
-            if (nodeDirectory != null && !fileTabContainer.TabPages.ContainsKey(nodeDirectory))
-            {
-                string nodeFileName = util.GetFileName(nodeDirectory);
-                if (nodeFileName == util.fileMagic.ElementAt(0).Key)
-                    LoadATKD(nodeDirectory);
-                else if (nodeFileName == util.fileMagic.ElementAt(1).Key ||
-                    nodeFileName == util.fileMagic.ElementAt(2).Key)
-                    LoadAIPD(nodeDirectory);
-                else if (nodeFileName == util.fileMagic.ElementAt(3).Key)
-                    LoadScript(nodeDirectory);
-            }
-            if (fileTabContainer.TabPages.ContainsKey(nodeDirectory))
-            {
-                fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(nodeDirectory);
-            }
+            //basically just want to load the proper filetype with this method
         }
 
         private void treeView_DoubleClick(object sender, EventArgs e)
         {
             //double clicking a fighter opens all their files
-            TreeNode selectedNode = treeView.SelectedNode;
-            if ((string)selectedNode.Tag == null)
-            {
-                for(int i=0; i < selectedNode.Nodes.Count; i++)
-                {
-                    TreeNode subNode = selectedNode.Nodes[i];
-                    string subNodeDir = (string)subNode.Tag;
-                    if (subNodeDir != null && !fileTabContainer.TabPages.ContainsKey(subNodeDir))
-                    {
-                        string nodeFileName = util.GetFileName(subNodeDir);
-                        if (nodeFileName == util.fileMagic.ElementAt(0).Key)
-                            LoadATKD(subNodeDir);
-                        else if (nodeFileName == util.fileMagic.ElementAt(1).Key ||
-                            nodeFileName == util.fileMagic.ElementAt(2).Key)
-                            LoadAIPD(subNodeDir);
-                        else if (nodeFileName == util.fileMagic.ElementAt(3).Key)
-                            LoadScript(subNodeDir);
-                    }
-                    if (i == selectedNode.Nodes.Count - 1)
-                    {
-                        fileTabContainer.SelectedIndex = fileTabContainer.TabPages.IndexOfKey(subNodeDir);
-                    }
-                }
-            }
         }
 
         private void fileTabContainer_ControlAdded(object sender, ControlEventArgs e)
@@ -250,53 +159,6 @@ namespace Sm4shAIEditor
             Close();
         }
 
-        private void everyATKDToCSV_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            List<TreeNode> nodes = new List<TreeNode>();
-            RecursiveTreeArray(treeView.Nodes, "attack_data.bin", ref nodes);
-            foreach (TreeNode node in nodes)
-            {
-                string path = @"atkd_disasm\";
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                string fileDirectory = (string)node.Tag;
-                if (node.Parent != null)
-                {
-                    attack_data atkdFile = new attack_data(fileDirectory);
-                    string text = "";
-                    foreach (attack_data.attack_entry attack in atkdFile.attacks)
-                    {
-                        text += attack.SubactionID + ",";
-                        //leave out the second Uint16 because it's always 0 and probably never read
-                        text += attack.FirstFrame + ",";
-                        text += attack.LastFrame + ",";
-                        text += attack.X1 + ",";
-                        text += attack.X2 + ",";
-                        text += attack.Y1 + ",";
-                        text += attack.Y2 + "\r\n";
-                    }
-                    File.WriteAllText(path + node.Parent.Name + "_atkd.csv", text);
-                }
-            }
-            status_TB.Text += "Disassembled attack_data to folder" + "\r\n";
-        }
-
-        //totally unnecessary since the tree never goes past a second level but idc
-        private void RecursiveTreeArray(TreeNodeCollection nodes, string fileName, ref List<TreeNode> collection_added_to)
-        {
-            foreach (TreeNode node in nodes)
-            {
-                if (node.Tag != null)
-                {
-                    if (util.GetFileName((string)node.Tag) == fileName)
-                        collection_added_to.Add(node);
-                }
-                if (node.Nodes.Count != 0)
-                    RecursiveTreeArray(node.Nodes, fileName, ref collection_added_to);
-            }
-        }
-
         private void asmDialog_ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AssemblyDialog asmDialog = new AssemblyDialog();
@@ -312,7 +174,7 @@ namespace Sm4shAIEditor
 
         private void Assemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.AsmScope scope)
         {
-            if (!doATKD && !doAIPD && !doScript)
+            /*if (!doATKD && !doAIPD && !doScript)
             {
                 status_TB.Text += "Returned without assembling. No filetypes given" + "\r\n";
                 return;
@@ -475,7 +337,7 @@ namespace Sm4shAIEditor
                 }
                 else
                     status_TB.Text += string.Format("The workspace folder '{0}' does not exist. By saving and/or diassembling files, you can create a workspace.", util.workDirectory) + "\r\n";
-            }
+            }*/
         }
 
         private void assembleAIPD()
@@ -485,7 +347,7 @@ namespace Sm4shAIEditor
 
         private void assembleScript(Dictionary<UInt32, string> decompiledActs, string outDirectory)
         {
-            BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
+            /*BinaryWriter binWriter = new BinaryWriter(File.Create(outDirectory));
             //header data
             binWriter.Write((UInt32)0);//pad
             util.WriteReverseUInt32(ref binWriter, (UInt32)decompiledActs.Count);
@@ -530,17 +392,12 @@ namespace Sm4shAIEditor
                 }
                 positionInHeader += 4;
             }
-            binWriter.Dispose();
-        }
-        
-        private uint Align0x10(uint position)
-        {
-            return ((position + 0xf) / 0x10) * 0x10;
+            binWriter.Dispose();*/
         }
 
         private void Disassemble(bool doATKD, bool doAIPD, bool doScript, AssemblyDialog.DisasmScope scope)
         {
-            if (!doATKD && !doAIPD && !doScript)
+            /*if (!doATKD && !doAIPD && !doScript)
             {
                 status_TB.Text += "Returned without disassembling. No filetypes given" + "\r\n";
                 return;
@@ -606,7 +463,7 @@ namespace Sm4shAIEditor
                     }
                     status_TB.Text += string.Format("Disassembled scripts from tree to {0}", util.workDirectory) + "\r\n";
                 }
-            }
+            }*/
         }
     }
 }
