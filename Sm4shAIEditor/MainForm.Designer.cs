@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFighterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openAllFightersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,9 +39,7 @@
             this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
-            this.status_TB = new System.Windows.Forms.RichTextBox();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
-            this.openWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,8 +71,15 @@
             this.openFighterToolStripMenuItem,
             this.openAllFightersToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "Open";
+            // 
+            // openWorkspaceToolStripMenuItem
+            // 
+            this.openWorkspaceToolStripMenuItem.Name = "openWorkspaceToolStripMenuItem";
+            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openWorkspaceToolStripMenuItem.Text = "Open Workspace";
+            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.openWorkspaceToolStripMenuItem_Click);
             // 
             // openFighterToolStripMenuItem
             // 
@@ -92,13 +98,13 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -123,24 +129,10 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Location = new System.Drawing.Point(12, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(200, 400);
+            this.treeView.Size = new System.Drawing.Size(200, 522);
             this.treeView.TabIndex = 1;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.DoubleClick += new System.EventHandler(this.treeView_DoubleClick);
-            // 
-            // status_TB
-            // 
-            this.status_TB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.status_TB.BackColor = System.Drawing.SystemColors.InfoText;
-            this.status_TB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.status_TB.ForeColor = System.Drawing.SystemColors.Info;
-            this.status_TB.Location = new System.Drawing.Point(12, 433);
-            this.status_TB.Name = "status_TB";
-            this.status_TB.ReadOnly = true;
-            this.status_TB.Size = new System.Drawing.Size(960, 116);
-            this.status_TB.TabIndex = 2;
-            this.status_TB.Text = "";
             // 
             // fileTabContainer
             // 
@@ -150,18 +142,11 @@
             this.fileTabContainer.Location = new System.Drawing.Point(219, 27);
             this.fileTabContainer.Name = "fileTabContainer";
             this.fileTabContainer.SelectedIndex = 0;
-            this.fileTabContainer.Size = new System.Drawing.Size(753, 400);
+            this.fileTabContainer.Size = new System.Drawing.Size(753, 522);
             this.fileTabContainer.TabIndex = 3;
             this.fileTabContainer.Visible = false;
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
-            // 
-            // openWorkspaceToolStripMenuItem
-            // 
-            this.openWorkspaceToolStripMenuItem.Name = "openWorkspaceToolStripMenuItem";
-            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.openWorkspaceToolStripMenuItem.Text = "Open Workspace";
-            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.openWorkspaceToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -169,7 +154,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 561);
             this.Controls.Add(this.fileTabContainer);
-            this.Controls.Add(this.status_TB);
             this.Controls.Add(this.treeView);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -192,7 +176,6 @@
         private System.Windows.Forms.ToolStripMenuItem openFighterToolStripMenuItem;
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ToolStripMenuItem openAllFightersToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox status_TB;
         private System.Windows.Forms.TabControl fileTabContainer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compilationToolStripMenuItem;
