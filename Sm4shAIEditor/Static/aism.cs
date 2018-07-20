@@ -22,12 +22,12 @@ namespace Sm4shAIEditor.Static
 
                 util.CorrectFormatFolderPath(ref pathOut);
                 if (!Directory.Exists(pathOut))
-                    throw new Exception("Output path directory not found");
+                    Directory.CreateDirectory(pathOut);
                 pathOut = Path.GetFullPath(pathOut);//is this actually necessary for anything?
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
                 string genObject = string.Format("Generating {0} object... ", fileType);
-                string asm = string.Format("Assembling to {0}", pathOut);
+                string asm = string.Format("Assembling to {0}... ", pathOut);
 
                 Console.WriteLine(genObject);
                 if (type == AITree.AIType.attack_data)
@@ -43,13 +43,12 @@ namespace Sm4shAIEditor.Static
                         acts.Add(uint.Parse(ID, NumberStyles.HexNumber), File.ReadAllText(pathIn + ID + ".txt"));
                     }
                     script script = new script(acts);
-
-                    //write to file
-                    Console.WriteLine(asm);
+                    
+                    Console.Write(asm);
                     BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
-                    binWriter.Write((UInt32)0);//pad
+                    binWriter.Write((int)0);//pad
                     util.WriteReverseUInt32(ref binWriter, script.actScriptCount);
-                    binWriter.Write((UInt64)0);//pad
+                    binWriter.Write((long)0);//pad
                     foreach (var act in script.acts.Keys)
                         util.WriteReverseUInt32(ref binWriter, script.acts[act]);
                     foreach (var act in script.acts.Keys)
@@ -72,6 +71,7 @@ namespace Sm4shAIEditor.Static
                             util.WriteReverseFloat(ref binWriter, value);
                     }
                     binWriter.Dispose();
+                    Console.WriteLine("Done");
                 }
                 else //param and param_nfp will use same methods
                 {
@@ -92,6 +92,42 @@ namespace Sm4shAIEditor.Static
             {
                 if (!File.Exists(pathIn))
                     throw new Exception("Input path file not found");
+                pathIn = Path.GetFullPath(pathIn);
+                string fileType = Path.GetFileNameWithoutExtension(pathIn);
+                if (!AITree.StringToAIType.ContainsKey(fileType))
+                    throw new Exception(string.Format("Nonexistant file type {0}", fileType));
+
+                util.CorrectFormatFolderPath(ref pathOut);
+                if (!Directory.Exists(pathOut))
+                    Directory.CreateDirectory(pathOut);
+                pathOut = Path.GetFullPath(pathOut);//is this actually necessary for anything?
+
+                AITree.AIType type = AITree.StringToAIType[fileType];
+                string genObject = string.Format("Generating {0} object... ", fileType);
+                string disasm = string.Format("Disassembling to {0}... ", pathOut);
+
+                Console.WriteLine(genObject);
+                if (type == AITree.AIType.attack_data)
+                {
+
+                }
+                else if (type == AITree.AIType.script)
+                {
+                    script script = new script(pathIn);
+                    Console.Write(disasm);
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "acts.txt"));
+                    foreach(var act in script.acts.Keys)
+                    {
+                        writer.WriteLine(act.ID.ToString("x4"));
+                        File.WriteAllText(pathOut + act.ID.ToString("x4") + ".txt", act.DecompAct());
+                    }
+                    writer.Dispose();
+                    Console.WriteLine("Done");
+                }
+                else //param and param_nfp will use same methods
+                {
+
+                }
             }
             catch (Exception e)
             {
