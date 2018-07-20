@@ -8,10 +8,11 @@ namespace Sm4shAIEditor
     {
         static string[] keys = { "-a", "-d", "-h" };
         static string helpReminder = string.Format("See {0} for help text", keys[2]);
-        static string usage = string.Format("usage: assemble folder or disassemble file for Smash 4 AI\n" +
-            "assembly: {0} [input folder] [output file]\n" +
-            "disassembly: {1} [input file] [output folder]\n" +
-            "this text: {2}", keys[0], keys[1], keys[2]);
+        static string usage = string.Format("Assemble folder or disassemble file for Smash 4 AI. Usage:\n" +
+            "\topen the GUI: no args\n" +
+            "\tassembly: {0} [input folder] [output folder]\n" +
+            "\tdisassembly: {1} [input file] [output folder]\n" +
+            "\tthis text: {2}", keys[0], keys[1], keys[2]);
 
         /// <summary>
         /// The main entry point for the application.

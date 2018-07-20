@@ -10,13 +10,13 @@ namespace Sm4shAIEditor
     class script
     {
         public UInt32 actScriptCount { get; set; }
-        public Dictionary<Act,UInt32> acts { get; set; }
+        public Dictionary<Act, UInt32> acts { get; set; }
 
-        public script(string fileDirectory)
+        public script(string binDirectory)
         {
             acts = new Dictionary<Act, uint>();
 
-            BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
+            BinaryReader binReader = new BinaryReader(File.OpenRead(binDirectory));
             binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
             actScriptCount = util.ReadReverseUInt32(ref binReader);
             for (int i = 0; i < actScriptCount; i++)
@@ -29,6 +29,23 @@ namespace Sm4shAIEditor
             }
 
             binReader.Close();
+        }
+        public script(Dictionary<uint, string> decompiledActs)
+        {
+            acts = new Dictionary<Act, uint>();
+
+            List<script.Act> actData = new List<script.Act>();
+            foreach (var act in decompiledActs)
+            {
+                actData.Add(new Act(act.Key, act.Value));
+            }
+            actScriptCount = (uint)actData.Count;
+            uint offset = util.Align0x10(0x10 + (4 * actScriptCount));
+            foreach (script.Act act in actData)
+            {
+                acts.Add(act, offset);
+                offset += act.GetSize();
+            }
         }
 
         public class Act
@@ -80,7 +97,7 @@ namespace Sm4shAIEditor
             {
                 this.ID = ID;
                 ScriptOffset = 0x10;//since every act and header is 0x10 aligned this is guaranteed to be 0x10
-                ScriptFloatOffset = ScriptOffset;//just temporary, each command increases this to be placed properly
+                ScriptFloatOffset = ScriptOffset;//temporarily set to this; every command increases the offset
                 CmdList = new List<Cmd>();
                 ScriptFloats = new Dictionary<uint, float>();
 
@@ -94,26 +111,6 @@ namespace Sm4shAIEditor
                     CmdList.Add(cmd);
                     sReader.SkipWhiteSpace();
                     ScriptFloatOffset += cmd.Size;
-                }
-            }
-
-            protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
-            {
-                float scriptFloat;
-                Int32 binPosition = (Int32)binReader.BaseStream.Position;
-                cmdParam -= 0x2000;
-                binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
-                scriptFloat = util.ReadReverseFloat(ref binReader);
-                binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
-                return scriptFloat;
-            }
-
-            public void AddScriptFloat(float value)
-            {
-                if (!ScriptFloats.ContainsValue(value))
-                {
-                    UInt32 nextFloatID = (UInt32)(ScriptFloats.Keys.Count + 0x2000);
-                    ScriptFloats.Add(nextFloatID, value);
                 }
             }
 
@@ -277,6 +274,7 @@ namespace Sm4shAIEditor
                             }
                             parent.UpdateVarCount(uint.Parse(word.Substring(3)), isVec);
                         }
+                        else throw new Exception(string.Format("Unrecognized command {0}", word));
                         if (!isIfArg && canHaveArgs)
                             ConvertCmdParams(ref sReader);
                     }
@@ -673,6 +671,11 @@ namespace Sm4shAIEditor
                 }
             }
 
+            public uint GetSize()
+            {
+                return ScriptFloatOffset + (4 * (uint)ScriptFloats.Count);
+            }
+
             public UInt32 GetParamIDFromType(string param, int type)
             {
                 UInt32 id;
@@ -713,6 +716,26 @@ namespace Sm4shAIEditor
                     }
                 }
                 return correctIndex;
+            }
+
+            protected float GetScriptFloat(ref BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
+            {
+                float scriptFloat;
+                Int32 binPosition = (Int32)binReader.BaseStream.Position;
+                cmdParam -= 0x2000;
+                binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
+                scriptFloat = util.ReadReverseFloat(ref binReader);
+                binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
+                return scriptFloat;
+            }
+
+            public void AddScriptFloat(float value)
+            {
+                if (!ScriptFloats.ContainsValue(value))
+                {
+                    UInt32 nextFloatID = (UInt32)(ScriptFloats.Keys.Count + 0x2000);
+                    ScriptFloats.Add(nextFloatID, value);
+                }
             }
 
             public string GetScriptValue(UInt32 paramID)

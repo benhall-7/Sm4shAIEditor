@@ -49,6 +49,18 @@ namespace Sm4shAIEditor.Static
             int index = directory.LastIndexOf('\\');
             return directory.Remove(0, index + 1);
         }
+        public static string GetFolderName(string directory)
+        {
+            if (directory[directory.Length - 1] == '\\')
+                directory = directory.Remove(directory.Length - 1, 1);
+            int index = directory.LastIndexOf('\\');
+            return directory.Remove(0, index + 1);
+        }
+        public static void CorrectFormatFolderPath(ref string directory)
+        {
+            if (directory[directory.Length - 1] != '\\')
+                directory += '\\';
+        }
         public static void WriteReverseByteArray(ref BinaryWriter binWriter, byte[] bytes)
         {
             Array.Reverse(bytes);
