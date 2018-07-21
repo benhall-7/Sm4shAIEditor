@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace Sm4shAIEditor
 {
@@ -45,12 +44,12 @@ namespace Sm4shAIEditor
                 //constructors
                 public AIFile(AIType type, AISource source, string parentName)
                 {
+                    this.type = type;
+                    this.source = source;
                     this.parentName = parentName;
-                    //INCOMPLETE:
-                    //I need to think of a good method to parse workspace, compile, and game directories into the ai tree instance
                 }
 
-                //methods
+                //methods?
             }
         }
 
@@ -66,6 +65,7 @@ namespace Sm4shAIEditor
                         fighterFiles.Add(file);
                 }
                 if (fighterFiles.Count > 0) this.fighters.Add(new AIFighter(ft, fighterFiles));
+                else Console.WriteLine("NOTICE: fighter '{0}' contains no AI files", ft);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Sm4shAIEditor
             //set data from the workspace. Fighter list is empty here
             foreach (string dir in Directory.EnumerateDirectories(util.workDirectory))
             {
-                string name = util.GetFileName(dir);
+                string name = util.GetFolderName(dir);
                 List<AIFighter.AIFile> files = new List<AIFighter.AIFile>();
                 foreach (string subDir in Directory.EnumerateDirectories(dir).ToArray())
                 {
@@ -86,7 +86,7 @@ namespace Sm4shAIEditor
             //set any remaining data from the compile directory
             foreach (string dir in Directory.EnumerateDirectories(util.compileDirectory))
             {
-                string name = util.GetFileName(dir);
+                string name = util.GetFolderName(dir);
                 List<AIFighter.AIFile> newFiles = new List<AIFighter.AIFile>();
                 foreach (string file in Directory.EnumerateFiles(dir).ToArray())
                 {
@@ -107,7 +107,7 @@ namespace Sm4shAIEditor
             }
         }
 
-        public void onDecomp()
+        public void onDisasm()
         {
             //convert the files with game_file source to workspace sources
             fighters.Clear();

@@ -33,13 +33,12 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFighterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openAllFightersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compilationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.assemblyDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
+            this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +46,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.compilationToolStripMenuItem});
+            this.compilationToolStripMenuItem,
+            this.configToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
@@ -68,60 +68,43 @@
             // 
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openWorkspaceToolStripMenuItem,
-            this.openFighterToolStripMenuItem,
-            this.openAllFightersToolStripMenuItem});
+            this.openFighterToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openWorkspaceToolStripMenuItem
             // 
             this.openWorkspaceToolStripMenuItem.Name = "openWorkspaceToolStripMenuItem";
-            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.openWorkspaceToolStripMenuItem.Text = "Open Workspace";
-            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.openWorkspaceToolStripMenuItem_Click);
+            this.openWorkspaceToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openWorkspaceToolStripMenuItem.Text = "New Project";
+            this.openWorkspaceToolStripMenuItem.Click += new System.EventHandler(this.newProjectToolStripMenuItem_Click);
             // 
             // openFighterToolStripMenuItem
             // 
             this.openFighterToolStripMenuItem.Name = "openFighterToolStripMenuItem";
-            this.openFighterToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.openFighterToolStripMenuItem.Text = "Open Fighter";
+            this.openFighterToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.openFighterToolStripMenuItem.Text = "Existing Project";
             this.openFighterToolStripMenuItem.Click += new System.EventHandler(this.openFighterToolStripMenuItem_Click);
-            // 
-            // openAllFightersToolStripMenuItem
-            // 
-            this.openAllFightersToolStripMenuItem.Name = "openAllFightersToolStripMenuItem";
-            this.openAllFightersToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.openAllFightersToolStripMenuItem.Text = "Open All Fighters";
-            this.openAllFightersToolStripMenuItem.Click += new System.EventHandler(this.openAllFightersToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // compilationToolStripMenuItem
             // 
-            this.compilationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.assemblyDialogToolStripMenuItem});
             this.compilationToolStripMenuItem.Name = "compilationToolStripMenuItem";
             this.compilationToolStripMenuItem.Size = new System.Drawing.Size(70, 20);
             this.compilationToolStripMenuItem.Text = "Assembly";
-            // 
-            // assemblyDialogToolStripMenuItem
-            // 
-            this.assemblyDialogToolStripMenuItem.Name = "assemblyDialogToolStripMenuItem";
-            this.assemblyDialogToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.assemblyDialogToolStripMenuItem.Text = "Assembly Dialog";
-            this.assemblyDialogToolStripMenuItem.Click += new System.EventHandler(this.asmDialog_ToolStripMenuItem_Click);
             // 
             // treeView
             // 
@@ -147,6 +130,13 @@
             this.fileTabContainer.Visible = false;
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
+            // 
+            // configToolStripMenuItem
+            // 
+            this.configToolStripMenuItem.Name = "configToolStripMenuItem";
+            this.configToolStripMenuItem.Size = new System.Drawing.Size(55, 20);
+            this.configToolStripMenuItem.Text = "Config";
+            this.configToolStripMenuItem.Click += new System.EventHandler(this.configToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -175,12 +165,11 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFighterToolStripMenuItem;
         private System.Windows.Forms.TreeView treeView;
-        private System.Windows.Forms.ToolStripMenuItem openAllFightersToolStripMenuItem;
         private System.Windows.Forms.TabControl fileTabContainer;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compilationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem assemblyDialogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openWorkspaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem configToolStripMenuItem;
     }
 }
 

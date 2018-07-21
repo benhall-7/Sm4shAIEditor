@@ -12,7 +12,7 @@ namespace Sm4shAIEditor.Static
             //check path is folder ; check folder name ; check folder contents ; proceed
             try
             {
-                util.CorrectFormatFolderPath(ref pathIn);
+                pathIn = util.CorrectFormatFolderPath(pathIn);
                 if (!Directory.Exists(pathIn))
                     throw new Exception("Input path directory not found");
                 pathIn = Path.GetFullPath(pathIn);
@@ -20,22 +20,19 @@ namespace Sm4shAIEditor.Static
                 if (!AITree.StringToAIType.ContainsKey(fileType))
                     throw new Exception(string.Format("Nonexistant file type {0}", fileType));
 
-                util.CorrectFormatFolderPath(ref pathOut);
-                if (!Directory.Exists(pathOut))
-                    Directory.CreateDirectory(pathOut);
-                pathOut = Path.GetFullPath(pathOut);//is this actually necessary for anything?
+                //no need to check "if (!pathOut exists -> create path) because File.Create will create/open the directory too
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
                 string genObject = string.Format("Generating {0} object... ", fileType);
                 string asm = string.Format("Assembling to {0}... ", pathOut);
 
-                Console.WriteLine(genObject);
                 if (type == AITree.AIType.attack_data)
                 {
                     
                 }
                 else if (type == AITree.AIType.script)
                 {
+                    Console.Write(genObject);
                     Dictionary<uint, string> acts = new Dictionary<uint, string>();
                     string[] IDs = File.ReadAllLines(pathIn + "acts.txt");
                     foreach(string ID in IDs)
@@ -45,6 +42,8 @@ namespace Sm4shAIEditor.Static
                     script script = new script(acts);
                     
                     Console.Write(asm);
+                    if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
                     BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
                     binWriter.Write((int)0);//pad
                     util.WriteReverseUInt32(ref binWriter, script.actScriptCount);
@@ -97,29 +96,28 @@ namespace Sm4shAIEditor.Static
                 if (!AITree.StringToAIType.ContainsKey(fileType))
                     throw new Exception(string.Format("Nonexistant file type {0}", fileType));
 
-                util.CorrectFormatFolderPath(ref pathOut);
-                if (!Directory.Exists(pathOut))
-                    Directory.CreateDirectory(pathOut);
-                pathOut = Path.GetFullPath(pathOut);//is this actually necessary for anything?
+                pathOut = util.CorrectFormatFolderPath(pathOut);
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
                 string genObject = string.Format("Generating {0} object... ", fileType);
                 string disasm = string.Format("Disassembling to {0}... ", pathOut);
 
-                Console.WriteLine(genObject);
                 if (type == AITree.AIType.attack_data)
                 {
 
                 }
                 else if (type == AITree.AIType.script)
                 {
+                    Console.Write(genObject);
                     script script = new script(pathIn);
                     Console.Write(disasm);
+                    if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
                     StreamWriter writer = new StreamWriter(File.Create(pathOut + "acts.txt"));
                     foreach(var act in script.acts.Keys)
                     {
-                        writer.WriteLine(act.ID.ToString("x4"));
-                        File.WriteAllText(pathOut + act.ID.ToString("x4") + ".txt", act.DecompAct());
+                        writer.WriteLine(act.ID.ToString("X4"));
+                        File.WriteAllText(pathOut + act.ID.ToString("X4") + ".txt", act.DecompAct());
                     }
                     writer.Dispose();
                     Console.WriteLine("Done");

@@ -72,6 +72,12 @@
     <Compile Include="AssemblyDialog.Designer.cs">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Config.Designer.cs">
+      <DependentUpon>Config.cs</DependentUpon>
+    </Compile>
     <Compile Include="CustomStringReader.cs" />
     <Compile Include="Filetypes\attack_data.cs" />
     <Compile Include="MainForm.cs">

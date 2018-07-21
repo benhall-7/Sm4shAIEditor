@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Configuration;
+using System.IO;
 
 namespace Sm4shAIEditor.Static
 {
@@ -9,32 +9,17 @@ namespace Sm4shAIEditor.Static
     {
         public static string workDirectory
         {
-            get
-            {
-                string temp = ConfigurationManager.AppSettings.Get("work_directory");
-                if (temp == "") return "project";
-                return temp;
-            }
+            get { return ConfigurationManager.AppSettings.Get("work_directory"); }
             set { ConfigurationManager.AppSettings.Set("work_directory", value); }
         }
         public static string compileDirectory
         {
-            get
-            {
-                string temp = ConfigurationManager.AppSettings.Get("export_directory");
-                if (temp == "") return "export";
-                return temp;
-            }
+            get { return ConfigurationManager.AppSettings.Get("export_directory"); }
             set { ConfigurationManager.AppSettings.Set("export_directory", value); }
         }
         public static string gameFighterDirectory
         {
-            get
-            {
-                string temp = ConfigurationManager.AppSettings.Get("game_fighter_directory");
-                if (temp == "") throw new Exception("game fighter directory must be set!");
-                return temp;
-            }
+            get { return ConfigurationManager.AppSettings.Get("game_fighter_directory"); }
             set { ConfigurationManager.AppSettings.Set("game_fighter_directory", value); }
         }
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
@@ -56,10 +41,11 @@ namespace Sm4shAIEditor.Static
             int index = directory.LastIndexOf('\\');
             return directory.Remove(0, index + 1);
         }
-        public static void CorrectFormatFolderPath(ref string directory)
+        public static string CorrectFormatFolderPath(string directory)
         {
             if (directory[directory.Length - 1] != '\\')
                 directory += '\\';
+            return directory;
         }
         public static void WriteReverseByteArray(ref BinaryWriter binWriter, byte[] bytes)
         {

@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Sm4shAIEditor
@@ -18,8 +15,6 @@ namespace Sm4shAIEditor
         public static Font scriptFont = new Font(
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
-
-        public static Stopwatch timer = new Stopwatch();
 
         public MainForm()
         {
@@ -127,9 +122,29 @@ namespace Sm4shAIEditor
             
         }
         
-        private void openWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            if (!CheckConfig())
+                return;
+            string[] fighters = Directory.GetDirectories(util.gameFighterDirectory);
+            for (int i = 0; i < fighters.Length; i++)
+                fighters[i] = util.GetFolderName(fighters[i]);
+            var types = (AITree.AIType[])Enum.GetValues(typeof(AITree.AIType));//temporary. The user should choose the types
+            tree.InitNewProject(fighters, types);
+            //BIG DECISION: Should I disassemble the files immediately or offer an option to do so?
+            //If the user doesn't disassemble game_files to work files, then they disappear from the project on exit
+            //for now just disassemble all of them because it's easier to handle/test
+            foreach (var ft in tree.fighters)
+            {
+                foreach (var file in ft.files)
+                {
+                    string pathIn = file.folder_address + AITree.AITypeToString[file.type] + ".bin";
+                    string pathOut = util.workDirectory + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
+                    aism.DisassembleFile(pathIn, pathOut);
+                }
+            }
+            tree.onDisasm();
+            UpdateTreeView();
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -464,6 +479,30 @@ namespace Sm4shAIEditor
                     status_TB.Text += string.Format("Disassembled scripts from tree to {0}", util.workDirectory) + "\r\n";
                 }
             }*/
+        }
+
+        private void configToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private bool CheckConfig()
+        {
+            if (util.workDirectory == ""
+                || util.compileDirectory == ""
+                || util.gameFighterDirectory == ""
+                || !Directory.Exists(util.workDirectory)
+                || !Directory.Exists(util.compileDirectory)
+                || !Directory.Exists(util.gameFighterDirectory))
+            {
+                Config config = new Config();
+                if (config.ShowDialog() != DialogResult.OK)
+                    return false;
+            }
+            util.workDirectory = util.CorrectFormatFolderPath(util.workDirectory);
+            util.compileDirectory = util.CorrectFormatFolderPath(util.compileDirectory);
+            util.gameFighterDirectory = util.CorrectFormatFolderPath(util.gameFighterDirectory);
+            return true;
         }
     }
 }
