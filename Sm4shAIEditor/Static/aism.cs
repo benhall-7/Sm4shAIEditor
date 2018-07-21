@@ -19,8 +19,8 @@ namespace Sm4shAIEditor.Static
                 string fileType = util.GetFolderName(pathIn);
                 if (!AITree.StringToAIType.ContainsKey(fileType))
                     throw new Exception(string.Format("Nonexistant file type {0}", fileType));
-
-                //no need to check "if (!pathOut exists -> create path) because File.Create will create/open the directory too
+                
+                pathOut = util.CorrectFormatFolderPath(pathOut);
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
                 string genObject = string.Format("Generating {0} object... ", fileType);

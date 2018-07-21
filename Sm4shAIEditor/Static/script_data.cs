@@ -39,17 +39,17 @@ namespace Sm4shAIEditor.Static
             "GetNearestCliffRel",
             "VarAbs",
             "StickAbs",
-            "Unk_20",
-            "Unk_21",
+            "ReturnIfAerial",
+            "ReturnIfGroundFree",
             "SetMaxWaitTime",
-            "Unk_23",//something with position and cliff
+            "SetCliffResetDist",//if value >= 0, ends the act if closer to cliff than value
             "CalcArriveFrameX",
             "CalcArriveFrameY",
             "SetVarShieldHP",
             "StagePtRand",
             "CalcArrivePosX",
             "CalcArrivePosY",
-            "AtkdDiceRoll",
+            "AttackDiceRoll",
             "Null_2b",
             "Norm",
             "Dot",
@@ -58,11 +58,11 @@ namespace Sm4shAIEditor.Static
             "SwingChkSet",//when the AI hits an opponent with this set, affects the float 0x1bc8 more -> affects the AI act ratio
             "GetNearestCliffAbs",
             "ClearStick",//if no argument, reset stickX and stickY. If arg is 0x0, reset X. Else, reset Y
-            "Unk_33",//new to Smash 4
+            "SticRel_Unk",//new to Smash 4
             "Null_34",
             "Null_35",
-            "Unk_36",//this one is unused
-            "Unk_37",
+            "StickAngleFront",//this one is unused
+            "StickAngleBack",
             "ACos",
             "Unk_39"//only used once in Common script E040
         };
@@ -86,7 +86,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x1d, 2},//vector (cliff position)
             new byte[] {0x1f, 3, 3},//set stick abs
             new byte[] {0x22, 3},//set wait
-            new byte[] {0x23, 3},//unk
+            new byte[] {0x23, 3},//cliff distance to end act
             new byte[] {0x24, 1, 3},//calcArriveFrameX
             new byte[] {0x25, 1, 3},//calcArriveFrameY
             new byte[] {0x26, 1},//gets shield hp
@@ -99,8 +99,8 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x31, 2},//vector (cliff position)
             new byte[] {0x32, 0},//clear stick
             new byte[] {0x33, 3, 3},//unk
-            new byte[] {0x36, 3},//unk
-			new byte[] {0x37, 3},//unk
+            new byte[] {0x36, 3},//stickAngleFront
+			new byte[] {0x37, 3},//stickAngleBack
             new byte[] {0x38, 1},//ACos
         };
 
