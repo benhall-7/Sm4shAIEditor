@@ -36,7 +36,7 @@ namespace Sm4shAIEditor.Static
             "SetFrame",
             "SetAct",
             "Jump",
-            "GetNearestCliffRel",
+            "GetNearestCliffRel",//NEEDS DISAMBIGUATION
             "VarAbs",
             "StickAbs",
             "ReturnIfAerial",
@@ -46,7 +46,7 @@ namespace Sm4shAIEditor.Static
             "CalcArriveFrameX",
             "CalcArriveFrameY",
             "SetVarShieldHP",
-            "StagePtRand",
+            "StagePtRand",//NEEDS DISAMBIGUATION
             "CalcArrivePosX",
             "CalcArrivePosY",
             "AttackDiceRoll",
@@ -56,9 +56,9 @@ namespace Sm4shAIEditor.Static
             "CalcArrivePosSec",
             "Unk_2f",
             "SwingChkSet",//when the AI hits an opponent with this set, affects the float 0x1bc8 more -> affects the AI act ratio
-            "GetNearestCliffAbs",
+            "GetNearestCliffAbs",//NEEDS DISAMBIGUATION
             "ClearStick",//if no argument, reset stickX and stickY. If arg is 0x0, reset X. Else, reset Y
-            "SticRel_Unk",//new to Smash 4
+            "StickRel_Unk",//new to Smash 4
             "Null_34",
             "Null_35",
             "StickAngleFront",//this one is unused
@@ -98,7 +98,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
             new byte[] {0x32, 0},//clear stick
-            new byte[] {0x33, 3, 3},//unk
+            new byte[] {0x33, 3, 3},//set stick 2 (unk data)
             new byte[] {0x36, 3},//stickAngleFront
 			new byte[] {0x37, 3},//stickAngleBack
             new byte[] {0x38, 1},//ACos
