@@ -129,11 +129,9 @@ namespace Sm4shAIEditor
             string[] fighters = Directory.GetDirectories(util.gameFighterDirectory);
             for (int i = 0; i < fighters.Length; i++)
                 fighters[i] = util.GetFolderName(fighters[i]);
-            var types = (AITree.AIType[])Enum.GetValues(typeof(AITree.AIType));//temporary. The user should choose the types
+            var types = (AITree.AIType[])Enum.GetValues(typeof(AITree.AIType));//TEMPORARY. The user should choose the types
             tree.InitNewProject(fighters, types);
-            //BIG DECISION: Should I disassemble the files immediately or offer an option to do so?
-            //If the user doesn't disassemble game_files to work files, then they disappear from the project on exit
-            //for now just disassemble all of them because it's easier to handle/test
+            //all files loaded into project tree are disassembled immediately, then the tree is refreshed with files from workspace
             foreach (var ft in tree.fighters)
             {
                 foreach (var file in ft.files)
@@ -483,19 +481,15 @@ namespace Sm4shAIEditor
 
         private void configToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Config config = new Config();
+            config.ShowDialog();
         }
 
         private bool CheckConfig()
         {
-            if (util.workDirectory == ""
-                || util.compileDirectory == ""
-                || util.gameFighterDirectory == ""
-                || !Directory.Exists(util.workDirectory)
-                || !Directory.Exists(util.compileDirectory)
-                || !Directory.Exists(util.gameFighterDirectory))
+            Config config = new Config();
+            if (!config.check)
             {
-                Config config = new Config();
                 if (config.ShowDialog() != DialogResult.OK)
                     return false;
             }

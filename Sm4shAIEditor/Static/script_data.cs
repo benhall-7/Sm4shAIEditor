@@ -39,8 +39,8 @@ namespace Sm4shAIEditor.Static
             "GetNearestCliffRel",//NEEDS DISAMBIGUATION
             "VarAbs",
             "StickAbs",
-            "ReturnIfAerial",
-            "ReturnIfGroundFree",
+            "BreakIfAerial",
+            "BreakIfGroundFree",
             "SetMaxWaitTime",
             "SetCliffResetDist",//if value >= 0, ends the act if closer to cliff than value
             "CalcArriveFrameX",
