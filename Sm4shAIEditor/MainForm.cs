@@ -126,12 +126,11 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            string[] fighters = Directory.GetDirectories(util.gameFighterDirectory);
-            for (int i = 0; i < fighters.Length; i++)
-                fighters[i] = util.GetFolderName(fighters[i]);
-            var types = (AITree.AIType[])Enum.GetValues(typeof(AITree.AIType));//TEMPORARY. The user should choose the types
-            tree.InitNewProject(fighters, types);
-            //all files loaded into project tree are disassembled immediately, then the tree is refreshed with files from workspace
+            FighterSelection selector = new FighterSelection();
+            if (selector.ShowDialog() != DialogResult.OK)
+                return;
+            tree.InitNewProject(selector.selFighters, selector.selTypes);
+            //all files in project tree are disassembled immediately, then the tree is refreshed with files from workspace
             foreach (var ft in tree.fighters)
             {
                 foreach (var file in ft.files)
@@ -170,16 +169,6 @@ namespace Sm4shAIEditor
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
-        }
-
-        private void asmDialog_ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AssemblyDialog asmDialog = new AssemblyDialog();
-            if (asmDialog.ShowDialog() == DialogResult.OK)
-            {
-                
-            }
-            asmDialog.Dispose();
         }
 
         private void configToolStripMenuItem_Click(object sender, EventArgs e)
