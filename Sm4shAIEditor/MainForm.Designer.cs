@@ -41,6 +41,7 @@
             this.configToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView = new System.Windows.Forms.TreeView();
             this.fileTabContainer = new System.Windows.Forms.TabControl();
+            this.addToProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,6 +61,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newProjectToolStripMenuItem,
             this.openProjectToolStripMenuItem,
+            this.addToProjectToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.toolStripSeparator1,
             this.compileToolStripMenuItem,
@@ -153,6 +155,13 @@
             this.fileTabContainer.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlAdded);
             this.fileTabContainer.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.fileTabContainer_ControlRemoved);
             // 
+            // addToProjectToolStripMenuItem
+            // 
+            this.addToProjectToolStripMenuItem.Name = "addToProjectToolStripMenuItem";
+            this.addToProjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.addToProjectToolStripMenuItem.Text = "Add to Project";
+            this.addToProjectToolStripMenuItem.Click += new System.EventHandler(this.addToProjectToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -187,6 +196,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem compileToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem addToProjectToolStripMenuItem;
     }
 }
 

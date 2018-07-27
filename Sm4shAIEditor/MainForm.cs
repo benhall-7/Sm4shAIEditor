@@ -137,7 +137,7 @@ namespace Sm4shAIEditor
                 foreach (var file in ft.files)
                 {
                     string pathIn = file.folder_address + AITree.AITypeToString[file.type] + ".bin";
-                    string pathOut = util.workDirectory + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
+                    string pathOut = util.workDir + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
                     aism.DisassembleFile(pathIn, pathOut);
                 }
             }
@@ -155,8 +155,33 @@ namespace Sm4shAIEditor
             SetProjectStatus(true);
         }
 
+        private void addToProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!CheckConfig())
+                return;
+            FighterSelection selector = new FighterSelection();
+            if (selector.ShowDialog() != DialogResult.OK)
+                return;
+            tree.AddProjectGameFiles(selector.selFighters, selector.selTypes);
+            foreach (var ft in tree.fighters)
+            {
+                foreach (var file in ft.files)
+                {
+                    if (file.source == AITree.AISource.game_file)
+                    {
+                        string pathIn = file.folder_address + AITree.AITypeToString[file.type] + ".bin";
+                        string pathOut = util.workDir + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
+                        aism.DisassembleFile(pathIn, pathOut);
+                    }
+                }
+            }
+            tree.onDisasm();
+            UpdateTreeView();
+        }
+
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //NEEDS TO CHECK CHANGES AND REQUEST THE SAVE FUNCTION
             tree.fighters.Clear();
             UpdateTreeView();
             SetProjectStatus(false);
@@ -169,7 +194,7 @@ namespace Sm4shAIEditor
                 foreach (var file in ft.files)
                 {
                     string pathIn = file.folder_address;
-                    string pathOut = util.compileDirectory + ft.name + "\\";
+                    string pathOut = util.compDir + ft.name + "\\";
                     aism.AssembleFolder(pathIn, pathOut);
                 }
             }
@@ -216,9 +241,9 @@ namespace Sm4shAIEditor
                 if (config.ShowDialog() != DialogResult.OK)
                     return false;
             }
-            util.workDirectory = util.CorrectFormatFolderPath(util.workDirectory);
-            util.compileDirectory = util.CorrectFormatFolderPath(util.compileDirectory);
-            util.gameFighterDirectory = util.CorrectFormatFolderPath(util.gameFighterDirectory);
+            util.workDir = util.CorrectFormatFolderPath(util.workDir);
+            util.compDir = util.CorrectFormatFolderPath(util.compDir);
+            util.gameFtDir = util.CorrectFormatFolderPath(util.gameFtDir);
             return true;
         }
     }

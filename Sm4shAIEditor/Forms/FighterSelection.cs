@@ -14,7 +14,7 @@ namespace Sm4shAIEditor
 {
     public partial class FighterSelection : Form
     {
-        string ftDir { get { return util.gameFighterDirectory; } }
+        string ftDir { get { return util.gameFtDir; } }
         string[] fighters { get; set; }
 
         public AITree.AIType[] selTypes

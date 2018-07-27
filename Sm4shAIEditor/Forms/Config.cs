@@ -46,17 +46,17 @@ namespace Sm4shAIEditor
         {
             InitializeComponent();
             CheckOK();
-            workDir = util.workDirectory;
-            compileDir = util.compileDirectory;
-            gameFighterDir = util.gameFighterDirectory;
+            workDir = util.workDir;
+            compileDir = util.compDir;
+            gameFighterDir = util.gameFtDir;
         }
         public Config(bool disableWork)
         {
             InitializeComponent();
             CheckOK();
-            workDir = util.workDirectory;
-            compileDir = util.compileDirectory;
-            gameFighterDir = util.gameFighterDirectory;
+            workDir = util.workDir;
+            compileDir = util.compDir;
+            gameFighterDir = util.gameFtDir;
             if (disableWork)
             {
                 work_tB.Enabled = false;
@@ -77,9 +77,9 @@ namespace Sm4shAIEditor
 
         private void apply_button_Click(object sender, EventArgs e)
         {
-            util.workDirectory = workDir;
-            util.compileDirectory = compileDir;
-            util.gameFighterDirectory = gameFighterDir;
+            util.workDir = workDir;
+            util.compDir = compileDir;
+            util.gameFtDir = gameFighterDir;
         }
 
         private void OK_button_Click(object sender, EventArgs e)

@@ -7,20 +7,20 @@ namespace Sm4shAIEditor.Static
 {
     public static class util
     {
-        public static string workDirectory
+        public static string workDir
         {
-            get { return ConfigurationManager.AppSettings.Get("work_directory"); }
-            set { ConfigurationManager.AppSettings.Set("work_directory", value); }
+            get { return Properties.Settings.Default.work_directory; }
+            set { Properties.Settings.Default.work_directory = value; Properties.Settings.Default.Save(); }
         }
-        public static string compileDirectory
+        public static string compDir
         {
-            get { return ConfigurationManager.AppSettings.Get("export_directory"); }
-            set { ConfigurationManager.AppSettings.Set("export_directory", value); }
+            get { return Properties.Settings.Default.export_directory; }
+            set { Properties.Settings.Default.export_directory = value; Properties.Settings.Default.Save(); }
         }
-        public static string gameFighterDirectory
+        public static string gameFtDir
         {
-            get { return ConfigurationManager.AppSettings.Get("game_fighter_directory"); }
-            set { ConfigurationManager.AppSettings.Set("game_fighter_directory", value); }
+            get { return Properties.Settings.Default.game_fighter_directory; }
+            set { Properties.Settings.Default.game_fighter_directory = value; Properties.Settings.Default.Save(); }
         }
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
         {

@@ -34,9 +34,9 @@ namespace Sm4shAIEditor
                 {
                     get
                     {
-                        if (source == AISource.work) return util.workDirectory + parentName + @"\" + AITypeToString[type];
-                        else if (source == AISource.compiled) return util.compileDirectory + parentName + @"\";
-                        else if (source == AISource.game_file) return util.gameFighterDirectory + parentName + @"\script\ai\";
+                        if (source == AISource.work) return util.workDir + parentName + @"\" + AITypeToString[type];
+                        else if (source == AISource.compiled) return util.compDir + parentName + @"\";
+                        else if (source == AISource.game_file) return util.gameFtDir + parentName + @"\script\ai\";
                         else throw new Exception("invalid AI file source");
                     }
                 }
@@ -72,7 +72,7 @@ namespace Sm4shAIEditor
         public void InitOpenProject()
         {
             //set data from the workspace. Fighter list is empty here
-            foreach (string dir in Directory.EnumerateDirectories(util.workDirectory))
+            foreach (string dir in Directory.EnumerateDirectories(util.workDir))
             {
                 string name = util.GetFolderName(dir);
                 List<AIFighter.AIFile> files = new List<AIFighter.AIFile>();
@@ -83,7 +83,8 @@ namespace Sm4shAIEditor
                 }
                 if (files.Count > 0) this.fighters.Add(new AIFighter(name, files));
             }
-            //set any remaining data from the compile directory
+            //set any remaining data from the compile directory. THIS SHOULD BE A NEW SEPARATE OPTION
+            /*
             foreach (string dir in Directory.EnumerateDirectories(util.compileDirectory))
             {
                 string name = util.GetFolderName(dir);
@@ -94,7 +95,8 @@ namespace Sm4shAIEditor
                     newFiles.Add(new AIFighter.AIFile(type, AISource.compiled, name));
                 }
                 int ftIndex = this.fighters.FindIndex(ft => ft.name == name);
-                if (ftIndex == -1) this.fighters.Add(new AIFighter(name, newFiles));//if the fighter doesn't exist, add it
+                //if the fighter doesn't exist, add it
+                if (ftIndex == -1 && newFiles.Count > 0) this.fighters.Add(new AIFighter(name, newFiles));
                 else
                 {
                     foreach (AIFighter.AIFile newFile in newFiles)
@@ -104,6 +106,24 @@ namespace Sm4shAIEditor
                             this.fighters[ftIndex].files.Add(newFile);
                     }
                 }
+            }*/
+        }
+
+        public void AddProjectGameFiles(string[] fighters, AIType[] types)
+        {
+            foreach (string name in fighters)
+            {
+                List<AIFighter.AIFile> newFiles = new List<AIFighter.AIFile>();
+                int ftIndex = this.fighters.FindIndex(ft => ft.name == name);
+                foreach (AIType type in types)
+                {
+                    AIFighter.AIFile newFile = new AIFighter.AIFile(type, AISource.game_file, name);
+                    if (ftIndex == -1 || !this.fighters[ftIndex].files.Exists(file => file.type == newFile.type))
+                        newFiles.Add(newFile);
+                }
+                //if the fighter doesn't exist, add it
+                if (ftIndex == -1 && newFiles.Count > 0) this.fighters.Add(new AIFighter(name, newFiles));
+                else foreach (var file in newFiles) this.fighters[ftIndex].files.Add(file);
             }
         }
 
@@ -112,11 +132,6 @@ namespace Sm4shAIEditor
             //convert the files with game_file source to workspace sources
             fighters.Clear();
             InitOpenProject();
-        }
-
-        public void AddGameFiles(string[] fighters, AIType[] types)
-        {
-            //TODO
         }
 
         public void Refresh()
