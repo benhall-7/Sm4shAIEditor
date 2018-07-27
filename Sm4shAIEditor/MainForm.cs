@@ -30,6 +30,7 @@ namespace Sm4shAIEditor
             projectActive = active;
             openProjectToolStripMenuItem.Enabled = !active;
             newProjectToolStripMenuItem.Enabled = !active;
+            compileToolStripMenuItem.Enabled = active;
         }
         
         /*private void LoadATKD(string directory)
@@ -163,7 +164,15 @@ namespace Sm4shAIEditor
 
         private void compileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            foreach (var ft in tree.fighters)
+            {
+                foreach (var file in ft.files)
+                {
+                    string pathIn = file.folder_address;
+                    string pathOut = util.compileDirectory + ft.name + "\\";
+                    aism.AssembleFolder(pathIn, pathOut);
+                }
+            }
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
