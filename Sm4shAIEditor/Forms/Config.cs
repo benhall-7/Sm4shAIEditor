@@ -50,6 +50,19 @@ namespace Sm4shAIEditor
             compileDir = util.compileDirectory;
             gameFighterDir = util.gameFighterDirectory;
         }
+        public Config(bool disableWork)
+        {
+            InitializeComponent();
+            CheckOK();
+            workDir = util.workDirectory;
+            compileDir = util.compileDirectory;
+            gameFighterDir = util.gameFighterDirectory;
+            if (disableWork)
+            {
+                work_tB.Enabled = false;
+                browseProjectDir_button.Enabled = false;
+            }
+        }
 
         private void CheckOK()
         {

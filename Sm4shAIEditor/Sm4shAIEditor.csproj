@@ -66,23 +66,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AITree.cs" />
-    <Compile Include="AssemblyDialog.cs">
+    <Compile Include="Forms\AssemblyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssemblyDialog.Designer.cs">
+    <Compile Include="Forms\AssemblyDialog.Designer.cs">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Config.cs">
+    <Compile Include="Forms\Config.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Config.Designer.cs">
+    <Compile Include="Forms\Config.Designer.cs">
       <DependentUpon>Config.cs</DependentUpon>
     </Compile>
     <Compile Include="CustomStringReader.cs" />
-    <Compile Include="FighterSelection.cs">
+    <Compile Include="Forms\FighterSelection.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FighterSelection.Designer.cs">
+    <Compile Include="Forms\FighterSelection.Designer.cs">
       <DependentUpon>FighterSelection.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\attack_data.cs" />
@@ -99,13 +99,13 @@
     <Compile Include="Static\aism.cs" />
     <Compile Include="Static\script_data.cs" />
     <Compile Include="Static\util.cs" />
-    <EmbeddedResource Include="AssemblyDialog.resx">
+    <EmbeddedResource Include="Forms\AssemblyDialog.resx">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Config.resx">
+    <EmbeddedResource Include="Forms\Config.resx">
       <DependentUpon>Config.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FighterSelection.resx">
+    <EmbeddedResource Include="Forms\FighterSelection.resx">
       <DependentUpon>FighterSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">

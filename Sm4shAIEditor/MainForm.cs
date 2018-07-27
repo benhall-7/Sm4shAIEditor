@@ -15,12 +15,21 @@ namespace Sm4shAIEditor
         public static Font scriptFont = new Font(
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
+        public static bool projectActive { get; private set; }
 
         public MainForm()
         {
             InitializeComponent();
             this.Text = Properties.Resources.Title;
             this.Icon = Properties.Resources.FoxLogo;
+            SetProjectStatus(false);
+        }
+
+        public void SetProjectStatus(bool active)
+        {
+            projectActive = active;
+            openProjectToolStripMenuItem.Enabled = !active;
+            newProjectToolStripMenuItem.Enabled = !active;
         }
         
         /*private void LoadATKD(string directory)
@@ -111,16 +120,6 @@ namespace Sm4shAIEditor
                 treeView.Nodes.Add(ftNode);
             }
         }
-
-        private void openFighterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void openAllFightersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
         
         private void newProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -131,6 +130,7 @@ namespace Sm4shAIEditor
                 return;
             tree.InitNewProject(selector.selFighters, selector.selTypes);
             //all files in project tree are disassembled immediately, then the tree is refreshed with files from workspace
+            //move this part to new method? Do I need to use it anywhere else?
             foreach (var ft in tree.fighters)
             {
                 foreach (var file in ft.files)
@@ -142,6 +142,28 @@ namespace Sm4shAIEditor
             }
             tree.onDisasm();
             UpdateTreeView();
+            SetProjectStatus(true);
+        }
+
+        private void openProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!CheckConfig())
+                return;
+            tree.InitOpenProject();
+            UpdateTreeView();
+            SetProjectStatus(true);
+        }
+
+        private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tree.fighters.Clear();
+            UpdateTreeView();
+            SetProjectStatus(false);
+        }
+
+        private void compileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -173,7 +195,7 @@ namespace Sm4shAIEditor
 
         private void configToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Config config = new Config();
+            Config config = new Config(projectActive);
             config.ShowDialog();
         }
 
