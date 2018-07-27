@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{63D45AA3-FE06-42B5-81E7-81C291EC3977}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Sm4shAIEditor</RootNamespace>
     <AssemblyName>Sm4shAIEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
@@ -46,6 +46,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -63,18 +66,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AITree.cs" />
-    <Compile Include="AssemblyDialog.cs">
+    <Compile Include="Forms\AssemblyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AssemblyDialog.Designer.cs">
+    <Compile Include="Forms\AssemblyDialog.Designer.cs">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomStringReader.cs" />
-    <Compile Include="FolderSelectDialog.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Forms\Config.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FolderSelectDialog.designer.cs">
-      <DependentUpon>FolderSelectDialog.cs</DependentUpon>
+    <Compile Include="Forms\Config.Designer.cs">
+      <DependentUpon>Config.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomStringReader.cs" />
+    <Compile Include="Forms\FighterSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FighterSelection.Designer.cs">
+      <DependentUpon>FighterSelection.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\attack_data.cs" />
     <Compile Include="MainForm.cs">
@@ -87,10 +96,17 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\script.cs" />
+    <Compile Include="Static\aism.cs" />
     <Compile Include="Static\script_data.cs" />
     <Compile Include="Static\util.cs" />
-    <EmbeddedResource Include="AssemblyDialog.resx">
+    <EmbeddedResource Include="Forms\AssemblyDialog.resx">
       <DependentUpon>AssemblyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Config.resx">
+      <DependentUpon>Config.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FighterSelection.resx">
+      <DependentUpon>FighterSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

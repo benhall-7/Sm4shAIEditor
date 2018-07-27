@@ -12,13 +12,13 @@ namespace Sm4shAIEditor.Static
             "SetVec",//syntax vecX = item
             "Label",
             "Return",
-            "SearchLabel",
+            "Search",
             "If",
             "IfNot",//special syntax, the "Not" portion is in the params
             "Else",
             "EndIf",//syntax }
-            "SetStickRel",
-            "SetButton",
+            "StickRel",
+            "Button",
             "VarAdd",//syntax varX +=
             "VarSub",//syntax varX -=
             "VarMul",//syntax varX *=
@@ -35,35 +35,35 @@ namespace Sm4shAIEditor.Static
             "AndNot",//syntax && !
             "SetFrame",
             "SetAct",
-            "GoToLabel",
-            "GetNearestCliffRel",
+            "Jump",
+            "GetNearestCliffRel",//NEEDS DISAMBIGUATION
             "VarAbs",
-            "SetStickAbs",
-            "Unk_20",
-            "Unk_21",
+            "StickAbs",
+            "BreakIfAerial",
+            "BreakIfGroundFree",
             "SetMaxWaitTime",
-            "Unk_23",//something with position and cliff
+            "SetCliffResetDist",//if value >= 0, ends the act if closer to cliff than value
             "CalcArriveFrameX",
             "CalcArriveFrameY",
-            "GetShieldHP",
-            "StagePtRand",
+            "SetVarShieldHP",
+            "StagePtRand",//NEEDS DISAMBIGUATION
             "CalcArrivePosX",
             "CalcArrivePosY",
-            "AtkdDiceRoll",
-            "Unk_2b",//does nothing. Does any other command reference this???
+            "AttackDiceRoll",
+            "Null_2b",
             "Norm",
             "Dot",
             "CalcArrivePosSec",
             "Unk_2f",
-            "Unk_30",
-            "GetNearestCliffAbs",
-            "ClearStick",
-            "Unk_33",//new to Smash 4
-            "Unk_34",
-            "Unk_35",
-            "Unk_36",//this one is unused
-            "Unk_37",
-            "Unk_38",
+            "SwingChkSet",//when the AI hits an opponent with this set, affects the float 0x1bc8 more -> affects the AI act ratio
+            "GetNearestCliffAbs",//NEEDS DISAMBIGUATION
+            "ClearStick",//if no argument, reset stickX and stickY. If arg is 0x0, reset X. Else, reset Y
+            "StickRel_Unk",//new to Smash 4
+            "Null_34",
+            "Null_35",
+            "StickAngleFront",//this one is unused
+            "StickAngleBack",
+            "ACos",
             "Unk_39"//only used once in Common script E040
         };
 
@@ -86,7 +86,7 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x1d, 2},//vector (cliff position)
             new byte[] {0x1f, 3, 3},//set stick abs
             new byte[] {0x22, 3},//set wait
-            new byte[] {0x23, 3},//unk
+            new byte[] {0x23, 3},//cliff distance to end act
             new byte[] {0x24, 1, 3},//calcArriveFrameX
             new byte[] {0x25, 1, 3},//calcArriveFrameY
             new byte[] {0x26, 1},//gets shield hp
@@ -97,7 +97,11 @@ namespace Sm4shAIEditor.Static
             new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
             new byte[] {0x2f, 1, 3},//unk
             new byte[] {0x31, 2},//vector (cliff position)
-            new byte[] {0x33, 3, 3},//unk
+            new byte[] {0x32, 0},//clear stick
+            new byte[] {0x33, 3, 3},//set stick 2 (unk data)
+            new byte[] {0x36, 3},//stickAngleFront
+			new byte[] {0x37, 3},//stickAngleBack
+            new byte[] {0x38, 1},//ACos
         };
 
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()

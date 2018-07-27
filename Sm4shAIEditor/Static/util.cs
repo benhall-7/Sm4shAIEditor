@@ -1,11 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 
 namespace Sm4shAIEditor.Static
 {
     public static class util
     {
+        public static string workDir
+        {
+            get { return Properties.Settings.Default.work_directory; }
+            set { Properties.Settings.Default.work_directory = value; Properties.Settings.Default.Save(); }
+        }
+        public static string compDir
+        {
+            get { return Properties.Settings.Default.export_directory; }
+            set { Properties.Settings.Default.export_directory = value; Properties.Settings.Default.Save(); }
+        }
+        public static string gameFtDir
+        {
+            get { return Properties.Settings.Default.game_fighter_directory; }
+            set { Properties.Settings.Default.game_fighter_directory = value; Properties.Settings.Default.Save(); }
+        }
         public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
         {
             { "attack_data.bin", 0x444b5441 },
@@ -17,6 +33,19 @@ namespace Sm4shAIEditor.Static
         {
             int index = directory.LastIndexOf('\\');
             return directory.Remove(0, index + 1);
+        }
+        public static string GetFolderName(string directory)
+        {
+            if (directory[directory.Length - 1] == '\\')
+                directory = directory.Remove(directory.Length - 1, 1);
+            int index = directory.LastIndexOf('\\');
+            return directory.Remove(0, index + 1);
+        }
+        public static string CorrectFormatFolderPath(string directory)
+        {
+            if (directory[directory.Length - 1] != '\\')
+                directory += '\\';
+            return directory;
         }
         public static void WriteReverseByteArray(ref BinaryWriter binWriter, byte[] bytes)
         {
@@ -58,6 +87,10 @@ namespace Sm4shAIEditor.Static
             byte[] bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             binWriter.Write(bytes);
+        }
+        public static uint Align0x10(uint position)
+        {
+            return ((position + 0xf) / 0x10) * 0x10;
         }
     }
 }
