@@ -1,9 +1,7 @@
 ﻿using Sm4shAIEditor.Static;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Sm4shAIEditor
