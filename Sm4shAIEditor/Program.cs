@@ -1,5 +1,5 @@
-﻿using System;
-using Sm4shAIEditor.Static;
+﻿using Sm4shAIEditor.Static;
+using System;
 using System.Windows.Forms;
 
 namespace Sm4shAIEditor

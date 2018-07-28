@@ -66,12 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AITree.cs" />
-    <Compile Include="Forms\AssemblyDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AssemblyDialog.Designer.cs">
-      <DependentUpon>AssemblyDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Config.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,9 +93,6 @@
     <Compile Include="Static\aism.cs" />
     <Compile Include="Static\script_data.cs" />
     <Compile Include="Static\util.cs" />
-    <EmbeddedResource Include="Forms\AssemblyDialog.resx">
-      <DependentUpon>AssemblyDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Config.resx">
       <DependentUpon>Config.cs</DependentUpon>
     </EmbeddedResource>
