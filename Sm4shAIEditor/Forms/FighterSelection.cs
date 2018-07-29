@@ -10,6 +10,7 @@ namespace Sm4shAIEditor
     public partial class FighterSelection : Form
     {
         string ftDir { get { return util.gameFtDir; } }
+        string cDir { get { return util.compDir; } }
         string[] fighters { get; set; }
 
         public AITree.AIType[] selTypes
@@ -40,10 +41,12 @@ namespace Sm4shAIEditor
             }
         }
 
-        public FighterSelection()
+        public FighterSelection(bool fromCompile)
         {
             InitializeComponent();
-            string[] dirs = Directory.EnumerateDirectories(ftDir).ToArray();
+            string[] dirs;
+            if (fromCompile) dirs = Directory.EnumerateDirectories(cDir).ToArray();
+            else dirs = Directory.EnumerateDirectories(ftDir).ToArray();
             fighters = new string[dirs.Length];
             for (int i = 0; i < dirs.Length; i++)
             {

@@ -9,11 +9,11 @@ namespace Sm4shAIEditor
     public partial class MainForm : Form
     {
         public static AITree tree = new AITree();
+        public static bool projectActive { get; private set; }
         //font
         public static Font scriptFont = new Font(
                     new FontFamily(ConfigurationManager.AppSettings.Get("script_font")),
                     float.Parse(ConfigurationManager.AppSettings.Get("script_font_size")));
-        public static bool projectActive { get; private set; }
 
         public MainForm()
         {
@@ -26,8 +26,11 @@ namespace Sm4shAIEditor
         public void SetProjectStatus(bool active)
         {
             projectActive = active;
-            openProjectToolStripMenuItem.Enabled = !active;
             newProjectToolStripMenuItem.Enabled = !active;
+            openProjectToolStripMenuItem.Enabled = !active;
+            addGameFilesToolStripMenuItem.Enabled = active;
+            addCompiledFilesToolStripMenuItem.Enabled = active;
+            saveToolStripMenuItem.Enabled = active;
             compileToolStripMenuItem.Enabled = active;
         }
         
@@ -109,10 +112,10 @@ namespace Sm4shAIEditor
         private void UpdateTreeView()
         {
             treeView.Nodes.Clear();
-            foreach (AITree.AIFighter ft in tree.fighters)
+            foreach (AITree.AIFt ft in tree.fighters)
             {
                 TreeNode ftNode = new TreeNode(ft.name);
-                foreach (AITree.AIFighter.AIFile file in ft.files)
+                foreach (AITree.AIFt.AIFile file in ft.files)
                 {
                     ftNode.Nodes.Add(AITree.AITypeToString[file.type]);
                 }
@@ -124,22 +127,10 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection();
+            FighterSelection selector = new FighterSelection(false);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
             tree.InitNewProject(selector.selFighters, selector.selTypes);
-            //all files in project tree are disassembled immediately, then the tree is refreshed with files from workspace
-            //move this part to new method? Do I need to use it anywhere else?
-            foreach (var ft in tree.fighters)
-            {
-                foreach (var file in ft.files)
-                {
-                    string pathIn = file.folder_address + AITree.AITypeToString[file.type] + ".bin";
-                    string pathOut = util.workDir + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
-                    aism.DisassembleFile(pathIn, pathOut);
-                }
-            }
-            tree.onDisasm();
             UpdateTreeView();
             SetProjectStatus(true);
         }
@@ -153,28 +144,31 @@ namespace Sm4shAIEditor
             SetProjectStatus(true);
         }
 
-        private void addToProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addGameFilesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection();
+            FighterSelection selector = new FighterSelection(false);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
-            tree.AddProjectGameFiles(selector.selFighters, selector.selTypes);
-            foreach (var ft in tree.fighters)
-            {
-                foreach (var file in ft.files)
-                {
-                    if (file.source == AITree.AISource.game_file)
-                    {
-                        string pathIn = file.folder_address + AITree.AITypeToString[file.type] + ".bin";
-                        string pathOut = util.workDir + ft.name + "\\" + AITree.AITypeToString[file.type] + "\\";
-                        aism.DisassembleFile(pathIn, pathOut);
-                    }
-                }
-            }
-            tree.onDisasm();
+            tree.AddProjectFiles(selector.selFighters, selector.selTypes, AITree.AISource.game_file);
             UpdateTreeView();
+        }
+
+        private void addCompiledFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!CheckConfig())
+                return;
+            FighterSelection selector = new FighterSelection(true);
+            if (selector.ShowDialog() != DialogResult.OK)
+                return;
+            tree.AddProjectFiles(selector.selFighters, selector.selTypes, AITree.AISource.compiled);
+            UpdateTreeView();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void closeProjectToolStripMenuItem_Click(object sender, EventArgs e)
