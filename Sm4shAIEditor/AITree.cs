@@ -31,7 +31,7 @@ namespace Sm4shAIEditor
                 public string folder_address { get { return GetFolderPath(parentName, type, source); } }
 
                 //constructors
-                public AIFile(AIType type, AISource source, string parentName)
+                public AIFile(string parentName, AIType type, AISource source)
                 {
                     this.type = type;
                     this.source = source;
@@ -66,12 +66,11 @@ namespace Sm4shAIEditor
                 List<AIFt.AIFile> fighterFiles = new List<AIFt.AIFile>();
                 foreach (AIType type in types)
                 {
-                    string folder = AIFt.AIFile.GetFolderPath(name, type, AISource.game_file);
-                    if (File.Exists(folder + AITypeToString[type] + ".bin"))
+                    if (File.Exists(AIFt.AIFile.GetFolderPath(name, type, AISource.game_file) + AITypeToString[type] + ".bin"))
                     {
                         try
                         {
-                            AIFt.AIFile file = new AIFt.AIFile(type, AISource.game_file, name);
+                            AIFt.AIFile file = new AIFt.AIFile(name, type, AISource.game_file);
                             if (Directory.Exists(file.folder_address))
                                 fighterFiles.Add(file);
                         }
@@ -97,7 +96,7 @@ namespace Sm4shAIEditor
                 foreach (string subDir in Directory.EnumerateDirectories(dir).ToArray())
                 {
                     AIType type = StringToAIType[util.GetFileName(subDir)];
-                    files.Add(new AIFt.AIFile(type, AISource.work, name));
+                    files.Add(new AIFt.AIFile(name, type, AISource.work));
                 }
                 if (files.Count > 0) this.fighters.Add(new AIFt(name, files));
             }
@@ -111,11 +110,12 @@ namespace Sm4shAIEditor
                 int ftIndex = this.fighters.FindIndex(ft => ft.name == name);
                 foreach (AIType type in types)
                 {
-                    if (ftIndex == -1 || !this.fighters[ftIndex].files.Exists(file => file.type == type))
+                    if (File.Exists(AIFt.AIFile.GetFolderPath(name, type, source) + AITypeToString[type] + ".bin")
+                        && (ftIndex == -1 || !this.fighters[ftIndex].files.Exists(file => file.type == type)))
                     {
                         try
                         {
-                            AIFt.AIFile file = new AIFt.AIFile(type, source, name);
+                            AIFt.AIFile file = new AIFt.AIFile(name, type, source);
                             if (Directory.Exists(file.folder_address))
                                 newFiles.Add(file);
                         }
@@ -133,17 +133,18 @@ namespace Sm4shAIEditor
             }
         }
 
-        public void Refresh()
-        {
-            //TODO
-        }
-
         public void Sort()
         {
             //sorting the custom class, thanks to https://stackoverflow.com/a/3163963
             foreach (AIFt fighter in fighters)
                 fighter.files.Sort(delegate (AIFt.AIFile f1, AIFt.AIFile f2) { return f1.type.CompareTo(f2.type); });
             fighters.Sort(delegate (AIFt ft1, AIFt ft2) { return ft1.name.CompareTo(ft2.name); });
+        }
+
+        //defunct methods, maybe save for later?
+        public void Refresh()
+        {
+            //TODO
         }
 
         public void CheckNoFiles()
