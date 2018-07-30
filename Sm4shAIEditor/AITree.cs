@@ -63,7 +63,7 @@ namespace Sm4shAIEditor
         {
             foreach (string name in fighters)
             {
-                List<AIFt.AIFile> fighterFiles = new List<AIFt.AIFile>();
+                int fileCount = 0;
                 foreach (AIType type in types)
                 {
                     if (File.Exists(AIFt.AIFile.GetFolderPath(name, type, AISource.game_file) + AITypeToString[type] + ".bin"))
@@ -71,8 +71,7 @@ namespace Sm4shAIEditor
                         try
                         {
                             AIFt.AIFile file = new AIFt.AIFile(name, type, AISource.game_file);
-                            if (Directory.Exists(file.folder_address))
-                                fighterFiles.Add(file);
+                            fileCount++;
                         }
                         catch (Exception e)
                         {
@@ -81,8 +80,8 @@ namespace Sm4shAIEditor
                         }
                     }
                 }
-                if (fighterFiles.Count > 0) this.fighters.Add(new AIFt(name, fighterFiles));
-                else Console.WriteLine("NOTICE: fighter '{0}' contains no AI files", name);
+                if (fileCount == 0) Console.WriteLine("NOTICE: no AI files loaded from fighter '{0}'", name);
+                InitOpenProject();
             }
         }
 
