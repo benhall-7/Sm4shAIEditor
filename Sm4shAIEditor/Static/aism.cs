@@ -124,7 +124,8 @@ namespace Sm4shAIEditor.Static
                 }
                 else //param and param_nfp will use same methods
                 {
-
+                    Console.WriteLine(genObject);
+                    param param = new param(pathIn);
                 }
             }
             catch (Exception e)

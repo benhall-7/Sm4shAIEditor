@@ -15,13 +15,13 @@ namespace Sm4shAIEditor
         public byte unk_index3 { get; set; }
         public byte unk_index4 { get; set; }
         public byte last_index { get; set; }
-        //0x0 hword always?
+        //hword padding, for some reason there is "0x10" alignment after these indeces but offset by 0x8
         private byte[] Bytes_1 = new byte[0x28];
         public byte[] bytes_1 { get { return Bytes_1; } set { Bytes_1 = value; } }
-        //0x0 dword always?
+        //dword padding
         private byte[] Flags = new byte[0x118];
         public byte[] flags { get { return Flags; } set { Flags = value; } }
-        //0x0 dword always?
+        //dword padding
         private Unk1[] Unk1s = new Unk1[0x1c];
         public Unk1[] unk1s { get { return Unk1s; } set { Unk1s = value; } }
         public ActFreqDef[] freqs { get; set; }
@@ -33,7 +33,7 @@ namespace Sm4shAIEditor
                 bR.BaseStream.Position = 0x4;
                 unk_size = util.ReadReverseUInt32(bR);
                 bR.BaseStream.Position = 0x10;
-                unk_index0 = bR.ReadByte();
+                unk_index0 = bR.ReadByte();//always 0. Is this padding?
                 unk_index1 = bR.ReadByte();
                 unk_index2 = bR.ReadByte();
                 unk_index3 = bR.ReadByte();
@@ -58,6 +58,7 @@ namespace Sm4shAIEditor
                     bR.BaseStream.Position = unk1_offsets[i];
                     Unk1s[i] = new Unk1(bR);
                 }
+                freqs = new ActFreqDef[last_index + 1];
                 for (int i = 0; i <= last_index; i++)
                 {
                     bR.BaseStream.Position = freq_offsets[i];
@@ -74,12 +75,13 @@ namespace Sm4shAIEditor
 
             public Unk1(BinaryReader bR)
             {
-                byte index = 1;
-                while (index <= count)
+                byte i = 1;
+                while (i <= count)
                 {
-                    index = bR.ReadByte();
+                    byte index = bR.ReadByte();
                     bR.BaseStream.Position += 4;
-                    things[index - 1] = new field(index, bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
+                    things[i - 1] = new field(index, bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
+                    i++;
                 }
             }
 
@@ -104,18 +106,20 @@ namespace Sm4shAIEditor
         public class ActFreqDef
         {
             public byte ID { get; set; }
-            public byte unk { get; set; }
-            public ushort count { get; set; }
+            public byte unk1 { get; set; }
+            public byte unk2 { get; set; }
+            public byte count { get; set; }
             public data[] events { get; set; }
 
             public ActFreqDef(BinaryReader bR)
             {
                 ID = bR.ReadByte();
-                unk = bR.ReadByte();
-                count = bR.ReadUInt16();
+                unk1 = bR.ReadByte();
+                unk2 = bR.ReadByte();
+                count = bR.ReadByte();
                 events = new data[count];
                 for (int i = 0; i < count; i++)
-                    events[i] = new data(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadUInt16());
+                    events[i] = new data(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), util.ReadReverseUInt16(bR));
             }
 
             public struct data
