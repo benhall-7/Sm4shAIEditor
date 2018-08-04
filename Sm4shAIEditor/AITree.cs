@@ -140,23 +140,6 @@ namespace Sm4shAIEditor
             fighters.Sort(delegate (AIFt ft1, AIFt ft2) { return ft1.name.CompareTo(ft2.name); });
         }
 
-        //defunct methods, maybe save for later?
-        public void Refresh()
-        {
-            //TODO
-        }
-
-        public void CheckNoFiles()
-        {
-            foreach(AIFt ft in fighters.ToArray())
-            {
-                if (ft.files.Count == 0)
-                {
-                    fighters.Remove(ft);
-                }
-            }
-        }
-
         public enum AIType { attack_data, param, param_nfp, script }
         public enum AISource { work, compiled, game_file }
         public static Dictionary<AIType, string> AITypeToString = new Dictionary<AIType, string>()

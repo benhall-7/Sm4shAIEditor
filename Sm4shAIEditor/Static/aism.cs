@@ -46,28 +46,28 @@ namespace Sm4shAIEditor.Static
                         Directory.CreateDirectory(pathOut);
                     BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
                     binWriter.Write((int)0);//pad
-                    util.WriteReverseUInt32(ref binWriter, script.actScriptCount);
+                    util.WriteReverseUInt32(binWriter, script.actCount);
                     binWriter.Write((long)0);//pad
                     foreach (var act in script.acts.Keys)
-                        util.WriteReverseUInt32(ref binWriter, script.acts[act]);
+                        util.WriteReverseUInt32(binWriter, script.acts[act]);
                     foreach (var act in script.acts.Keys)
                     {
                         binWriter.BaseStream.Position = script.acts[act];
-                        util.WriteReverseUInt32(ref binWriter, act.ID);
-                        util.WriteReverseUInt32(ref binWriter, act.ScriptOffset);
-                        util.WriteReverseUInt32(ref binWriter, act.ScriptFloatOffset);
-                        util.WriteReverseUInt16(ref binWriter, act.VarCount);
+                        util.WriteReverseUInt32(binWriter, act.ID);
+                        util.WriteReverseUInt32(binWriter, act.ScriptOffset);
+                        util.WriteReverseUInt32(binWriter, act.ScriptFloatOffset);
+                        util.WriteReverseUInt16(binWriter, act.VarCount);
                         binWriter.Write((short)0);
                         foreach (var cmd in act.CmdList)
                         {
                             binWriter.Write(cmd.ID);
                             binWriter.Write(cmd.ParamCount);
-                            util.WriteReverseUInt16(ref binWriter, cmd.Size);
+                            util.WriteReverseUInt16(binWriter, cmd.Size);
                             foreach (var param in cmd.ParamList)
-                                util.WriteReverseUInt32(ref binWriter, param);
+                                util.WriteReverseUInt32(binWriter, param);
                         }
                         foreach (var value in act.ScriptFloats.Values)
-                            util.WriteReverseFloat(ref binWriter, value);
+                            util.WriteReverseFloat(binWriter, value);
                     }
                     binWriter.Dispose();
                     Console.WriteLine("Done");

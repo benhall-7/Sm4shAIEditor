@@ -8,8 +8,8 @@ namespace Sm4shAIEditor
     class attack_data
     {
         public UInt32 EntryCount { get; set; }
-        public UInt32 SpecialMoveIndex { get; set; }
-        public UInt32 SpecialIndexCount { get; set; }
+        public UInt32 CommonSubactions { get; set; }
+        public UInt32 SpecialSubactions { get; set; }
         public List<attack_entry> attacks { get; set; }
 
         public attack_data(string fileDirectory)
@@ -17,9 +17,9 @@ namespace Sm4shAIEditor
             BinaryReader binReader = new BinaryReader(File.OpenRead(fileDirectory));
 
             binReader.BaseStream.Seek(0x4, SeekOrigin.Begin);
-            EntryCount = util.ReadReverseUInt32(ref binReader);
-            SpecialMoveIndex = util.ReadReverseUInt32(ref binReader);
-            SpecialIndexCount = util.ReadReverseUInt32(ref binReader);
+            EntryCount = util.ReadReverseUInt32(binReader);
+            CommonSubactions = util.ReadReverseUInt32(binReader);
+            SpecialSubactions = util.ReadReverseUInt32(binReader);
 
             InitializeEntries(EntryCount, binReader);
 
@@ -34,16 +34,16 @@ namespace Sm4shAIEditor
                 //have to initialize the thing or get the error thing
                 attacks.Add(new attack_entry());
                 //ints
-                attacks[i].SubactionID = util.ReadReverseUInt16(ref binReader);
-                attacks[i].Unk_1 = util.ReadReverseUInt16(ref binReader);
-                attacks[i].FirstFrame = util.ReadReverseUInt16(ref binReader);
-                attacks[i].LastFrame = util.ReadReverseUInt16(ref binReader);
+                attacks[i].SubactionID = util.ReadReverseUInt16(binReader);
+                attacks[i].Unk_1 = util.ReadReverseUInt16(binReader);
+                attacks[i].FirstFrame = util.ReadReverseUInt16(binReader);
+                attacks[i].LastFrame = util.ReadReverseUInt16(binReader);
 
                 //floats
-                attacks[i].X1 = util.ReadReverseFloat(ref binReader);
-                attacks[i].X2 = util.ReadReverseFloat(ref binReader);
-                attacks[i].Y1 = util.ReadReverseFloat(ref binReader);
-                attacks[i].Y2 = util.ReadReverseFloat(ref binReader);
+                attacks[i].X1 = util.ReadReverseFloat(binReader);
+                attacks[i].X2 = util.ReadReverseFloat(binReader);
+                attacks[i].Y1 = util.ReadReverseFloat(binReader);
+                attacks[i].Y2 = util.ReadReverseFloat(binReader);
             }
         }
 
