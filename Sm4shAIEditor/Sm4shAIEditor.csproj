@@ -91,7 +91,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filetypes\script.cs" />
     <Compile Include="Static\aism.cs" />
-    <Compile Include="Static\script_data.cs" />
     <Compile Include="Static\util.cs" />
     <EmbeddedResource Include="Forms\Config.resx">
       <DependentUpon>Config.cs</DependentUpon>

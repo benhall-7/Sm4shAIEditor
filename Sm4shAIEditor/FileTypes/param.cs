@@ -105,7 +105,7 @@ namespace Sm4shAIEditor
 
         public class ActFreqDef
         {
-            public byte ID { get; set; }
+            public byte condition { get; set; }
             public byte unk1 { get; set; }
             public byte unk2 { get; set; }
             public byte count { get; set; }
@@ -113,7 +113,7 @@ namespace Sm4shAIEditor
 
             public ActFreqDef(BinaryReader bR)
             {
-                ID = bR.ReadByte();
+                condition = bR.ReadByte();
                 unk1 = bR.ReadByte();
                 unk2 = bR.ReadByte();
                 count = bR.ReadByte();
@@ -140,5 +140,78 @@ namespace Sm4shAIEditor
                 }
             }
         }
+
+        public static string[] conditions = new string[]
+        {
+            "true",
+            "unk_01",
+            "unk_02",
+            "unk_03",
+            "tgt_front_far",
+            "tgt_front_mid",
+            "tgt_front_close",
+            "unk_07",
+            "unk_08",
+            "unk_09",
+            "unk_0a",
+            "unk_0b",
+            "unk_0c",
+            "unk_0d",
+            "unk_0e",
+            "false",
+            "unk_10",
+            "unk_11",
+            "unk_12",
+            "unk_13",
+            "unk_14",
+            "unk_15",
+            "unk_16",
+            "unk_17",
+            "unk_18",
+            "unk_19",
+            "unk_1a",
+            "unk_1b",
+            "unk_1c",
+            "unk_1d",
+            "unk_1e",
+            "unk_1f",
+            "unk_20",
+            "unk_21",
+            "unk_22",
+            "unk_23",
+            "unk_24",
+            "unk_25",
+            "unk_26",
+            "unk_27",
+            "unk_28",
+            "unk_29",
+            "unk_2a",
+            "unk_2b",
+            "unk_2c",
+            "unk_2d",
+            "unk_2e",
+            "unk_2f",
+            "unk_30",
+            "unk_31",
+            "unk_32",
+            "unk_33",
+            "unk_34",
+            "unk_35",
+            "unk_36",
+            "unk_37",
+            "unk_38",
+            "unk_39",
+            "unk_3a",
+            "unk_3b",
+            "unk_3c",
+            "unk_3d",
+            "unk_3e",
+            "unk_3f",
+            "unk_40",
+            "unk_41",
+            "unk_42",
+            "unk_43",
+            "unk_44"
+        };
     }
 }
