@@ -81,8 +81,8 @@ namespace Sm4shAIEditor
                     }
                 }
                 if (fileCount == 0) Console.WriteLine("NOTICE: no AI files loaded from fighter '{0}'", name);
-                InitOpenProject();
             }
+            InitOpenProject();
         }
 
         public void InitOpenProject()
