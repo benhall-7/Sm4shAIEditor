@@ -9,12 +9,12 @@ namespace Sm4shAIEditor
     {
         public uint unk_size { get; set; }
         //padding for 0x10 alignment
-        public byte unk_index0 { get; set; }
-        public byte unk_index1 { get; set; }
-        public byte unk_index2 { get; set; }
-        public byte unk_index3 { get; set; }
-        public byte unk_index4 { get; set; }
-        public byte last_index { get; set; }
+        public byte sec1_start { get; set; }
+        public byte sec1_end { get; set; }
+        public byte sec2_start { get; set; }
+        public byte sec2_end { get; set; }
+        public byte sec3_start { get; set; }
+        public byte sec3_end { get; set; }
         //hword padding, for some reason there is "0x10" alignment after these indeces but offset by 0x8
         private byte[] Bytes_1 = new byte[0x28];
         public byte[] bytes_1 { get { return Bytes_1; } set { Bytes_1 = value; } }
@@ -33,12 +33,12 @@ namespace Sm4shAIEditor
                 bR.BaseStream.Position = 0x4;
                 unk_size = util.ReadReverseUInt32(bR);
                 bR.BaseStream.Position = 0x10;
-                unk_index0 = bR.ReadByte();//always 0. Is this padding?
-                unk_index1 = bR.ReadByte();
-                unk_index2 = bR.ReadByte();
-                unk_index3 = bR.ReadByte();
-                unk_index4 = bR.ReadByte();
-                last_index = bR.ReadByte();
+                sec1_start = bR.ReadByte();//always 0. Is this padding?
+                sec1_end = bR.ReadByte();
+                sec2_start = bR.ReadByte();
+                sec2_end = bR.ReadByte();
+                sec3_start = bR.ReadByte();
+                sec3_end = bR.ReadByte();
                 bR.BaseStream.Position = 0x18;
                 for (int i = 0; i < bytes_1.Length; i++)
                     bytes_1[i] = bR.ReadByte();
@@ -50,7 +50,7 @@ namespace Sm4shAIEditor
                 uint[] unk1_offsets = new uint[0x1c];
                 for (int i = 0; i < 0x1c; i++)
                     unk1_offsets[i] = util.ReadReverseUInt32(bR);
-                uint[] freq_offsets = new uint[last_index + 1];
+                uint[] freq_offsets = new uint[sec3_end + 1];
                 for (int i = 0; i < freq_offsets.Length; i++)
                     freq_offsets[i] = util.ReadReverseUInt32(bR);
                 for (int i = 0; i < 0x1c; i++)
@@ -58,8 +58,8 @@ namespace Sm4shAIEditor
                     bR.BaseStream.Position = unk1_offsets[i];
                     Unk1s[i] = new Unk1(bR);
                 }
-                freqs = new ActFreqDef[last_index + 1];
-                for (int i = 0; i <= last_index; i++)
+                freqs = new ActFreqDef[sec3_end + 1];
+                for (int i = 0; i <= sec3_end; i++)
                 {
                     bR.BaseStream.Position = freq_offsets[i];
                     freqs[i] = new ActFreqDef(bR);
@@ -105,17 +105,17 @@ namespace Sm4shAIEditor
 
         public class ActFreqDef
         {
-            public byte condition { get; set; }
-            public byte unk1 { get; set; }
-            public byte unk2 { get; set; }
+            public byte condition0 { get; set; }
+            public byte condition1 { get; set; }
+            public byte flags { get; set; }//0x1 -> negate condition0 ; 0x2 -> negate condition1; 0x4? 0x8?
             public byte count { get; set; }
             public data[] events { get; set; }
 
             public ActFreqDef(BinaryReader bR)
             {
-                condition = bR.ReadByte();
-                unk1 = bR.ReadByte();
-                unk2 = bR.ReadByte();
+                condition0 = bR.ReadByte();
+                condition1 = bR.ReadByte();
+                flags = bR.ReadByte();
                 count = bR.ReadByte();
                 events = new data[count];
                 for (int i = 0; i < count; i++)
