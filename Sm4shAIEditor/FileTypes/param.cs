@@ -107,7 +107,11 @@ namespace Sm4shAIEditor
         {
             public byte condition0 { get; set; }
             public byte condition1 { get; set; }
-            public byte flags { get; set; }//0x1 -> negate condition0 ; 0x2 -> negate condition1; 0x4? 0x8?
+            public byte flags { get; set; }
+            //0x1 -> negate condition0
+            //0x2 -> negate condition1
+            //0x4 -> && the conditions
+            //0x8 -> 
             public byte count { get; set; }
             public data[] events { get; set; }
 
@@ -124,11 +128,11 @@ namespace Sm4shAIEditor
 
             public struct data
             {
-                byte min_prob;
-                byte max_prob;
-                byte max_rank;
-                byte min_rank;
-                ushort act;
+                public byte min_prob;
+                public byte max_prob;
+                public byte max_rank;
+                public byte min_rank;
+                public ushort act;
 
                 public data(byte min_prob, byte max_prob, byte max_rank, byte min_rank, ushort act)
                 {
@@ -138,6 +142,26 @@ namespace Sm4shAIEditor
                     this.min_rank = min_rank;
                     this.act = act;
                 }
+            }
+
+            public override string ToString()
+            {
+                string arg0 = "";
+                if ((flags & 0x1) == 0x1)
+                    arg0 = "!";
+                arg0 += conditions[condition0];
+                string arg1 = "";
+                if ((flags & 0x2) == 0x2)
+                    arg1 = "!";
+                arg1 += conditions[condition1];
+                string op;
+                if ((flags & 0x4) == 0x4) op = "||";
+                else op = "&&";
+                string ActOdds = "";
+                foreach (data thing in events)
+                    ActOdds += string.Format("\n\t{0}\t{1}\t{2}\t{3}\t{4}",
+                        thing.min_prob, thing.max_prob, thing.max_rank, thing.min_rank, thing.act.ToString("x4"));
+                return string.Format("if {0} {1} {2}: {3}",arg0,op,arg1,ActOdds);
             }
         }
 

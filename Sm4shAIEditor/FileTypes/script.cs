@@ -448,7 +448,7 @@ namespace Sm4shAIEditor
                 }
             }
 
-            public string DecompAct()
+            public override string ToString()
             {
                 string text = "";
                 byte lastCmdID = 0xff;

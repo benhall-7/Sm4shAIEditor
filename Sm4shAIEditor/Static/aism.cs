@@ -117,7 +117,7 @@ namespace Sm4shAIEditor.Static
                     foreach(var act in script.acts.Keys)
                     {
                         writer.WriteLine(act.ID.ToString("X4"));
-                        File.WriteAllText(pathOut + act.ID.ToString("X4") + ".txt", act.DecompAct());
+                        File.WriteAllText(pathOut + act.ID.ToString("X4") + ".txt", act.ToString());
                     }
                     writer.Dispose();
                     Console.WriteLine("Done");
@@ -126,6 +126,17 @@ namespace Sm4shAIEditor.Static
                 {
                     Console.WriteLine(genObject);
                     param param = new param(pathIn);
+                    Console.Write(disasm);
+                    if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation.txt"));//pls change name to something better
+                    for (int i = 0; i < param.freqs.Length; i++)
+                    {
+                        var freq = param.freqs[i];
+                        writer.WriteLine(freq.ToString());
+                    }
+                    writer.Dispose();
+                    Console.WriteLine("Done");
                 }
             }
             catch (Exception e)
