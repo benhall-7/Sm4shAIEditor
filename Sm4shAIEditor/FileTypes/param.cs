@@ -24,7 +24,7 @@ namespace Sm4shAIEditor
         //dword padding
         private Unk1[] Unk1s = new Unk1[0x1c];
         public Unk1[] unk1s { get { return Unk1s; } set { Unk1s = value; } }
-        public ActFreqDef[] freqs { get; set; }
+        public Situation[] sits { get; set; }
 
         public param(string fileDir)
         {
@@ -58,11 +58,11 @@ namespace Sm4shAIEditor
                     bR.BaseStream.Position = unk1_offsets[i];
                     Unk1s[i] = new Unk1(bR);
                 }
-                freqs = new ActFreqDef[sec3_end + 1];
+                sits = new Situation[sec3_end + 1];
                 for (int i = 0; i <= sec3_end; i++)
                 {
                     bR.BaseStream.Position = freq_offsets[i];
-                    freqs[i] = new ActFreqDef(bR);
+                    sits[i] = new Situation(bR);
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace Sm4shAIEditor
             }
         }
 
-        public class ActFreqDef
+        public class Situation
         {
             public byte condition0 { get; set; }
             public byte condition1 { get; set; }
@@ -113,20 +113,20 @@ namespace Sm4shAIEditor
             //0x4 -> && the conditions
             //0x8 -> 
             public byte count { get; set; }
-            public data[] events { get; set; }
+            public action[] actions { get; set; }
 
-            public ActFreqDef(BinaryReader bR)
+            public Situation(BinaryReader bR)
             {
                 condition0 = bR.ReadByte();
                 condition1 = bR.ReadByte();
                 flags = bR.ReadByte();
                 count = bR.ReadByte();
-                events = new data[count];
+                actions = new action[count];
                 for (int i = 0; i < count; i++)
-                    events[i] = new data(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), util.ReadReverseUInt16(bR));
+                    actions[i] = new action(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), util.ReadReverseUInt16(bR));
             }
 
-            public struct data
+            public struct action
             {
                 public byte min_prob;
                 public byte max_prob;
@@ -134,7 +134,7 @@ namespace Sm4shAIEditor
                 public byte min_rank;
                 public ushort act;
 
-                public data(byte min_prob, byte max_prob, byte max_rank, byte min_rank, ushort act)
+                public action(byte min_prob, byte max_prob, byte max_rank, byte min_rank, ushort act)
                 {
                     this.min_prob = min_prob;
                     this.max_prob = max_prob;
@@ -149,23 +149,23 @@ namespace Sm4shAIEditor
                 string arg0 = "";
                 if ((flags & 0x1) == 0x1)
                     arg0 = "!";
-                arg0 += conditions[condition0];
+                arg0 += checks[condition0];
                 string arg1 = "";
                 if ((flags & 0x2) == 0x2)
                     arg1 = "!";
-                arg1 += conditions[condition1];
+                arg1 += checks[condition1];
                 string op;
                 if ((flags & 0x4) == 0x4) op = "||";
                 else op = "&&";
                 string ActOdds = "";
-                foreach (data thing in events)
+                foreach (action thing in actions)
                     ActOdds += string.Format("\n\t{0}\t{1}\t{2}\t{3}\t{4}",
                         thing.min_prob, thing.max_prob, thing.max_rank, thing.min_rank, thing.act.ToString("x4"));
                 return string.Format("if {0} {1} {2}: {3}",arg0,op,arg1,ActOdds);
             }
         }
 
-        public static string[] conditions = new string[]
+        public static string[] checks = new string[]
         {
             "true",
             "unk_01",

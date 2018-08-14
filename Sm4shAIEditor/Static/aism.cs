@@ -124,15 +124,15 @@ namespace Sm4shAIEditor.Static
                 }
                 else //param and param_nfp will use same methods
                 {
-                    Console.WriteLine(genObject);
+                    Console.Write(genObject);
                     param param = new param(pathIn);
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
-                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation.txt"));//pls change name to something better
-                    for (int i = 0; i < param.freqs.Length; i++)
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation.txt"));
+                    for (int i = 0; i < param.sits.Length; i++)
                     {
-                        var freq = param.freqs[i];
+                        var freq = param.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();
