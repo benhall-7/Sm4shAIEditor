@@ -128,16 +128,16 @@ namespace Sm4shAIEditor
 
             public struct action
             {
-                public byte min_prob;
-                public byte max_prob;
+                public byte hi_prob;
+                public byte lw_prob;
                 public byte max_rank;
                 public byte min_rank;
                 public ushort act;
 
                 public action(byte min_prob, byte max_prob, byte max_rank, byte min_rank, ushort act)
                 {
-                    this.min_prob = min_prob;
-                    this.max_prob = max_prob;
+                    this.hi_prob = min_prob;
+                    this.lw_prob = max_prob;
                     this.max_rank = max_rank;
                     this.min_rank = min_rank;
                     this.act = act;
@@ -154,14 +154,16 @@ namespace Sm4shAIEditor
                 if ((flags & 0x2) == 0x2)
                     arg1 = "!";
                 arg1 += checks[condition1];
+                if ((flags & 0x8) == 0x8)
+                    arg1 += " (flag 0x8)";
                 string op;
                 if ((flags & 0x4) == 0x4) op = "||";
                 else op = "&&";
                 string ActOdds = "";
-                foreach (action thing in actions)
+                foreach (action action in actions)
                     ActOdds += string.Format("\n\t{0}\t{1}\t{2}\t{3}\t{4}",
-                        thing.min_prob, thing.max_prob, thing.max_rank, thing.min_rank, thing.act.ToString("x4"));
-                return string.Format("if {0} {1} {2}: {3}",arg0,op,arg1,ActOdds);
+                        action.hi_prob, action.lw_prob, action.max_rank, action.min_rank, action.act.ToString("x4"));
+                return string.Format("if {0} {1} {2}:{3}", arg0, op, arg1, ActOdds);
             }
         }
 

@@ -129,8 +129,22 @@ namespace Sm4shAIEditor.Static
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
-                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation.txt"));
-                    for (int i = 0; i < param.sits.Length; i++)
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation_1.txt"));
+                    for (int i = param.sec1_start; i <= param.sec1_end; i++)
+                    {
+                        var freq = param.sits[i];
+                        writer.WriteLine(freq.ToString());
+                    }
+                    writer.Dispose();
+                    writer = new StreamWriter(File.Create(pathOut + "situation_2.txt"));
+                    for (int i = param.sec2_start; i <= param.sec2_end; i++)
+                    {
+                        var freq = param.sits[i];
+                        writer.WriteLine(freq.ToString());
+                    }
+                    writer.Dispose();
+                    writer = new StreamWriter(File.Create(pathOut + "situation_3.txt"));
+                    for (int i = param.sec3_start; i <= param.sec3_end; i++)
                     {
                         var freq = param.sits[i];
                         writer.WriteLine(freq.ToString());

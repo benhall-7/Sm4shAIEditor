@@ -202,18 +202,6 @@ namespace Sm4shAIEditor
             //double clicking a fighter opens all their files
         }
 
-        private void fileTabContainer_ControlAdded(object sender, ControlEventArgs e)
-        {
-            if (fileTabContainer.TabCount != 0)
-                fileTabContainer.Visible = true;
-        }
-
-        private void fileTabContainer_ControlRemoved(object sender, ControlEventArgs e)
-        {
-            if (fileTabContainer.TabCount == 0)
-                fileTabContainer.Visible = false;
-        }
-
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
