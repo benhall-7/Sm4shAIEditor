@@ -99,28 +99,33 @@ namespace Sm4shAIEditor.Static
                 pathOut = util.CorrectFormatFolderPath(pathOut);
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
-                string genObject = string.Format("Generating {0} object... ", fileType);
+                string init = string.Format("Initializing {0}... ", fileType);
                 string disasm = string.Format("Disassembling to {0}... ", pathOut);
 
                 if (type == AITree.AIType.attack_data)
                 {
-                    Console.Write(genObject);
+                    Console.Write(init);
                     attack_data atkd = new attack_data(pathIn);
                     Console.Write(disasm);
-                    /*if (!Directory.Exists(pathOut))
+                    if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
-                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "attack_data.txt"));*/
-                    Console.WriteLine();//only temporary
+                    File.WriteAllText(pathOut + "subactions.txt", atkd.common_subactions + ", " + atkd.special_subactions);
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "attack_data.txt"));
+                    writer.WriteLine("#format:\n" +
+                        "#subaction: [start_frame, end_frame], [x1, x2, y1, y2]");
+                    foreach (var attack in atkd.attacks)
+                        writer.WriteLine(attack.ToString());
+                    Console.WriteLine("Done");//only temporary
                 }
                 else if (type == AITree.AIType.script)
                 {
-                    Console.Write(genObject);
+                    Console.Write(init);
                     script script = new script(pathIn);
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
                     StreamWriter writer = new StreamWriter(File.Create(pathOut + "acts.txt"));
-                    foreach(var act in script.acts.Keys)
+                    foreach (var act in script.acts.Keys)
                     {
                         writer.WriteLine(act.ID.ToString("X4"));
                         File.WriteAllText(pathOut + act.ID.ToString("X4") + ".txt", act.ToString());
@@ -130,7 +135,7 @@ namespace Sm4shAIEditor.Static
                 }
                 else //param and param_nfp will use same methods
                 {
-                    Console.Write(genObject);
+                    Console.Write(init);
                     param aipd = new param(pathIn);
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))

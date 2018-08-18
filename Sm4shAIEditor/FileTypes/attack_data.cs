@@ -30,8 +30,8 @@ namespace Sm4shAIEditor
                 attacks[i] = new attack();
                 attacks[i].subaction = util.ReadReverseUInt16(binReader);
                 binReader.BaseStream.Position += 0x2;//padding
-                attacks[i].start_frame = util.ReadReverseUInt16(binReader);
-                attacks[i].end_frame = util.ReadReverseUInt16(binReader);
+                attacks[i].start = util.ReadReverseUInt16(binReader);
+                attacks[i].end = util.ReadReverseUInt16(binReader);
                 attacks[i].x1 = util.ReadReverseFloat(binReader);
                 attacks[i].x2 = util.ReadReverseFloat(binReader);
                 attacks[i].y1 = util.ReadReverseFloat(binReader);
@@ -41,13 +41,18 @@ namespace Sm4shAIEditor
 
         public struct attack
         {
-            public UInt16 subaction { get; set; }
-            public UInt16 start_frame { get; set; }
-            public UInt16 end_frame { get; set; }
-            public Single x1 { get; set; }
-            public Single x2 { get; set; }
-            public Single y1 { get; set; }
-            public Single y2 { get; set; }
+            public ushort subaction { get; set; }
+            public ushort start { get; set; }
+            public ushort end { get; set; }
+            public float x1 { get; set; }
+            public float x2 { get; set; }
+            public float y1 { get; set; }
+            public float y2 { get; set; }
+
+            public override string ToString()
+            {
+                return string.Format("{0}: [{1}, {2}], [{3}, {4}, {5}, {6}]", subaction, start, end, x1, x2, y1, y2);
+            }
         }
     }
 }
