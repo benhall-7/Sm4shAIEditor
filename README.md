@@ -1,6 +1,6 @@
 # Sm4shAIEditor
 
-AI File manager capable of mass disassembly and assembly of ATKD, script, and partial disassembly of AIPD filetypes for Smash 4.
+AI File manager capable of mass disassembly and assembly of ATKD, script, and partial disassembly of AIPD filetypes in Sm4sh.
 
 **GUI**
 
