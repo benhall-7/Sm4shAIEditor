@@ -188,6 +188,7 @@ namespace Sm4shAIEditor
                                 sReader.Position--;//if Else is followed by a real command, don't skip the first letter
                         }
                         word = sReader.ReadWord();
+                        int tempIndex = -1;
                         if (word == null)
                         {
                             string nextChar = sReader.ReadChar();
@@ -196,7 +197,7 @@ namespace Sm4shAIEditor
                                 sReader.SkipWhiteSpace();
                                 int tempPosition = sReader.Position;
                                 word = sReader.ReadWord();
-                                if (word != cmds[8])//if next command isn't Else
+                                if (word != cmd_info[8].name)//if next command isn't Else
                                 {
                                     ID = 9;//then the } represents an Endif command
                                     sReader.Position = tempPosition;//move the position back so the next loop reads the next command
@@ -206,9 +207,9 @@ namespace Sm4shAIEditor
                                 canHaveArgs = false;
                             }
                         }
-                        else if (cmds.Contains(word))
+                        else if ((tempIndex = cmd_info.FindIndex(item => item.name == word)) != -1)
                         {
-                            ID = (byte)cmds.IndexOf(word);
+                            ID = (byte)tempIndex;
                             if (ID == 6)//if statement
                             {
                                 sReader.ReadUntilAnyOfChars("(", true);
@@ -361,19 +362,15 @@ namespace Sm4shAIEditor
                                 if (word == null)
                                 {
                                     if (append == ",")
-                                        throw new Exception(string.Format("null argument in {0}", cmds[ID]));
+                                        throw new Exception(string.Format("null argument in {0}", cmd_info[ID].name));
                                     else if (append != ")")
-                                        throw new Exception(string.Format("syntax error in {0} args: {1}", cmds[ID], append));
+                                        throw new Exception(string.Format("syntax error in {0} args: {1}", cmd_info[ID].name, append));
                                 }
                                 else
                                 {
-                                    int listIndex = parent.GetCorrectIndexToCmdArgList(ID);
-                                    int argNumber = readParams + 1;
                                     int type = 0;
-                                    if (listIndex != -1 && argNumber < cmd_args[listIndex].Length)
-                                    {
-                                        type = cmd_args[listIndex][argNumber];
-                                    }
+                                    if (readParams < cmd_info[ID].args.Length)
+                                        type = cmd_info[ID].args[readParams];
                                     ParamList.Add(parent.GetParamIDFromType(word, type));
                                     
                                     readParams++;
@@ -488,7 +485,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x06://If
                         case 0x07://IfNot
-                            cmdString += cmds[0x6] + "(";
+                            cmdString += cmd_info[0x6].name + "(";
                             if (cmd.ID == 0x7)
                                 cmdString += "!";
                             int cmdAfterIndex = 1;
@@ -526,9 +523,9 @@ namespace Sm4shAIEditor
                             cmdString += ifPadding + "}" + "\r\n" + ifPadding;
                             //if next command is an "if" or "ifNot" don't put it on a separate line
                             if (CmdList[cmdIndex + 1].ID == 0x6 || CmdList[cmdIndex + 1].ID == 0x7)
-                                cmdString += cmds[cmd.ID] + " ";
+                                cmdString += cmd_info[cmd.ID].name + " ";
                             else
-                                cmdString += cmds[cmd.ID] + " {" + "\r\n";
+                                cmdString += cmd_info[cmd.ID].name + " {" + "\r\n";
                             text += cmdString;
                             break;
                         case 0x09://EndIf
@@ -536,7 +533,7 @@ namespace Sm4shAIEditor
                             text += ifPadding + cmdString;
                             break;
                         case 0x0b://SetButton
-                            cmdString += cmds[cmd.ID] + "(";
+                            cmdString += cmd_info[cmd.ID].name + "(";
                             List<string> cmdButtons = new List<string>();
                             //generate buttons from command
                             for (int i = 0; i < 4; i++)
@@ -591,7 +588,7 @@ namespace Sm4shAIEditor
                             text += ifPadding + cmdString;
                             break;
                         case 0x1e://VarAbs, which supports arbitrary number of args
-                            cmdString += cmds[cmd.ID] + "(";
+                            cmdString += cmd_info[cmd.ID].name + "(";
                             for (int i = 0; i < cmd.ParamCount; i++)
                             {
                                 cmdParams += "var" + cmd.ParamList[i];
@@ -603,7 +600,7 @@ namespace Sm4shAIEditor
                             text += ifPadding + cmdString;
                             break;
                         default:
-                            cmdString += cmds[cmd.ID] + "(";
+                            cmdString += cmd_info[cmd.ID].name + "(";
                             string parsed = ParseCmdParams(cmd);
                             if (parsed != null)
                             {
@@ -632,43 +629,36 @@ namespace Sm4shAIEditor
 
             public string ParseCmdParams(Cmd cmd)
             {
-                int correctIndex = GetCorrectIndexToCmdArgList(cmd.ID);
-                if (correctIndex == -1)
-                    return null;
-                else
+                string cmdParams = "";
+                for (int i = 0; i < cmd.ParamCount; i++)
                 {
-                    string cmdParams = "";
-                    for (int i = 0; i < cmd.ParamCount; i++)
-                    {
-                        int argIndex = i + 1;
-                        byte type;
-                        if (argIndex < cmd_args[correctIndex].Length)
-                            type = cmd_args[correctIndex][argIndex];
-                        else
-                            type = 0;
+                    byte type;
+                    if (i < cmd_info[cmd.ID].args.Length)
+                        type = cmd_info[cmd.ID].args[i];
+                    else
+                        type = 0;
 
-                        switch (type)
-                        {
-                            case 0:
-                                cmdParams += "0x" + cmd.ParamList[i].ToString("X");
-                                break;
-                            case 1:
-                                cmdParams += "var" + cmd.ParamList[i];
-                                break;
-                            case 2:
-                                cmdParams += "vec" + cmd.ParamList[i];
-                                break;
-                            case 3:
-                                cmdParams += GetScriptValue(cmd.ParamList[i]);
-                                break;
-                            default:
-                                break;
-                        }
-                        if (i != cmd.ParamCount - 1)
-                            cmdParams += ", ";
+                    switch (type)
+                    {
+                        case 0:
+                            cmdParams += "0x" + cmd.ParamList[i].ToString("X");
+                            break;
+                        case 1:
+                            cmdParams += "var" + cmd.ParamList[i];
+                            break;
+                        case 2:
+                            cmdParams += "vec" + cmd.ParamList[i];
+                            break;
+                        case 3:
+                            cmdParams += GetScriptValue(cmd.ParamList[i]);
+                            break;
+                        default:
+                            break;
                     }
-                    return cmdParams;
+                    if (i != cmd.ParamCount - 1)
+                        cmdParams += ", ";
                 }
+                return cmdParams;
             }
 
             public uint GetSize()
@@ -701,21 +691,6 @@ namespace Sm4shAIEditor
                         throw new Exception("Invalid param type");
                 }
                 return id;
-            }
-
-            public int GetCorrectIndexToCmdArgList(int cmdID)
-            {
-                int correctIndex = -1;
-                //can this be made faster?
-                for (int i = 0; i < cmd_args.Count; i++)
-                {
-                    if (cmdID == cmd_args[i][0])
-                    {
-                        correctIndex = i;
-                        break;
-                    }
-                }
-                return correctIndex;
             }
 
             protected float GetScriptFloat(BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
@@ -846,103 +821,112 @@ namespace Sm4shAIEditor
             }
         }//end of Act class
 
-        public static List<string> cmds = new List<string>()
+        public class CmdInfo
         {
-            "End",
-            "SetVar",//syntax varX = item
-            "SetVec",//syntax vecX = item
-            "Label",
-            "Return",
-            "Search",
-            "If",
-            "IfNot",//special syntax, the "Not" portion is in the params
-            "Else",
-            "EndIf",//syntax }
-            "StickRel",
-            "Button",
-            "VarAdd",//syntax varX +=
-            "VarSub",//syntax varX -=
-            "VarMul",//syntax varX *=
-            "VarDiv",//syntax varX /=
-            "VecAdd",//syntax vecX +=
-            "VecSub",//syntax vecX -=
-            "VecMul",//syntax vecX *=
-            "VecDiv",//syntax vecX /=
-            "GoToCurrentLabel",
-            "SetVarRandf",
-            "Or",//syntax ||
-            "OrNot",//syntax || !
-            "And",//syntax &&
-            "AndNot",//syntax && !
-            "SetFrame",
-            "SetAct",
-            "Jump",
-            "GetNearestCliffRel",//NEEDS DISAMBIGUATION
-            "VarAbs",
-            "StickAbs",
-            "BreakIfAerial",
-            "BreakIfGroundFree",
-            "SetMaxWaitTime",
-            "SetCliffResetDist",//if value >= 0, ends the act if closer to cliff than value
-            "CalcArriveFrameX",
-            "CalcArriveFrameY",
-            "SetVarShieldHP",
-            "StagePtRand",//NEEDS DISAMBIGUATION
-            "CalcArrivePosX",
-            "CalcArrivePosY",
-            "AttackDiceRoll",
-            "Null_2b",
-            "Norm",
-            "Dot",
-            "CalcArrivePosSec",
-            "Unk_2f",
-            "SwingChkSet",//when the AI hits an opponent with this set, affects the float 0x1bc8 more -> affects the AI act ratio
-            "GetNearestCliffAbs",//NEEDS DISAMBIGUATION
-            "ClearStick",//if no argument, reset stickX and stickY. If arg is 0x0, reset X. Else, reset Y
-            "StickRel_Unk",//new to Smash 4
-            "Null_34",
-            "Null_35",
-            "StickAngleFront",//this one is unused
-            "StickAngleBack",
-            "ACos",
-            "Unk_39"//only used once in Common script E040
-        };
+            public string name { get; private set; }
+            public string desc { get; private set; }
+            public byte[] args { get; private set; }
+            //args: 0 = int, 1 = var, 2 = vec, 3 = script_value
 
-        //schema: for each possible overflow of each command passed through this, the outline of each int[] is as follows
-        //CmdID, arg0, arg1, arg2, etc. For each arg:
-        //0 = raw value
-        //1 = variable set
-        //2 = vector set
-        //3 = get_script_value
-        //if a command or its args aren't represented in the list it will go through a switch for special cases/default behavior
-        public static List<byte[]> cmd_args = new List<byte[]>()
+            public CmdInfo(string name, string desc)
+            {
+                this.name = name;
+                this.desc = desc;
+                args = new byte[0];
+            }
+            public CmdInfo(string name, string desc, byte[] args)
+            {
+                this.name = name;
+                this.desc = desc;
+                this.args = args;
+            }
+        }
+
+        public static List<CmdInfo> cmd_info = new List<CmdInfo>()
         {
-            new byte[] {0x03, 0},//label
-            new byte[] {0x05, 0},//search label
-            new byte[] {0x0a, 3, 3},//set stick rel
-            new byte[] {0x15, 1, 3, 3, 3, 3},//set var with randf
-            new byte[] {0x1a, 3},//set act timer/set frame
-            new byte[] {0x1b, 0},//set act
-            new byte[] {0x1c, 0},//go to label
-            new byte[] {0x1d, 2},//vector (cliff position)
-            new byte[] {0x1f, 3, 3},//set stick abs
-            new byte[] {0x22, 3},//set wait
-            new byte[] {0x23, 3},//cliff distance to end act
-            new byte[] {0x24, 1, 3},//calcArriveFrameX
-            new byte[] {0x25, 1, 3},//calcArriveFrameY
-            new byte[] {0x26, 1},//gets shield hp
-            new byte[] {0x27, 2},//vector (random stage point)
-            new byte[] {0x28, 1, 3},//calcArrivePosX
-            new byte[] {0x29, 1, 3},//calcArrivePosY
-            new byte[] {0x2c, 1, 3, 3},//Norm
-            new byte[] {0x2e, 1, 1, 3},//CalcArrivePosSec
-            new byte[] {0x2f, 1, 3},//unk
-            new byte[] {0x31, 2},//vector (cliff position)
-            new byte[] {0x32, 0},//clear stick
-            new byte[] {0x33, 3, 3},//set stick 2 (unk data)
-            new byte[] {0x36, 3},//stickAngleFront
-			new byte[] {0x37, 3},//stickAngleBack
-            new byte[] {0x38, 1},//ACos
+            new CmdInfo("End","Ends execution of the script"),
+            new CmdInfo("SetVar","Sets a variable using an ID.\nSpecial syntax: varX = Y"),
+            new CmdInfo("SetVec","Sets two consecutive variables with an ID.\nSpecial syntax vecX = Y"),
+            new CmdInfo("Label","Saves a script position to memory. Starts a loop to run logic within",
+                new byte[] { 0 }),
+            new CmdInfo("Return","If a label is set, exits the script and returns to the label on the next frame"),
+            new CmdInfo("Search","Sets a new label without changing script position. If no argument is given, searches for the next label. Otherwise, searches for the label of the ID given",
+                new byte[] { 0 }),
+            new CmdInfo("If","Checks conditions before running code.\nNOTE: the conditions can require their own arguments and the code to run is enclosed in { } blocks"),
+            new CmdInfo("IfNot","Same as If, except this negates the first condition. To use this, negate the first condition with a '!' symbol"),
+            new CmdInfo("Else","If a prior If statement was false, runs this code"),
+            new CmdInfo("Endif","The end of each { } block in an If statement. Do not use this directly"),
+            new CmdInfo("Stick","Adds a value to the current stickX relative to facing direction. If a second argument is given, StickY",
+                new byte[] { 3, 3 }),
+            new CmdInfo("Button","Sets the AI's held buttons: Attack, Special, Shield, Jump. Buttons can be set in separate commands or in the same command using a + or | operator"),
+            new CmdInfo("VarAdd","Adds a value to a variable.\nSpecial syntax: varX += Y, Z, etc"),
+            new CmdInfo("VarSub","Subtracts a value from a variable.\nSpecial syntax: varX -= Y, Z, etc"),
+            new CmdInfo("VarMul","Multiplies a value with a variable.\nSpecial syntax: varX *= Y, Z, etc"),
+            new CmdInfo("VarDiv","Divides a value from a variable.\nSpecial syntax: varX /= Y, Z, etc"),
+            new CmdInfo("VecAdd","Adds a value to a vector.\nSpecial syntax: vecX += Y, Z, etc"),
+            new CmdInfo("VecSub","Subtracts a value from a vector.\nSpecial syntax: vecX -= Y, Z, etc"),
+            new CmdInfo("VecMul","Multiplies a value with a vector.\nSpecial syntax: vecX *= Y, Z, etc"),
+            new CmdInfo("VecDiv","Divides a value from a vector.\nSpecial syntax: vecX /= Y, Z, etc"),
+            new CmdInfo("GoToCurrentLabel","Changes script position immediately to the set position"),
+            new CmdInfo("SetVarRandf","Sets a variable to a random float, with some options.\n1 args: var = [0,1]\n2 args: var = arg2 + [0,1]\n3 args: var = arg2 + arg3*[0,1]\n5 args: var = arg2 + var3*[0,1], + arg4 if arg5 % chance probability is met",
+                new byte[] { 1, 3, 3, 3, 3 }),
+            new CmdInfo("Or","For use only in If statements. Use || instead"),
+            new CmdInfo("OrNot","For use only in If statements. Use || !(condition) instead"),
+            new CmdInfo("And","For use only in If statements. Use && instead"),
+            new CmdInfo("AndNot","For use only in If statemnets. Use && !(condition) instead"),
+            new CmdInfo("SetFrame","Sets a value representing the execution frame",
+                new byte[] { 3 }),
+            new CmdInfo("SetAct","Sets a new Act ID, to be called when the script finishes",
+                new byte[] { 0 }),
+            new CmdInfo("Jump","Jumps to a specified label immediately. When a return command is reached, jump back immediately",
+                new byte[] { 0 }),
+            new CmdInfo("GetNearestCliff","",
+                new byte[] { 2 }),
+            new CmdInfo("VarAbs","Sets a variable to the absolute value of itself. Supports multiple args"),
+            new CmdInfo("StickAbs","Adds a value to the current StickX independent of facing direction. If a second arg is given, StickY",
+                new byte[] { 3, 3 }),
+            new CmdInfo("BreakIfAerial","If AI is in the air, exits the script reader loop. Returns to the current position after a frame"),
+            new CmdInfo("BreakIfGroundFree","If AI is free to act on the ground, exits the script reader loop. Returns to the current position after a frame"),
+            new CmdInfo("SetResetFrames","Sets a countdown which 'encourages the CPU to act' once it reaches 0",
+                new byte[] { 3 }),
+            new CmdInfo("SetCliffResetDistance","Sets a distance such that when the AI enter within the given range of a cliff, they change acts", new byte[] { 3 }),
+            new CmdInfo("CalcArriveFrameX","Sets a variable to the estimated time until the AI's target reaches the given X position",
+                new byte[] { 1, 3 }),
+            new CmdInfo("CalcArriveFrameY","Sets a variable to the estimated time until the AI's target reaches the given Y position",
+                new byte[] { 1, 3 }),
+            new CmdInfo("SetVarShieldHP","Sets a variable to the Shield HP value",
+                new byte[] { 1 }),
+            new CmdInfo("StagePtRand","",
+                new byte[] { 2 }),
+            new CmdInfo("CalcArrivePosX","Sets a variable to the estimated X position the AI's target reaches after given frames",
+                new byte[] { 1, 3 }),
+            new CmdInfo("CalcArrivePosY","Sets a variable to the estimated Y position the AI's target reaches after given frames",
+                new byte[] { 1, 3 }),
+            new CmdInfo("AttackDiceRoll",""),
+            new CmdInfo("Null_2b","This command serves no function?"),
+            new CmdInfo("Norm","Sets a variable to the magnitude of the given X and Y parameters",
+                new byte[] { 1, 3, 3 }),
+            new CmdInfo("Dot",""),
+            new CmdInfo("CalcTargetVector","Sets the first and second variables to the expected X and Y displacement after a certain unit of time (14 frames?). If arg3 is given, multiplies the unit of time by it",
+                new byte[] { 1, 1, 3 }),
+            new CmdInfo("Unk_2f","",
+                new byte[] { 1, 3 }),
+            new CmdInfo("SwingChkSet","Sets a value indicating that the AI should 'respond' to successfully hitting the target. Affects a value in memory which affects act frequency"),
+            new CmdInfo("GetNearestCliffAbs","",
+                new byte[] { 2 }),
+            new CmdInfo("ClearStick","If arg is not given, sets both StickX and StickY to 0. Otherwise, if the arg is 0, only sets StickX to 0, else sets StickY to 0",
+                new byte[] { 0 }),
+            new CmdInfo("Unk_Stick","Add values to StickX and StickY, multiplies the given arguments by an unknown value",
+                new byte[] { 3, 3 }),
+            new CmdInfo("Null_34","This command serves no function?"),
+            new CmdInfo("Null_35","This command serves no function?"),
+            new CmdInfo("StickAngleFront","Sets StickX and StickY using an angle measure in degrees, clockwise",
+                new byte[] { 3 }),
+            new CmdInfo("StickAngleBack","Sets StickX and StickY using an angle measure in degrees, counter-clockwise",
+                new byte[] { 3 }),
+            new CmdInfo("ACos","Sets a variable to the arccosine of itself. Will throw an error if the absolute value ≥ 1",
+                new byte[] { 1 }),
+            new CmdInfo("Unk_39","")
         };
 
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
@@ -1031,9 +1015,6 @@ namespace Sm4shAIEditor
         //Key = ID, Value = type of arguments:
         //0 = get_script_value
         //1 = fighter name
-        //I could make more if need be
-        //If an ID is not represented it is either treated as a special case or uses raw values
-        //A special case could be a check that uses multiple types of arguments but I haven't found one yet
         public static Dictionary<UInt32, byte> if_chk_args = new Dictionary<uint, byte>()
         {
             {0x1000, 0},
