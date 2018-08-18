@@ -129,21 +129,21 @@ namespace Sm4shAIEditor.Static
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
-                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation_1.txt"));
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation_return.txt"));
                     for (int i = param.sec1_start; i <= param.sec1_end; i++)
                     {
                         var freq = param.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();
-                    writer = new StreamWriter(File.Create(pathOut + "situation_2.txt"));
+                    writer = new StreamWriter(File.Create(pathOut + "situation_attack.txt"));
                     for (int i = param.sec2_start; i <= param.sec2_end; i++)
                     {
                         var freq = param.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();
-                    writer = new StreamWriter(File.Create(pathOut + "situation_3.txt"));
+                    writer = new StreamWriter(File.Create(pathOut + "situation_defend.txt"));
                     for (int i = param.sec3_start; i <= param.sec3_end; i++)
                     {
                         var freq = param.sits[i];

@@ -80,7 +80,7 @@ namespace Sm4shAIEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Smash 4 AI Editor.
+        ///   Looks up a localized string similar to AI Manager.
         /// </summary>
         internal static string Title {
             get {
