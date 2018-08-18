@@ -104,7 +104,13 @@ namespace Sm4shAIEditor.Static
 
                 if (type == AITree.AIType.attack_data)
                 {
-
+                    Console.Write(genObject);
+                    attack_data atkd = new attack_data(pathIn);
+                    Console.Write(disasm);
+                    /*if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
+                    StreamWriter writer = new StreamWriter(File.Create(pathOut + "attack_data.txt"));*/
+                    Console.WriteLine();//only temporary
                 }
                 else if (type == AITree.AIType.script)
                 {
@@ -125,28 +131,28 @@ namespace Sm4shAIEditor.Static
                 else //param and param_nfp will use same methods
                 {
                     Console.Write(genObject);
-                    param param = new param(pathIn);
+                    param aipd = new param(pathIn);
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
                     StreamWriter writer = new StreamWriter(File.Create(pathOut + "situation_return.txt"));
-                    for (int i = param.sec1_start; i <= param.sec1_end; i++)
+                    for (int i = aipd.sec1_start; i <= aipd.sec1_end; i++)
                     {
-                        var freq = param.sits[i];
+                        var freq = aipd.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();
                     writer = new StreamWriter(File.Create(pathOut + "situation_attack.txt"));
-                    for (int i = param.sec2_start; i <= param.sec2_end; i++)
+                    for (int i = aipd.sec2_start; i <= aipd.sec2_end; i++)
                     {
-                        var freq = param.sits[i];
+                        var freq = aipd.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();
                     writer = new StreamWriter(File.Create(pathOut + "situation_defend.txt"));
-                    for (int i = param.sec3_start; i <= param.sec3_end; i++)
+                    for (int i = aipd.sec3_start; i <= aipd.sec3_end; i++)
                     {
-                        var freq = param.sits[i];
+                        var freq = aipd.sits[i];
                         writer.WriteLine(freq.ToString());
                     }
                     writer.Dispose();

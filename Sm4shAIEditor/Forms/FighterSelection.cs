@@ -18,6 +18,8 @@ namespace Sm4shAIEditor
             get
             {
                 bool[] checks = new bool[] { atkd_cB.Checked, aipd_cB.Checked, aipd_nfp_cB.Checked, script_cB.Checked };
+                if (all_cB.Checked)
+                    checks = new bool[] { true, true, true, true };
                 List<AITree.AIType> types = new List<AITree.AIType>();
                 for (int i = 0; i < checks.Length; i++)
                 {
@@ -61,24 +63,10 @@ namespace Sm4shAIEditor
 
         private void all_cB_CheckedChanged(object sender, EventArgs e)
         {
-            if (all_cB.Checked)
-            {
-                atkd_cB.Checked = true;
-                aipd_cB.Checked = true;
-                aipd_nfp_cB.Checked = true;
-                script_cB.Checked = true;
-                atkd_cB.Enabled = false;
-                aipd_cB.Enabled = false;
-                aipd_nfp_cB.Enabled = false;
-                script_cB.Enabled = false;
-            }
-            else
-            {
-                atkd_cB.Enabled = true;
-                aipd_cB.Enabled = true;
-                aipd_nfp_cB.Enabled = true;
-                script_cB.Enabled = true;
-            }
+            atkd_cB.Enabled = !all_cB.Checked;
+            aipd_cB.Enabled = !all_cB.Checked;
+            aipd_nfp_cB.Enabled = !all_cB.Checked;
+            script_cB.Enabled = !all_cB.Checked;
         }
 
         private void allFt_button_Click(object sender, EventArgs e)

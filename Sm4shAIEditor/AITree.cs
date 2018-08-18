@@ -101,7 +101,7 @@ namespace Sm4shAIEditor
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("ERROR: cannot load file ({0}: {1})", name, util.GetFolderName(subDir));
+                        Console.WriteLine("ERROR: cannot setup workspace folder ({0}: {1})", name, util.GetFolderName(subDir));
                         Console.WriteLine(e.Message);
                     }
                 }
