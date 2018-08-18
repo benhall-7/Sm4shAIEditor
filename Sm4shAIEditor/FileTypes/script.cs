@@ -632,11 +632,9 @@ namespace Sm4shAIEditor
                 string cmdParams = "";
                 for (int i = 0; i < cmd.ParamCount; i++)
                 {
-                    byte type;
+                    byte type = 0;
                     if (i < cmd_info[cmd.ID].args.Length)
                         type = cmd_info[cmd.ID].args[i];
-                    else
-                        type = 0;
 
                     switch (type)
                     {

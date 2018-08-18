@@ -75,7 +75,7 @@ namespace Sm4shAIEditor
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Error on file load ({0}: {1})", name, AITypeToString[type]);
+                            Console.WriteLine("ERROR: cannot load file ({0}: {1})", name, AITypeToString[type]);
                             Console.WriteLine(e.Message);
                         }
                     }
@@ -94,8 +94,16 @@ namespace Sm4shAIEditor
                 List<AIFt.AIFile> files = new List<AIFt.AIFile>();
                 foreach (string subDir in Directory.EnumerateDirectories(dir).ToArray())
                 {
-                    AIType type = StringToAIType[util.GetFileName(subDir)];
-                    files.Add(new AIFt.AIFile(name, type, AISource.work));
+                    try
+                    {
+                        AIType type = StringToAIType[util.GetFileName(subDir)];
+                        files.Add(new AIFt.AIFile(name, type, AISource.work));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("ERROR: cannot load file ({0}: {1})", name, util.GetFolderName(subDir));
+                        Console.WriteLine(e.Message);
+                    }
                 }
                 if (files.Count > 0) this.fighters.Add(new AIFt(name, files));
             }
