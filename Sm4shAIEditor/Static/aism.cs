@@ -23,24 +23,44 @@ namespace Sm4shAIEditor.Static
                 pathOut = util.CorrectFormatFolderPath(pathOut);
 
                 AITree.AIType type = AITree.StringToAIType[fileType];
-                string genObject = string.Format("Generating {0} object... ", fileType);
+                string init = string.Format("Initializing {0}... ", fileType);
                 string asm = string.Format("Assembling to {0}... ", pathOut);
 
                 if (type == AITree.AIType.attack_data)
                 {
-                    
+                    Console.Write(init);
+                    string[] sub_counts = File.ReadAllLines(pathIn + "subactions.txt");
+                    attack_data atkd = new attack_data(uint.Parse(sub_counts[0]), uint.Parse(sub_counts[1]), pathIn + "attack_data.txt");
+                    Console.Write(asm);
+                    if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
+                    BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
+                    binWriter.Write(util.fileMagic[type]);
+                    util.WriteReverseUInt32(binWriter, atkd.count);
+                    util.WriteReverseUInt32(binWriter, atkd.common_subactions);
+                    util.WriteReverseUInt32(binWriter, atkd.special_subactions);
+                    foreach (var attack in atkd.attacks)
+                    {
+                        util.WriteReverseUInt16(binWriter, attack.subaction);
+                        binWriter.BaseStream.Position += 2;
+                        util.WriteReverseUInt16(binWriter, attack.start);
+                        util.WriteReverseUInt16(binWriter, attack.end);
+                        util.WriteReverseFloat(binWriter, attack.x1);
+                        util.WriteReverseFloat(binWriter, attack.x2);
+                        util.WriteReverseFloat(binWriter, attack.y1);
+                        util.WriteReverseFloat(binWriter, attack.y2);
+                    }
+                    binWriter.Dispose();
+                    Console.WriteLine("Done");
                 }
                 else if (type == AITree.AIType.script)
                 {
-                    Console.Write(genObject);
+                    Console.Write(init);
                     Dictionary<uint, string> acts = new Dictionary<uint, string>();
                     string[] IDs = File.ReadAllLines(pathIn + "acts.txt");
                     foreach(string ID in IDs)
-                    {
                         acts.Add(uint.Parse(ID, NumberStyles.HexNumber), File.ReadAllText(pathIn + ID + ".txt"));
-                    }
                     script script = new script(acts);
-                    
                     Console.Write(asm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
@@ -74,7 +94,7 @@ namespace Sm4shAIEditor.Static
                 }
                 else //param and param_nfp will use same methods
                 {
-                    
+                    //can't be bothered to assemble the param files until I finish analysis + disassembly
                 }
             }
             catch (Exception e)
@@ -109,13 +129,13 @@ namespace Sm4shAIEditor.Static
                     Console.Write(disasm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
-                    File.WriteAllText(pathOut + "subactions.txt", atkd.common_subactions + ", " + atkd.special_subactions);
+                    File.WriteAllText(pathOut + "subactions.txt", atkd.common_subactions + "\n" + atkd.special_subactions);
                     StreamWriter writer = new StreamWriter(File.Create(pathOut + "attack_data.txt"));
-                    writer.WriteLine("#format:\n" +
-                        "#subaction: [start_frame, end_frame], [x1, x2, y1, y2]");
+                    writer.WriteLine("#format:\n#subaction: [start_frame, end_frame], [x1, x2, y1, y2]");
                     foreach (var attack in atkd.attacks)
                         writer.WriteLine(attack.ToString());
-                    Console.WriteLine("Done");//only temporary
+                    writer.Dispose();
+                    Console.WriteLine("Done");
                 }
                 else if (type == AITree.AIType.script)
                 {
@@ -167,6 +187,7 @@ namespace Sm4shAIEditor.Static
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: {0}", e.Message);
+                Console.WriteLine(e.StackTrace);
             }
         }
     }

@@ -22,12 +22,12 @@ namespace Sm4shAIEditor.Static
             get { return Properties.Settings.Default.game_fighter_directory; }
             set { Properties.Settings.Default.game_fighter_directory = value; Properties.Settings.Default.Save(); }
         }
-        public static Dictionary<string, Int32> fileMagic = new Dictionary<string, int>()
+        public static Dictionary<AITree.AIType, uint> fileMagic = new Dictionary<AITree.AIType, uint>()
         {
-            { "attack_data.bin", 0x444b5441 },
-            { "param.bin", 0x44504941 },
-            { "param_nfp.bin", 0x44504941 },
-            { "script.bin", 0x00000000 }
+            { AITree.AIType.attack_data, 0x444b5441 },
+            { AITree.AIType.param, 0x44504941 },
+            { AITree.AIType.param_nfp, 0x44504941 },
+            { AITree.AIType.script, 0x00000000 }
         };
         public static string GetFileName(string directory)
         {

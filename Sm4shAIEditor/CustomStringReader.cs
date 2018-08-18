@@ -63,7 +63,7 @@
                 else break;
             }
         }
-        private void SkipToEndLine()
+        public void SkipToEndLine()
         {
             while (!EndString)
             {

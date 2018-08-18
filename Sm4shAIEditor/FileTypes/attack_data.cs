@@ -1,14 +1,15 @@
 ﻿using Sm4shAIEditor.Static;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Sm4shAIEditor
 {
     class attack_data
     {
-        public UInt32 count { get; set; }
-        public UInt32 common_subactions { get; set; }
-        public UInt32 special_subactions { get; set; }
+        public uint count { get; set; }
+        public uint common_subactions { get; set; }
+        public uint special_subactions { get; set; }
         public attack[] attacks { get; set; }
 
         public attack_data(string fileDirectory)
@@ -20,6 +21,37 @@ namespace Sm4shAIEditor
             special_subactions = util.ReadReverseUInt32(binReader);
             InitializeEntries(count, binReader);
             binReader.Dispose();
+        }
+        public attack_data(uint cmn_subs, uint spc_subs, string attackDir)
+        {
+            common_subactions = cmn_subs;
+            special_subactions = spc_subs;
+            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(attackDir));
+            List<attack> atks = new List<attack>();
+            while (true)
+            {
+                attack atk = new attack();
+                string subactionStr = sReader.ReadWord();
+                if (subactionStr == null)
+                    break;
+                atk.subaction = ushort.Parse(subactionStr);
+                sReader.ReadUntilAnyOfChars("[", true);
+                atk.start = ushort.Parse(sReader.ReadWord());
+                sReader.ReadUntilAnyOfChars(",", true);
+                atk.end = ushort.Parse(sReader.ReadWord());
+                sReader.ReadUntilAnyOfChars("[", true);
+                atk.x1 = float.Parse(sReader.ReadWord());
+                sReader.ReadUntilAnyOfChars(",", true);
+                atk.x2 = float.Parse(sReader.ReadWord());
+                sReader.ReadUntilAnyOfChars(",", true);
+                atk.y1 = float.Parse(sReader.ReadWord());
+                sReader.ReadUntilAnyOfChars(",", true);
+                atk.y2 = float.Parse(sReader.ReadWord());
+                sReader.SkipToEndLine();
+                atks.Add(atk);
+            }
+            attacks = atks.ToArray();
+            count = (uint)attacks.Length;
         }
         
         private void InitializeEntries(UInt32 entryCount, BinaryReader binReader)
