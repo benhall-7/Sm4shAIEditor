@@ -1,18 +1,12 @@
 # Sm4shAIEditor
 
-Plan: Open and edit attack_data, param, and script files for Smash 4's AI
+AI File manager capable of mass disassembly and assembly of ATKD, script, and partial disassembly of AIPD filetypes in Sm4sh.
 
-**Current status**:
+**GUI**
 
-General: the GUI needs much more work to be fully functional.
+Provides an interface to setup workspace/compilation directories from game data and efficiently disassemble/assemble files from any chosen fighter or filetype. The GUI is in progress of being redeveloped to provide useful features, although direct file editing may or may not be left in favor of other tools such as Notepad++
 
-Can open ai directories and import/export ATKD and script files.
-
-Editing scripts can be done either through the GUI or through a decompiled output folder, but I haven't added a way to load fighters from that folder into the GUI yet.
-
-Currently the GUI doesn't have a way to add or remove acts, but this can be done in the folder by removing the act ID from acts.txt.
-
-Debug statements are in a primitive state, so I recommand using Visual Studio's debugger to find where an issue occurred.
+*Note:* This program also supports command line options to directly disassemble/assemble a chosen file/folder. See "-h" for syntax
 
 **Building**
 
