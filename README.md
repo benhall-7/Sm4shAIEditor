@@ -10,4 +10,4 @@ Provides an interface to setup workspace/compilation directories from game data 
 
 **Building**
 
-Open in Visual Studio and build. I'll make a release when it's more developed.
+Open in Visual Studio and build, or use the provided release
