@@ -1,4 +1,5 @@
 ﻿using Sm4shAIEditor.Static;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Sm4shAIEditor
@@ -67,36 +68,29 @@ namespace Sm4shAIEditor
 
         public class Unk1
         {
-            private static int count = 0x2e;
-            private field[] Things = new field[count];
-            public field[] things { get { return Things; } set { Things = value; } }
+            public field[] things { get; set; }
 
             public Unk1(BinaryReader bR)
             {
-                byte i = 1;
-                while (i <= count)
+                List<field> ls = new List<field>();
+                for (byte i = bR.ReadByte(); i > 0; i = bR.ReadByte())
                 {
-                    byte index = bR.ReadByte();
-                    bR.BaseStream.Position += 4;
-                    things[i - 1] = new field(index, bR.ReadByte(), bR.ReadByte(), bR.ReadByte());
-                    i++;
+                    bR.BaseStream.Position += 3;//3 bytes padding
+                    ls.Add(new field(i, util.ReadReverseUInt16(bR), util.ReadReverseUInt16(bR)));
                 }
+                things = ls.ToArray();
             }
 
             public struct field
             {
                 public byte index;
-                public int pad;
-                public byte unk1;
-                public byte unk2;
-                public byte unk3;
-                public field(byte i, byte unk1, byte unk2, byte unk3)
+                public ushort hi_rank_prob;
+                public ushort lw_rank_prob;
+                public field(byte index, ushort hi_rank_prob, ushort lw_rank_prob)
                 {
-                    index = i;
-                    pad = 0;
-                    this.unk1 = unk1;
-                    this.unk2 = unk2;
-                    this.unk3 = unk3;
+                    this.index = index;
+                    this.hi_rank_prob = hi_rank_prob;
+                    this.lw_rank_prob = lw_rank_prob;
                 }
             }
         }
@@ -126,16 +120,16 @@ namespace Sm4shAIEditor
 
             public struct action
             {
-                public byte hi_prob;
-                public byte lw_prob;
+                public byte hi_rank_prob;
+                public byte lw_rank_prob;
                 public byte max_rank;
                 public byte min_rank;
                 public ushort act;
 
-                public action(byte min_prob, byte max_prob, byte max_rank, byte min_rank, ushort act)
+                public action(byte hi_rank_prob, byte lw_rank_prob, byte max_rank, byte min_rank, ushort act)
                 {
-                    this.hi_prob = min_prob;
-                    this.lw_prob = max_prob;
+                    this.hi_rank_prob = hi_rank_prob;
+                    this.lw_rank_prob = lw_rank_prob;
                     this.max_rank = max_rank;
                     this.min_rank = min_rank;
                     this.act = act;
@@ -160,7 +154,7 @@ namespace Sm4shAIEditor
                 string ActOdds = "";
                 foreach (action action in actions)
                     ActOdds += string.Format("\n\t{0}\t{1}\t{2}\t{3}\t{4}",
-                        action.hi_prob, action.lw_prob, action.max_rank, action.min_rank, action.act.ToString("x4"));
+                        action.hi_rank_prob, action.lw_rank_prob, action.max_rank, action.min_rank, action.act.ToString("x4"));
                 return string.Format("if {0} {1} {2}:{3}", arg0, op, arg1, ActOdds);
             }
         }

@@ -34,14 +34,14 @@ namespace Sm4shAIEditor
         {
             try
             {
-                string op = (string)args[0];
+                string op = args[0];
                 if (op == keys[0])
                 {
-                    aism.AssembleFolder((string)args[1], (string)args[2]);
+                    aism.AssembleFolder(args[1], args[2]);
                 }
                 else if (op == keys[1])
                 {
-                    aism.DisassembleFile((string)args[1], (string)args[2]);
+                    aism.DisassembleFile(args[1], args[2]);
                 }
                 else if (op == keys[2])
                     Console.WriteLine(usage);
