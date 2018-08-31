@@ -98,7 +98,7 @@ namespace Sm4shAIEditor
                 foreach (var file in ft.files)
                 {
                     string pathIn = file.folder_address;
-                    string pathOut = util.compDir + ft.name + "\\";
+                    string pathOut = AITree.AIFt.AIFile.GetFolderPath(ft.name, file.type, AITree.AISource.compiled);
                     aism.AssembleFolder(pathIn, pathOut);
                 }
             }

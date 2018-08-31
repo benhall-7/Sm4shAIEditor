@@ -103,7 +103,7 @@ namespace Sm4shAIEditor
             //0x1 -> negate condition0
             //0x2 -> negate condition1
             //0x4 -> && the conditions
-            //0x8 -> 
+            //0x8 -> ?
             public byte count { get; set; }
             public action[] actions { get; set; }
 

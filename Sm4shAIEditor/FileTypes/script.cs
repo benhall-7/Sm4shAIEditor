@@ -112,6 +112,8 @@ namespace Sm4shAIEditor
                     sReader.SkipWhiteSpace();
                     ScriptFloatOffset += cmd.Size;
                 }
+                if (VarCount > 25)
+                    Console.WriteLine("NOTICE: (Act {0}) variable count exceeded 25", ID);
             }
 
             public class Cmd
@@ -812,8 +814,6 @@ namespace Sm4shAIEditor
             {
                 if (isVec)
                     varID++;
-                //if (varID > 24)
-                //    throw new Exception("variable count exceeded maximum");
                 if (varID > VarCount)
                     VarCount = (ushort)(varID + 1);
             }
@@ -824,7 +824,10 @@ namespace Sm4shAIEditor
             public string name { get; private set; }
             public string desc { get; private set; }
             public byte[] args { get; private set; }
-            //args: 0 = int, 1 = var, 2 = vec, 3 = script_value
+            //0 = int
+            //1 = var
+            //2 = vec
+            //3 = script_value
 
             public CmdInfo(string name, string desc)
             {
@@ -845,17 +848,14 @@ namespace Sm4shAIEditor
             new CmdInfo("End","Ends execution of the script"),
             new CmdInfo("SetVar","Sets a variable using an ID.\nSpecial syntax: varX = Y"),
             new CmdInfo("SetVec","Sets two consecutive variables with an ID.\nSpecial syntax vecX = Y"),
-            new CmdInfo("Label","Saves a script position to memory. Starts a loop to run logic within",
-                new byte[] { 0 }),
+            new CmdInfo("Label","Saves a script position to memory. Starts a loop to run logic within", new byte[] { 0 }),
             new CmdInfo("Return","If a label is set, exits the script and returns to the label on the next frame"),
-            new CmdInfo("Search","Sets a new label without changing script position. If no argument is given, searches for the next label. Otherwise, searches for the label of the ID given",
-                new byte[] { 0 }),
+            new CmdInfo("Search","Sets a new label without changing script position. If no argument is given, searches for the next label. Otherwise, searches for the label of the ID given", new byte[] { 0 }),
             new CmdInfo("If","Checks conditions before running code.\nNOTE: the conditions can require their own arguments and the code to run is enclosed in { } blocks"),
             new CmdInfo("IfNot","Same as If, except this negates the first condition. To use this, negate the first condition with a '!' symbol"),
             new CmdInfo("Else","If a prior If statement was false, runs this code"),
             new CmdInfo("Endif","The end of each { } block in an If statement. Do not use this directly"),
-            new CmdInfo("Stick","Adds a value to the current stickX relative to facing direction. If a second argument is given, StickY",
-                new byte[] { 3, 3 }),
+            new CmdInfo("Stick","Adds a value to the current stickX relative to facing direction. If a second argument is given, StickY", new byte[] { 3, 3 }),
             new CmdInfo("Button","Sets the AI's held buttons: Attack, Special, Shield, Jump. Buttons can be set in separate commands or in the same command using a + or | operator"),
             new CmdInfo("VarAdd","Adds a value to a variable.\nSpecial syntax: varX += Y, Z, etc"),
             new CmdInfo("VarSub","Subtracts a value from a variable.\nSpecial syntax: varX -= Y, Z, etc"),
@@ -866,64 +866,42 @@ namespace Sm4shAIEditor
             new CmdInfo("VecMul","Multiplies a value with a vector.\nSpecial syntax: vecX *= Y, Z, etc"),
             new CmdInfo("VecDiv","Divides a value from a vector.\nSpecial syntax: vecX /= Y, Z, etc"),
             new CmdInfo("GoToCurrentLabel","Changes script position immediately to the set position"),
-            new CmdInfo("SetVarRandf","Sets a variable to a random float, with some options.\n1 args: var = [0,1]\n2 args: var = arg2 + [0,1]\n3 args: var = arg2 + arg3*[0,1]\n5 args: var = arg2 + var3*[0,1], + arg4 if arg5 % chance probability is met",
-                new byte[] { 1, 3, 3, 3, 3 }),
+            new CmdInfo("SetVarRandf","Sets a variable to a random float, with some options.\n1 args: var = [0,1]\n2 args: var = arg2 + [0,1]\n3 args: var = arg2 + arg3*[0,1]\n5 args: var = arg2 + var3*[0,1], + arg4 if arg5 % chance probability is met", new byte[] { 1, 3, 3, 3, 3 }),
             new CmdInfo("Or","For use only in If statements. Use || instead"),
             new CmdInfo("OrNot","For use only in If statements. Use || !(condition) instead"),
             new CmdInfo("And","For use only in If statements. Use && instead"),
             new CmdInfo("AndNot","For use only in If statemnets. Use && !(condition) instead"),
-            new CmdInfo("SetFrame","Sets a value representing the execution frame",
-                new byte[] { 3 }),
-            new CmdInfo("SetAct","Sets a new Act ID, to be called when the script finishes",
-                new byte[] { 0 }),
-            new CmdInfo("Jump","Jumps to a specified label immediately. When a return command is reached, jump back immediately",
-                new byte[] { 0 }),
-            new CmdInfo("GetNearestCliff","",
-                new byte[] { 2 }),
+            new CmdInfo("SetFrame","Sets a value representing the execution frame, continues counting up every frame", new byte[] { 3 }),
+            new CmdInfo("SetAct","Sets a new Act ID, to be called when the script finishes", new byte[] { 0 }),
+            new CmdInfo("Jump","Jumps to a specified label immediately. When a return command is reached, jump back immediately", new byte[] { 0 }),
+            new CmdInfo("GetNearestCliff","", new byte[] { 2 }),
             new CmdInfo("VarAbs","Sets a variable to the absolute value of itself. Supports multiple args"),
-            new CmdInfo("StickAbs","Adds a value to the current StickX independent of facing direction. If a second arg is given, StickY",
-                new byte[] { 3, 3 }),
+            new CmdInfo("StickAbs","Adds a value to the current StickX independent of facing direction. If a second arg is given, StickY", new byte[] { 3, 3 }),
             new CmdInfo("BreakIfAerial","If AI is in the air, exits the script reader loop. Returns to the current position after a frame"),
             new CmdInfo("BreakIfGroundFree","If AI is free to act on the ground, exits the script reader loop. Returns to the current position after a frame"),
-            new CmdInfo("SetResetFrames","Sets a countdown which 'encourages the CPU to act' once it reaches 0",
-                new byte[] { 3 }),
-            new CmdInfo("SetCliffResetDistance","Sets a distance such that when the AI enter within the given range of a cliff, they change acts", new byte[] { 3 }),
-            new CmdInfo("CalcArriveFrameX","Sets a variable to the estimated time until the AI's target reaches the given X position",
-                new byte[] { 1, 3 }),
-            new CmdInfo("CalcArriveFrameY","Sets a variable to the estimated time until the AI's target reaches the given Y position",
-                new byte[] { 1, 3 }),
-            new CmdInfo("SetVarShieldHP","Sets a variable to the Shield HP value",
-                new byte[] { 1 }),
-            new CmdInfo("StagePtRand","",
-                new byte[] { 2 }),
-            new CmdInfo("CalcArrivePosX","Sets a variable to the estimated X position the AI's target reaches after given frames",
-                new byte[] { 1, 3 }),
-            new CmdInfo("CalcArrivePosY","Sets a variable to the estimated Y position the AI's target reaches after given frames",
-                new byte[] { 1, 3 }),
+            new CmdInfo("SetResetFrames","Sets a countdown which 'encourages the CPU to act' once it reaches 0", new byte[] { 3 }),
+            new CmdInfo("SetCliffResetDistance","Sets a distance such that when the AI are outside the given distance from the Cliff, they change acts", new byte[] { 3 }),
+            new CmdInfo("CalcArriveFrameX","Sets a variable to the estimated time until the AI's target reaches the given X position", new byte[] { 1, 3 }),
+            new CmdInfo("CalcArriveFrameY","Sets a variable to the estimated time until the AI's target reaches the given Y position", new byte[] { 1, 3 }),
+            new CmdInfo("SetVarShieldHP","Sets a variable to the Shield HP value", new byte[] { 1 }),
+            new CmdInfo("StagePtRand","", new byte[] { 2 }),
+            new CmdInfo("CalcArrivePosX","Sets a variable to the estimated X position the AI's target reaches after given frames", new byte[] { 1, 3 }),
+            new CmdInfo("CalcArrivePosY","Sets a variable to the estimated Y position the AI's target reaches after given frames", new byte[] { 1, 3 }),
             new CmdInfo("AttackDiceRoll",""),
             new CmdInfo("Null_2b","This command serves no function?"),
-            new CmdInfo("Norm","Sets a variable to the magnitude of the given X and Y parameters",
-                new byte[] { 1, 3, 3 }),
+            new CmdInfo("Norm","Sets a variable to the magnitude of the given X and Y parameters", new byte[] { 1, 3, 3 }),
             new CmdInfo("Dot",""),
-            new CmdInfo("CalcTargetVector","Sets the first and second variables to the expected X and Y displacement after a certain unit of time (14 frames?). If arg3 is given, multiplies the unit of time by it",
-                new byte[] { 1, 1, 3 }),
-            new CmdInfo("Unk_2f","",
-                new byte[] { 1, 3 }),
+            new CmdInfo("CalcTargetVector","Sets the first and second variables to the expected X and Y displacement after a certain unit of time (14 frames?). If arg3 is given, multiplies the unit of time by it", new byte[] { 1, 1, 3 }),
+            new CmdInfo("Unk_2f","", new byte[] { 1, 3 }),
             new CmdInfo("SwingChkSet","Sets a value indicating that the AI should 'respond' to successfully hitting the target. Affects a value in memory which affects act frequency"),
-            new CmdInfo("GetNearestCliffAbs","",
-                new byte[] { 2 }),
-            new CmdInfo("ClearStick","If arg is not given, sets both StickX and StickY to 0. Otherwise, if the arg is 0, only sets StickX to 0, else sets StickY to 0",
-                new byte[] { 0 }),
-            new CmdInfo("Unk_Stick","Add values to StickX and StickY, multiplies the given arguments by an unknown value",
-                new byte[] { 3, 3 }),
+            new CmdInfo("GetNearestCliffAbs","", new byte[] { 2 }),
+            new CmdInfo("ClearStick","If arg is not given, sets both StickX and StickY to 0. Otherwise, if the arg is 0, only sets StickX to 0, else sets StickY to 0", new byte[] { 0 }),
+            new CmdInfo("Unk_Stick","Add values to StickX and StickY, but multiplies the arguments by an unknown value", new byte[] { 3, 3 }),
             new CmdInfo("Null_34","This command serves no function?"),
             new CmdInfo("Null_35","This command serves no function?"),
-            new CmdInfo("StickAngleFront","Sets StickX and StickY using an angle measure in degrees, clockwise",
-                new byte[] { 3 }),
-            new CmdInfo("StickAngleBack","Sets StickX and StickY using an angle measure in degrees, counter-clockwise",
-                new byte[] { 3 }),
-            new CmdInfo("ACos","Sets a variable to the arccosine of itself. Will throw an error if the absolute value ≥ 1",
-                new byte[] { 1 }),
+            new CmdInfo("StickAngleFront","Sets StickX and StickY using an angle measure in degrees, clockwise", new byte[] { 3 }),
+            new CmdInfo("StickAngleBack","Sets StickX and StickY using an angle measure in degrees, counter-clockwise", new byte[] { 3 }),
+            new CmdInfo("ACos","Sets a variable to the arccosine of itself. Will throw an error if the absolute value > 1", new byte[] { 1 }),
             new CmdInfo("Unk_39","")
         };
 

@@ -53,7 +53,7 @@ namespace Sm4shAIEditor
                 public static string GetFolderPath(string name, AIType type, AISource source)
                 {
                     if (source == AISource.work) return util.workDir + name + "\\" + AITypeToString[type];
-                    else if (source == AISource.compiled) return util.compDir + name + "\\";
+                    else if (source == AISource.compiled) return util.compDir + name + "\\script\\ai\\";
                     else return util.gameFtDir + name + "\\script\\ai\\";
                 }
             }
