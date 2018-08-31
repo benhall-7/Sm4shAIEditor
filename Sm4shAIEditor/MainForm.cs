@@ -27,6 +27,7 @@ namespace Sm4shAIEditor
             addGameFilesToolStripMenuItem.Enabled = active;
             addCompiledFilesToolStripMenuItem.Enabled = active;
             compileToolStripMenuItem.Enabled = active;
+            closeProjectToolStripMenuItem.Enabled = active;
         }
 
         private void UpdateTreeView()

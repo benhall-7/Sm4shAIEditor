@@ -44,7 +44,7 @@ namespace Sm4shAIEditor
                     if (source == AISource.work)
                         return;
                     string pathIn = folder_address + AITypeToString[type] + ".bin";
-                    string pathOut = util.workDir + parentName + "\\" + AITypeToString[type] + "\\";
+                    string pathOut = GetFolderPath(parentName, type, AISource.work);
                     aism.DisassembleFile(pathIn, pathOut);
                     source = AISource.work;
                 }
@@ -52,7 +52,7 @@ namespace Sm4shAIEditor
                 //methods
                 public static string GetFolderPath(string name, AIType type, AISource source)
                 {
-                    if (source == AISource.work) return util.workDir + name + "\\" + AITypeToString[type];
+                    if (source == AISource.work) return util.workDir + name + "\\" + AITypeToString[type] + "\\";
                     else if (source == AISource.compiled) return util.compDir + name + "\\script\\ai\\";
                     else return util.gameFtDir + name + "\\script\\ai\\";
                 }
