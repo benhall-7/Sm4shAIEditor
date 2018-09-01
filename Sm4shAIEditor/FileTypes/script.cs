@@ -389,9 +389,7 @@ namespace Sm4shAIEditor
                     string word = sReader.ReadWord();
                     UInt32 reqID = 0;
                     if (word.StartsWith("req_"))
-                    {
                         reqID = UInt32.Parse(word.Substring(4), System.Globalization.NumberStyles.HexNumber);
-                    }
                     else if (if_chks.ContainsValue(word))
                     {
                         //get the Key used to index the value. This is probably inefficient and will need to be changed in the future
@@ -404,6 +402,8 @@ namespace Sm4shAIEditor
                             }
                         }
                     }
+                    else if (param.checks.Contains(word))
+                        reqID = (uint)param.checks.IndexOf(word);
                     else
                         throw new Exception(string.Format("unrecognized 'requirement' {0}", word));
 
@@ -493,7 +493,7 @@ namespace Sm4shAIEditor
                             int cmdAfterIndex = 1;
                             while (cmdIndex + cmdAfterIndex < CmdList.Count)
                             {
-                                script.Act.Cmd cmdCurr = CmdList[cmdIndex + cmdAfterIndex - 1];
+                                Cmd cmdCurr = CmdList[cmdIndex + cmdAfterIndex - 1];
                                 cmdParams += GetIfChk(cmdCurr.ParamList.ToArray());
                                 //commands 0x16 to 0x19 (Or + OrNot + And + AndNot)
                                 //believe it or not this next check is actually what the source code does
@@ -775,14 +775,14 @@ namespace Sm4shAIEditor
             {
                 UInt32 reqID = cmdParams[0];
                 string requirement = "";
-                if (if_chks.ContainsKey(reqID))
-                {
+
+                if (reqID < 0x1000)
+                    requirement += param.checks[(int)reqID];
+                else if (if_chks.ContainsKey(reqID))
                     requirement += if_chks[reqID];
-                }
                 else
-                {
                     requirement += "req_" + reqID.ToString("X");
-                }
+
                 requirement += "(";
                 for (int i = 1; i < cmdParams.Length; i++)
                 {
@@ -986,7 +986,7 @@ namespace Sm4shAIEditor
             {0x101e, "char" },
             {0x101f, "tgt_char" },
             {0x1024, "subaction" }
-        };
+        };//maximum value = 0x1059
 
         //Key = ID, Value = type of arguments:
         //0 = get_script_value

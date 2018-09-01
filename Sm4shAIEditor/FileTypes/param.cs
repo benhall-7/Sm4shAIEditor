@@ -159,7 +159,7 @@ namespace Sm4shAIEditor
             }
         }
 
-        public static string[] checks = new string[]
+        public static List<string> checks = new List<string>()
         {
             "true",
             "unk_01",
