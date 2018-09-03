@@ -58,6 +58,8 @@ namespace Sm4shAIEditor
 
             public List<Cmd> CmdList { get; set; }
 
+            private List<string> LabelNames { get; set; }
+
             public Act(BinaryReader binReader, UInt32 actPosition)
             {
                 binReader.BaseStream.Seek(actPosition, SeekOrigin.Begin);
@@ -100,6 +102,7 @@ namespace Sm4shAIEditor
                 ScriptFloatOffset = ScriptOffset;//temporarily set to this; every command increases the offset
                 CmdList = new List<Cmd>();
                 ScriptFloats = new Dictionary<uint, float>();
+                LabelNames = new List<string>();
 
                 CustomStringReader sReader = new CustomStringReader(text);
                 bool isIfArg = false;
@@ -291,6 +294,26 @@ namespace Sm4shAIEditor
                         case 0x02:
                             ParamList.Add(parent.GetScriptValueID(sReader.ReadWord()));
                             break;
+                        case 0x03://label. Convert names to IDs
+                        case 0x05://search label
+                        case 0x1c://jump to label
+                            {
+                                sReader.ReadUntilAnyOfChars("(", true);
+                                string word = sReader.ReadWord();
+                                sReader.SkipWhiteSpace();
+                                string append = sReader.ReadChar();
+                                if (append != ")")
+                                    throw new Exception(string.Format("Syntax error in {0} arg: {1}", cmd_info[ID].name, append));
+                                if (word == null) break;
+                                if (parent.LabelNames.Contains(word))
+                                    ParamList.Add((uint)parent.LabelNames.IndexOf(word));
+                                else
+                                {
+                                    ParamList.Add((uint)parent.LabelNames.Count);
+                                    parent.LabelNames.Add(word);
+                                }
+                                break;
+                            }
                         case 0x0b://button
                             uint arg = 0;
                             while (true)
@@ -969,12 +992,13 @@ namespace Sm4shAIEditor
             {0x1003, "ground_free" },
             {0x1004, "dashing" },
             {0x1005, "aerial" },
+            {0x1006, "null_1006" },
             {0x1007, "greater" },
             {0x1008, "less" },
             {0x1009, "geq" },
             {0x100a, "leq" },
             {0x100d, "off_stage" },
-            {0x100f, "action" },
+            {0x100f, "status" },
             //{0x1010, "" },? related to tgt_dist
             {0x1012, "air_free" },
             {0x1014, "catch_hold" },
@@ -985,7 +1009,8 @@ namespace Sm4shAIEditor
             {0x101c, "tgt_caught" },
             {0x101e, "char" },
             {0x101f, "tgt_char" },
-            {0x1024, "subaction" }
+            {0x1024, "motion" },
+            {0x102a, "tgt_dmg_geq" }
         };//maximum value = 0x1059
 
         //Key = ID, Value = type of arguments:
