@@ -115,6 +115,7 @@ namespace Sm4shAIEditor
                     sReader.SkipWhiteSpace();
                     ScriptFloatOffset += cmd.Size;
                 }
+                //warnings
                 if (VarCount > 25)
                     Console.WriteLine("NOTICE: (Act {0}) variable count exceeded 25", ID);
             }
@@ -168,7 +169,7 @@ namespace Sm4shAIEditor
                             if (nextChar == ")")
                                 isIfArg = false;
                             else
-                                throw new Exception();//syntax error: expected '&&', '||', or ')'
+                                throw new Exception("syntax; expected '&&', '||', or ')' keys");
                         }
 
                         if (isIfArg)
@@ -294,7 +295,7 @@ namespace Sm4shAIEditor
                         case 0x02:
                             ParamList.Add(parent.GetScriptValueID(sReader.ReadWord()));
                             break;
-                        case 0x03://label. Convert names to IDs
+                        case 0x03://label
                         case 0x05://search label
                         case 0x1c://jump to label
                             {

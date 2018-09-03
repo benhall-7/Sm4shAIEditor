@@ -147,7 +147,7 @@ namespace Sm4shAIEditor
                     arg1 = "!";
                 arg1 += checks[condition1];
                 if ((flags & 0x8) == 0x8)
-                    arg1 += " (flag 0x8)";
+                    arg1 += " (flag 0x8)";//really should change this
                 string op;
                 if ((flags & 0x4) == 0x4) op = "||";
                 else op = "&&";
