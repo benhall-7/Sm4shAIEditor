@@ -1,7 +1,6 @@
 ﻿using Sm4shAIEditor.Static;
 using System;
-using System.Configuration;
-using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Sm4shAIEditor
@@ -46,7 +45,7 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection(false);
+            FighterSelection selector = new FighterSelection(AITree.AISource.game_file);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
             tree.InitNewProject(selector.selFighters, selector.selTypes);
@@ -67,7 +66,7 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection(false);
+            FighterSelection selector = new FighterSelection(AITree.AISource.game_file);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
             tree.AddProjectFiles(selector.selFighters, selector.selTypes, AITree.AISource.game_file);
@@ -78,7 +77,7 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection(true);
+            FighterSelection selector = new FighterSelection(AITree.AISource.compiled);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
             tree.AddProjectFiles(selector.selFighters, selector.selTypes, AITree.AISource.compiled);
@@ -94,13 +93,21 @@ namespace Sm4shAIEditor
 
         private void compileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (var ft in tree.fighters)
+            if (!CheckConfig())
+                return;
+            FighterSelection selector = new FighterSelection(AITree.AISource.compiled);
+            if (selector.ShowDialog() != DialogResult.OK)
+                return;
+            foreach (var ft in selector.selFighters)
             {
-                foreach (var file in ft.files)
+                foreach (var type in selector.selTypes)
                 {
-                    string pathIn = file.folder_address;
-                    string pathOut = AITree.AIFt.AIFile.GetFolderPath(ft.name, file.type, AITree.AISource.compiled);
-                    aism.AssembleFolder(pathIn, pathOut);
+                    string pathIn = AITree.AIFt.AIFile.GetFolderPath(ft, type, AITree.AISource.work);
+                    if (Directory.Exists(pathIn))
+                    {
+                        string pathOut = AITree.AIFt.AIFile.GetFolderPath(ft, type, AITree.AISource.compiled);
+                        aism.AssembleFolder(pathIn, pathOut);
+                    }
                 }
             }
         }
