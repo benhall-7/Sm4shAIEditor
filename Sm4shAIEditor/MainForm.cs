@@ -20,6 +20,8 @@ namespace Sm4shAIEditor
 
         public void SetProjectStatus(bool active)
         {
+            if (active) Console.WriteLine("Project loaded: '{0}'", util.workDir);
+            else if (projectActive == true) Console.WriteLine("Project unloaded: '{0}'", util.workDir);
             projectActive = active;
             newProjectToolStripMenuItem.Enabled = !active;
             openProjectToolStripMenuItem.Enabled = !active;
