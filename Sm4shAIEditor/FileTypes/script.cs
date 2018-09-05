@@ -1010,6 +1010,10 @@ namespace Sm4shAIEditor
             {0x101c, "tgt_caught" },
             {0x101e, "char" },
             {0x101f, "tgt_char" },
+            {0x1020, "special_n_custom" },
+            {0x1021, "special_s_custom" },
+            {0x1022, "special_hi_custom" },
+            {0x1023, "special_lw_custom" },
             {0x1024, "motion" },
             {0x102a, "tgt_dmg_geq" }
         };//maximum value = 0x1059

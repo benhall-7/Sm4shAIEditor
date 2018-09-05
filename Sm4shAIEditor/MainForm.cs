@@ -13,8 +13,8 @@ namespace Sm4shAIEditor
         public MainForm()
         {
             InitializeComponent();
-            this.Text = Properties.Resources.Title;
-            this.Icon = Properties.Resources.FoxLogo;
+            Text = Properties.Resources.Title;
+            Icon = Properties.Resources.FoxLogo;
             SetProjectStatus(false);
         }
 
@@ -97,7 +97,7 @@ namespace Sm4shAIEditor
         {
             if (!CheckConfig())
                 return;
-            FighterSelection selector = new FighterSelection(AITree.AISource.compiled);
+            FighterSelection selector = new FighterSelection(AITree.AISource.work);
             if (selector.ShowDialog() != DialogResult.OK)
                 return;
             foreach (var ft in selector.selFighters)
