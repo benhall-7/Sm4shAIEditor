@@ -104,10 +104,10 @@ namespace Sm4shAIEditor
             {
                 foreach (var type in selector.selTypes)
                 {
-                    string pathIn = AITree.AIFt.AIFile.GetFolderPath(ft, type, AITree.AISource.work);
+                    string pathIn = AITree.GetFolderPath(ft, type, AITree.AISource.work);
                     if (Directory.Exists(pathIn))
                     {
-                        string pathOut = AITree.AIFt.AIFile.GetFolderPath(ft, type, AITree.AISource.compiled);
+                        string pathOut = AITree.GetFolderPath(ft, type, AITree.AISource.compiled);
                         aism.AssembleFolder(pathIn, pathOut);
                     }
                 }
@@ -121,7 +121,25 @@ namespace Sm4shAIEditor
 
         private void treeView_DoubleClick(object sender, EventArgs e)
         {
-            
+            TreeNode node = treeView.SelectedNode;
+            if (node == null) return;
+            if (node.Nodes.Count > 0)
+            {
+                foreach (TreeNode child in node.Nodes)
+                {
+                    AITree.AIType type = AITree.StringToAIType[child.Text];
+                    string pathIn = AITree.GetFolderPath(node.Text, type, AITree.AISource.work);
+                    string pathOut = AITree.GetFolderPath(node.Text, type, AITree.AISource.compiled);
+                    aism.AssembleFolder(pathIn, pathOut);
+                }
+            }
+            else if (node.Parent != null)
+            {
+                AITree.AIType type = AITree.StringToAIType[node.Text];
+                string pathIn = AITree.GetFolderPath(node.Parent.Text, type, AITree.AISource.work);
+                string pathOut = AITree.GetFolderPath(node.Parent.Text, type, AITree.AISource.compiled);
+                aism.AssembleFolder(pathIn, pathOut);
+            }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

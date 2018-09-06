@@ -48,14 +48,6 @@ namespace Sm4shAIEditor
                     aism.DisassembleFile(pathIn, pathOut);
                     source = AISource.work;
                 }
-
-                //methods
-                public static string GetFolderPath(string name, AIType type, AISource source)
-                {
-                    if (source == AISource.work) return util.workDir + name + "\\" + AITypeToString[type] + "\\";
-                    else if (source == AISource.compiled) return util.compDir + name + "\\script\\ai\\";
-                    else return util.gameFtDir + name + "\\script\\ai\\";
-                }
             }
         }
 
@@ -66,7 +58,7 @@ namespace Sm4shAIEditor
                 int fileCount = 0;
                 foreach (AIType type in types)
                 {
-                    if (File.Exists(AIFt.AIFile.GetFolderPath(name, type, AISource.game_file) + AITypeToString[type] + ".bin"))
+                    if (File.Exists(GetFolderPath(name, type, AISource.game_file) + AITypeToString[type] + ".bin"))
                     {
                         try
                         {
@@ -117,7 +109,7 @@ namespace Sm4shAIEditor
                 int ftIndex = this.fighters.FindIndex(ft => ft.name == name);
                 foreach (AIType type in types)
                 {
-                    if (File.Exists(AIFt.AIFile.GetFolderPath(name, type, source) + AITypeToString[type] + ".bin")
+                    if (File.Exists(GetFolderPath(name, type, source) + AITypeToString[type] + ".bin")
                         && (ftIndex == -1 || !this.fighters[ftIndex].files.Exists(file => file.type == type)))
                     {
                         try
@@ -146,6 +138,13 @@ namespace Sm4shAIEditor
             foreach (AIFt fighter in fighters)
                 fighter.files.Sort(delegate (AIFt.AIFile f1, AIFt.AIFile f2) { return f1.type.CompareTo(f2.type); });
             fighters.Sort(delegate (AIFt ft1, AIFt ft2) { return ft1.name.CompareTo(ft2.name); });
+        }
+
+        public static string GetFolderPath(string name, AIType type, AISource source)
+        {
+            if (source == AISource.work) return util.workDir + name + "\\" + AITypeToString[type] + "\\";
+            else if (source == AISource.compiled) return util.compDir + name + "\\script\\ai\\";
+            else return util.gameFtDir + name + "\\script\\ai\\";
         }
 
         public enum AIType { attack_data, param, param_nfp, script }
