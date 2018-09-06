@@ -960,7 +960,7 @@ namespace Sm4shAIEditor
             {0x101a, "hipn_pos" },
             {0x101b, "hipn_pos_y" },
             {0x101c, "tgt_hipn_pos" },
-            {0x101d, "tgt_hipn_pos" },
+            {0x101d, "tgt_hipn_pos_y" },
             {0x101e, "dmg" },
             {0x101f, "tgt_dmg" },
             //0x1020 is some ai param
