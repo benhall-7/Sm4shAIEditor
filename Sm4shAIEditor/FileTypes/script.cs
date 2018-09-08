@@ -931,8 +931,8 @@ namespace Sm4shAIEditor
 
         public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
         {
-            //0x1000 = par_work_update value. Represents distance of some sort?
-            //0x1001 = next par_work_update value
+            {0x1000, "range_far" },
+            {0x1001, "range_close" },
             {0x1002, "lr" },
             {0x1003, "lr_tgt" },
             {0x1004, "pos" },//vector
@@ -946,7 +946,7 @@ namespace Sm4shAIEditor
             {0x100c, "tgt_pos_y" },
             {0x100d, "spd_y" },
             {0x100e, "randf"},
-            //0x100f = {Ground = 2, Air = 1}? Based on usage this may have changed in Smash 4
+            {0x100f, "jumps_remain" },
             {0x1010, "edge_dist_front" },
             {0x1011, "rank" },
             //{0x1012, "" }, some byte
@@ -963,7 +963,7 @@ namespace Sm4shAIEditor
             {0x101d, "tgt_hipn_pos_y" },
             {0x101e, "dmg" },
             {0x101f, "tgt_dmg" },
-            //0x1020 is some ai param
+            //0x1020 ?? 0.5, haven't seen it change at all
             {0x1021, "jump_height" },
             {0x1022, "jump_length" },
             {0x1023, "air_jump_height" },
@@ -978,6 +978,17 @@ namespace Sm4shAIEditor
             {0x102c, "blastzone_left" },
             {0x102d, "blastzone_right" },
             {0x102e, "stage_length" },
+            {0x1037, "lr_stage_mid" },
+            {0x1038, "edge_dist_nearest" },
+            {0x1039, "unk_special_hi_2" },
+            {0x103a, "unk_special_hi_28" },
+            {0x103b, "unk_special_hi_32" },
+            {0x103c, "unk_special_hi_36" },
+            {0x103d, "unk_special_hi_40" },
+            {0x103e, "unk_special_hi_44" },
+            {0x103f, "unk_48" },
+            {0x1040, "unk_special_hi_53" },
+            {0x1044, "unk_special_hi_6" }
         };//maximum value = 0x1044
 
         public static List<string> buttons = new List<string>
