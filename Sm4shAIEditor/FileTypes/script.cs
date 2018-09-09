@@ -9,8 +9,8 @@ namespace Sm4shAIEditor
 {
     class script
     {
-        public UInt32 actCount { get; set; }
-        public Dictionary<Act, UInt32> acts { get; set; }
+        public uint actCount { get; set; }
+        public Dictionary<Act, uint> acts { get; set; }
 
         public script(string binDirectory)
         {
@@ -22,7 +22,7 @@ namespace Sm4shAIEditor
             for (int i = 0; i < actCount; i++)
             {
                 binReader.BaseStream.Seek(i * 4 + 0x10, SeekOrigin.Begin);
-                UInt32 actOffset = util.ReadReverseUInt32(binReader);
+                uint actOffset = util.ReadReverseUInt32(binReader);
                 Act act = new Act(binReader, actOffset);
 
                 acts.Add(act, actOffset);
@@ -50,17 +50,17 @@ namespace Sm4shAIEditor
 
         public class Act
         {
-            public UInt32 ID { get; set; }
-            public UInt32 ScriptOffset { get; set; }
-            public UInt32 ScriptFloatOffset { get; set; }
+            public uint ID { get; set; }
+            public uint ScriptOffset { get; set; }
+            public uint ScriptFloatOffset { get; set; }
             public UInt16 VarCount { get; set; }
-            public Dictionary<UInt32, float> ScriptFloats { get; set; }
+            public Dictionary<uint, float> ScriptFloats { get; set; }
 
             public List<Cmd> CmdList { get; set; }
 
             private List<string> LabelNames { get; set; }
 
-            public Act(BinaryReader binReader, UInt32 actPosition)
+            public Act(BinaryReader binReader, uint actPosition)
             {
                 binReader.BaseStream.Seek(actPosition, SeekOrigin.Begin);
                 ID = util.ReadReverseUInt32(binReader);
@@ -73,14 +73,14 @@ namespace Sm4shAIEditor
 
                 //Commands
                 CmdList = new List<Cmd>();
-                UInt32 relOffset = ScriptOffset;
+                uint relOffset = ScriptOffset;
                 while (relOffset < ScriptFloatOffset)
                 {
                     Cmd cmd = new Cmd(binReader);
                     CmdList.Add(cmd);
 
                     //add values to the script float list
-                    foreach (UInt32 cmdParam in cmd.ParamList)
+                    foreach (uint cmdParam in cmd.ParamList)
                     {
                         if (cmdParam >= 0x2000 &&
                             cmdParam < 0x2100 &&
@@ -95,7 +95,7 @@ namespace Sm4shAIEditor
                 }
             }
             //for compiling
-            public Act(UInt32 ID, string text)
+            public Act(uint ID, string text)
             {
                 this.ID = ID;
                 ScriptOffset = 0x10;//since every act and header is 0x10 aligned this is guaranteed to be 0x10
@@ -128,14 +128,14 @@ namespace Sm4shAIEditor
                 public byte ParamCount { get; set; }
                 public UInt16 Size { get; set; }
 
-                public List<UInt32> ParamList { get; set; }
+                public List<uint> ParamList { get; set; }
 
                 public Cmd(BinaryReader binReader)
                 {
                     ID = binReader.ReadByte();
                     ParamCount = binReader.ReadByte();
                     Size = util.ReadReverseUInt16(binReader);
-                    ParamList = new List<UInt32>(ParamCount);
+                    ParamList = new List<uint>(ParamCount);
                     int readParams = 0;
                     while (readParams < ParamCount)
                     {
@@ -143,7 +143,7 @@ namespace Sm4shAIEditor
                         readParams++;
                     }
                 }
-                public Cmd(byte id, List<UInt32> paramList)
+                public Cmd(byte id, List<uint> paramList)
                 {
                     ID = id;
                     ParamList = paramList;
@@ -244,7 +244,7 @@ namespace Sm4shAIEditor
                         }
                         else if (word.StartsWith("var") || word.StartsWith("vec"))
                         {
-                            ParamList.Add(UInt32.Parse(word.Substring(3)));//the numeric ID is the first arg
+                            ParamList.Add(uint.Parse(word.Substring(3)));//the numeric ID is the first arg
                             string op = sReader.ReadEqnSymbols();//operation
                             bool isVec;
                             if (word.Substring(0, 3) == "vec")
@@ -411,13 +411,13 @@ namespace Sm4shAIEditor
                 private void ConvertIfParams(CustomStringReader sReader)
                 {
                     string word = sReader.ReadWord();
-                    UInt32 reqID = 0;
+                    uint reqID = 0;
                     if (word.StartsWith("req_"))
-                        reqID = UInt32.Parse(word.Substring(4), System.Globalization.NumberStyles.HexNumber);
+                        reqID = uint.Parse(word.Substring(4), System.Globalization.NumberStyles.HexNumber);
                     else if (if_chks.ContainsValue(word))
                     {
                         //get the Key used to index the value. This is probably inefficient and will need to be changed in the future
-                        foreach (UInt32 key in if_chks.Keys)
+                        foreach (uint key in if_chks.Keys)
                         {
                             if (if_chks[key] == word)
                             {
@@ -505,7 +505,7 @@ namespace Sm4shAIEditor
                             break;
                         case 0x02://SetVec, uses notation [vecX = Y]
                             cmdString += "vec" + cmd.ParamList[0] + " = ";
-                            cmdParams += GetScriptValue(cmd.ParamList[1]);
+                            cmdParams += GetScriptValue(cmd.ParamList[1], true);
                             cmdString += cmdParams + "\r\n";
                             text += ifPadding + cmdString;
                             break;
@@ -605,7 +605,7 @@ namespace Sm4shAIEditor
 
                             for (int i = 1; i < cmd.ParamCount; i++)
                             {
-                                cmdParams += GetScriptValue(cmd.ParamList[i]);
+                                cmdParams += GetScriptValue(cmd.ParamList[i], relID >= 4);
 
                                 if (i != cmd.ParamCount - 1)
                                     cmdParams += ", ";
@@ -690,22 +690,22 @@ namespace Sm4shAIEditor
                 return ScriptFloatOffset + (4 * (uint)ScriptFloats.Count);
             }
 
-            public UInt32 GetParamIDFromType(string param, int type)
+            public uint GetParamIDFromType(string param, int type)
             {
-                UInt32 id;
+                uint id;
                 switch (type)
                 {
                     case 0:
                         if (param.StartsWith("0x"))
-                            id = UInt32.Parse(param.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                            id = uint.Parse(param.Substring(2), System.Globalization.NumberStyles.HexNumber);
                         else
-                            id = UInt32.Parse(param);
+                            id = uint.Parse(param);
                         break;
                     case 1:
                     case 2:
                         if (!param.StartsWith("var") && !param.StartsWith("vec"))
                             throw new Exception(string.Format("param type {0} was neither a variable nor a vector", param));
-                        id = UInt32.Parse(param.Substring(3));
+                        id = uint.Parse(param.Substring(3));
                         UpdateVarCount(id, param.StartsWith("vec"));
                         break;
                     case 3:
@@ -717,7 +717,7 @@ namespace Sm4shAIEditor
                 return id;
             }
 
-            protected float GetScriptFloat(BinaryReader binReader, UInt32 cmdParam, UInt32 actPosition, UInt32 floatOffset)
+            protected float GetScriptFloat(BinaryReader binReader, uint cmdParam, uint actPosition, uint floatOffset)
             {
                 float scriptFloat;
                 Int32 binPosition = (Int32)binReader.BaseStream.Position;
@@ -732,40 +732,49 @@ namespace Sm4shAIEditor
             {
                 if (!ScriptFloats.ContainsValue(value))
                 {
-                    UInt32 nextFloatID = (UInt32)(ScriptFloats.Keys.Count + 0x2000);
+                    uint nextFloatID = (uint)(ScriptFloats.Keys.Count + 0x2000);
                     ScriptFloats.Add(nextFloatID, value);
                 }
             }
 
-            public string GetScriptValue(UInt32 paramID)
+            public string GetScriptValue(uint paramID)
             {
                 if (paramID < 0x1000)
                     return "var" + paramID;
                 if (paramID >= 0x2000 && ScriptFloats.ContainsKey(paramID))
                     return ScriptFloats[paramID].ToString();
-                else
-                {
-                    string value;
-                    if (script_value_special.ContainsKey(paramID))
-                        value = script_value_special[paramID];
-                    else
-                        value = "0x" + paramID.ToString("X4");
-
-                    return value;
-                }
+                if (script_value_special.ContainsKey(paramID))
+                    return script_value_special[paramID];
+                return "0x" + paramID.ToString("X4");
             }
 
-            public UInt32 GetScriptValueID(string param)
+            public string GetScriptValue(uint paramID, bool vector)
             {
-                UInt32 ID = 0;
+                if (paramID < 0x1000)
+                {
+                    if (vector)
+                        return "vec" + paramID;
+                    else
+                        return "var" + paramID;
+                }
+                if (paramID >= 0x2000 && ScriptFloats.ContainsKey(paramID))
+                    return ScriptFloats[paramID].ToString();
+                if (script_value_special.ContainsKey(paramID))
+                    return script_value_special[paramID];
+                return "0x" + paramID.ToString("X4");
+            }
+
+            public uint GetScriptValueID(string param)
+            {
+                uint ID = 0;
                 if (param.StartsWith("0x"))
                 {
-                    ID = UInt32.Parse(param.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                    ID = uint.Parse(param.Substring(2), System.Globalization.NumberStyles.HexNumber);
                 }
                 else if (float.TryParse(param, out float value))
                 {
                     AddScriptFloat(value);
-                    foreach (UInt32 floatID in ScriptFloats.Keys)
+                    foreach (uint floatID in ScriptFloats.Keys)
                     {
                         if (value == ScriptFloats[floatID])
                         {
@@ -776,11 +785,11 @@ namespace Sm4shAIEditor
                 }
                 else if (param.StartsWith("var") || param.StartsWith("vec"))
                 {
-                    ID = UInt32.Parse(param.Substring(3));
+                    ID = uint.Parse(param.Substring(3));
                 }
                 else if (script_value_special.ContainsValue(param))
                 {
-                    foreach (UInt32 valueID in script_value_special.Keys)
+                    foreach (uint valueID in script_value_special.Keys)
                     {
                         if (param == script_value_special[valueID])
                         {
@@ -795,9 +804,9 @@ namespace Sm4shAIEditor
                 return ID;
             }
 
-            public string GetIfChk(UInt32[] cmdParams)
+            public string GetIfChk(uint[] cmdParams)
             {
-                UInt32 reqID = cmdParams[0];
+                uint reqID = cmdParams[0];
                 string requirement = "";
 
                 if (reqID < 0x1000)
@@ -810,7 +819,7 @@ namespace Sm4shAIEditor
                 requirement += "(";
                 for (int i = 1; i < cmdParams.Length; i++)
                 {
-                    UInt32 currentParam = cmdParams[i];
+                    uint currentParam = cmdParams[i];
                     if (if_chk_args.ContainsKey(reqID))
                     {
                         switch (if_chk_args[reqID])
@@ -929,7 +938,7 @@ namespace Sm4shAIEditor
             new CmdInfo("Unk_39","")
         };
 
-        public static Dictionary<UInt32, string> script_value_special = new Dictionary<UInt32, string>()
+        public static Dictionary<uint, string> script_value_special = new Dictionary<uint, string>()
         {
             {0x1000, "range_far" },
             {0x1001, "range_close" },
@@ -978,6 +987,14 @@ namespace Sm4shAIEditor
             {0x102c, "blastzone_left" },
             {0x102d, "blastzone_right" },
             {0x102e, "stage_length" },
+            //0x102f
+            //0x1030
+            //0x1031
+            //0x1031
+            //0x1031
+            //0x1031
+            //0x1031
+            //0x1031
             {0x1037, "lr_stage_mid" },
             {0x1038, "edge_dist_nearest" },
             {0x1039, "unk_special_hi_2" },
@@ -986,8 +1003,11 @@ namespace Sm4shAIEditor
             {0x103c, "unk_special_hi_36" },
             {0x103d, "unk_special_hi_40" },
             {0x103e, "unk_special_hi_44" },
-            {0x103f, "unk_48" },
-            {0x1040, "unk_special_hi_53" },
+            //0x103f
+            {0x1040, "unk_48" },
+            {0x1041, "unk_special_hi_53" },
+            {0x1042, "unk_multiplier1" },
+            {0x1043, "unk_multiplier2" },
             {0x1044, "unk_special_hi_6" }
         };//maximum value = 0x1044
 
@@ -996,7 +1016,7 @@ namespace Sm4shAIEditor
             "attack", "special", "shield", "jump"
         };
 
-        public static Dictionary<UInt32, string> if_chks = new Dictionary<UInt32, string>()
+        public static Dictionary<uint, string> if_chks = new Dictionary<uint, string>()
         {
             //{0x1000, "tgt_dist" },?
             //{0x1001, "tgt_dist_x" },?
@@ -1032,7 +1052,7 @@ namespace Sm4shAIEditor
         //Key = ID, Value = type of arguments:
         //0 = get_script_value
         //1 = fighter name
-        public static Dictionary<UInt32, byte> if_chk_args = new Dictionary<uint, byte>()
+        public static Dictionary<uint, byte> if_chk_args = new Dictionary<uint, byte>()
         {
             {0x1000, 0},
             {0x1001, 0},
