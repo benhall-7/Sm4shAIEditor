@@ -880,7 +880,7 @@ namespace Sm4shAIEditor
         {
             new CmdInfo("End","Ends execution of the script"),
             new CmdInfo("SetVar","Sets a variable using an ID.\nSpecial syntax: varX = Y"),
-            new CmdInfo("SetVec","Sets two consecutive variables with an ID.\nSpecial syntax vecX = Y"),
+            new CmdInfo("SetVec","Sets two consecutive variables with an ID.\nSpecial syntax: vecX = Y"),
             new CmdInfo("Label","Saves a script position to memory. Starts a loop to run logic within", new byte[] { 0 }),
             new CmdInfo("Return","If a label is set, exits the script and returns to the label on the next frame"),
             new CmdInfo("Search","Sets a new label without changing script position. If no argument is given, searches for the next label. Otherwise, searches for the label of the ID given", new byte[] { 0 }),

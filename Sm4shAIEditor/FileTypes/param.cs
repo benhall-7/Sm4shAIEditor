@@ -6,23 +6,26 @@ namespace Sm4shAIEditor
 {
     class param
     {
+        public const int val_count = 0x28;
+        public const int flg_count = 0x118;
+        public const int cmd_count = 0x1c;
+
+        public const int val_offset = 0x18;
+        public const int flg_offset = 0x48;
+        public const int cmd_offset = 0x168;
+        public const int sit_offset = 0x1d8;
+
         public uint unk_size { get; set; }
         //padding for 0x10 alignment
-        public byte sec1_start { get; set; }
-        public byte sec1_end { get; set; }
-        public byte sec2_start { get; set; }
-        public byte sec2_end { get; set; }
-        public byte sec3_start { get; set; }
-        public byte sec3_end { get; set; }
-        //hword padding, for some reason there is "0x10" alignment after these indeces but offset by 0x8
-        private byte[] Bytes_1 = new byte[0x28];
-        public byte[] bytes_1 { get { return Bytes_1; } set { Bytes_1 = value; } }
-        //dword padding
-        private byte[] Flags = new byte[0x118];
-        public byte[] flags { get { return Flags; } set { Flags = value; } }
-        //dword padding
-        private Unk1[] Unk1s = new Unk1[0x1c];
-        public Unk1[] unk1s { get { return Unk1s; } set { Unk1s = value; } }
+        public byte sit_return_start { get; set; }
+        public byte sit_return_end { get; set; }
+        public byte sit_attack_start { get; set; }
+        public byte sit_attack_end { get; set; }
+        public byte sit_defend_start { get; set; }
+        public byte sit_defend_end { get; set; }
+        public sbyte[] vals { get; set; } = new sbyte[val_count];
+        public byte[] flags { get; set; } = new byte[flg_count];
+        public Cmd[] cmds { get; set; } = new Cmd[cmd_count];
         public Situation[] sits { get; set; }
 
         public param(string fileDir)
@@ -32,33 +35,33 @@ namespace Sm4shAIEditor
                 bR.BaseStream.Position = 0x4;
                 unk_size = util.ReadReverseUInt32(bR);
                 bR.BaseStream.Position = 0x10;
-                sec1_start = bR.ReadByte();//always 0. Is this padding?
-                sec1_end = bR.ReadByte();
-                sec2_start = bR.ReadByte();
-                sec2_end = bR.ReadByte();
-                sec3_start = bR.ReadByte();
-                sec3_end = bR.ReadByte();
-                bR.BaseStream.Position = 0x18;
-                for (int i = 0; i < bytes_1.Length; i++)
-                    bytes_1[i] = bR.ReadByte();
-                bR.BaseStream.Position = 0x48;
+                sit_return_start = bR.ReadByte();
+                sit_return_end = bR.ReadByte();
+                sit_attack_start = bR.ReadByte();
+                sit_attack_end = bR.ReadByte();
+                sit_defend_start = bR.ReadByte();
+                sit_defend_end = bR.ReadByte();
+                bR.BaseStream.Position = val_offset;
+                for (int i = 0; i < vals.Length; i++)
+                    vals[i] = (sbyte)bR.ReadByte();
+                bR.BaseStream.Position = flg_offset;
                 for (int i = 0; i < flags.Length; i++)
                     flags[i] = bR.ReadByte();
-                bR.BaseStream.Position = 0x168;
+                bR.BaseStream.Position = cmd_offset;
                 //record the offsets
-                uint[] unk1_offsets = new uint[0x1c];
-                for (int i = 0; i < 0x1c; i++)
-                    unk1_offsets[i] = util.ReadReverseUInt32(bR);
-                uint[] freq_offsets = new uint[sec3_end + 1];
+                uint[] cmd_offsets = new uint[cmd_count];
+                for (int i = 0; i < cmd_count; i++)
+                    cmd_offsets[i] = util.ReadReverseUInt32(bR);
+                uint[] freq_offsets = new uint[sit_defend_end + 1];
                 for (int i = 0; i < freq_offsets.Length; i++)
                     freq_offsets[i] = util.ReadReverseUInt32(bR);
-                for (int i = 0; i < 0x1c; i++)
+                for (int i = 0; i < cmd_count; i++)
                 {
-                    bR.BaseStream.Position = unk1_offsets[i];
-                    Unk1s[i] = new Unk1(bR);
+                    bR.BaseStream.Position = cmd_offsets[i];
+                    cmds[i] = new Cmd(bR);
                 }
-                sits = new Situation[sec3_end + 1];
-                for (int i = 0; i <= sec3_end; i++)
+                sits = new Situation[sit_defend_end + 1];
+                for (int i = 0; i <= sit_defend_end; i++)
                 {
                     bR.BaseStream.Position = freq_offsets[i];
                     sits[i] = new Situation(bR);
@@ -66,32 +69,41 @@ namespace Sm4shAIEditor
             }
         }
 
-        public class Unk1
+        public class Cmd
         {
-            public field[] things { get; set; }
+            public const int unk_count = 0x2e;
+            public Unk[] unks { get; set; }
 
-            public Unk1(BinaryReader bR)
+            public Cmd(BinaryReader bR)
             {
-                List<field> ls = new List<field>();
-                for (byte i = bR.ReadByte(); i > 0; i = bR.ReadByte())
+                List<Unk> ls = new List<Unk>();
+                for (byte i = bR.ReadByte(); i > 0; i = bR.ReadByte())//temporarily entrust that there are always 0x2e of these
                 {
                     bR.BaseStream.Position += 3;//3 bytes padding
-                    ls.Add(new field(i, util.ReadReverseUInt16(bR), util.ReadReverseUInt16(bR)));
+                    ls.Add(new Unk(i, util.ReadReverseUInt16(bR), util.ReadReverseUInt16(bR)));
                 }
-                things = ls.ToArray();
+                unks = ls.ToArray();
             }
 
-            public struct field
+            public struct Unk
             {
                 public byte index;
                 public ushort hi_rank_prob;
                 public ushort lw_rank_prob;
-                public field(byte index, ushort hi_rank_prob, ushort lw_rank_prob)
+                public Unk(byte index, ushort hi_rank_prob, ushort lw_rank_prob)
                 {
                     this.index = index;
                     this.hi_rank_prob = hi_rank_prob;
                     this.lw_rank_prob = lw_rank_prob;
                 }
+            }
+
+            public override string ToString()
+            {
+                string str = "";
+                for (int i = 0; i < unks.Length; i++)
+                    str += string.Format("\t{0}, {1}, {2}\n", unks[i].index, unks[1].hi_rank_prob, unks[i].lw_rank_prob);
+                return str;
             }
         }
 
@@ -139,24 +151,37 @@ namespace Sm4shAIEditor
             public override string ToString()
             {
                 string arg0 = "";
-                if ((flags & 0x1) == 0x1)
+                if ((flags & 0x1) > 0)
                     arg0 = "!";
                 arg0 += checks[condition0];
                 string arg1 = "";
-                if ((flags & 0x2) == 0x2)
+                if ((flags & 0x2) > 0)
                     arg1 = "!";
                 arg1 += checks[condition1];
-                if ((flags & 0x8) == 0x8)
-                    arg1 += " (flag 0x8)";//really should change this
                 string op;
-                if ((flags & 0x4) == 0x4) op = "||";
+                if ((flags & 0x4) > 0) op = "||";
                 else op = "&&";
+                string delimiter = ":";
+                if ((flags & 0x8) > 0) delimiter = ";";//still not sure about the usage here
                 string ActOdds = "";
                 foreach (action action in actions)
                     ActOdds += string.Format("\n\t{0}\t{1}\t{2}\t{3}\t{4}",
                         action.hi_rank_prob, action.lw_rank_prob, action.max_rank, action.min_rank, action.act.ToString("x4"));
-                return string.Format("if {0} {1} {2}:{3}", arg0, op, arg1, ActOdds);
+                return string.Format("if {0} {1} {2}{3}{4}", arg0, op, arg1, delimiter, ActOdds);
             }
+        }
+
+        public static int act_id2cmd(int act_id)
+        {
+            //basically uses act IDs in range [0x6011,0x602e), but unsure if 0x601f or 0x6020 is unused
+            if (act_id > 0x6010)
+            {
+                if (act_id < 0x6020)
+                    return act_id - 0x6011;
+                if ((act_id -= 0x6012) < cmd_count)
+                    return act_id;
+            }
+            return 0;
         }
 
         public static List<string> checks = new List<string>()
