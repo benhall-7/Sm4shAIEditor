@@ -906,7 +906,7 @@ namespace Sm4shAIEditor
             new CmdInfo("AndNot","For use only in If statemnets. Use && !(condition) instead"),
             new CmdInfo("SetFrame","Sets a value representing the execution frame, continues counting up every frame", new byte[] { 3 }),
             new CmdInfo("SetAct","Sets a new Act ID, to be called when the script finishes", new byte[] { 0 }),
-            new CmdInfo("Jump","Jumps to a specified label immediately. When a return command is reached, jump back immediately", new byte[] { 0 }),
+            new CmdInfo("Call","Goes to to a specified label immediately. When a return command is reached, go back immediately", new byte[] { 0 }),
             new CmdInfo("GetNearestCliff","", new byte[] { 2 }),
             new CmdInfo("VarAbs","Sets a variable to the absolute value of itself. Supports multiple args"),
             new CmdInfo("StickAbs","Adds a value to the current StickX independent of facing direction. If a second arg is given, StickY", new byte[] { 3, 3 }),
