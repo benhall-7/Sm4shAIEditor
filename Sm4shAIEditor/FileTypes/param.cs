@@ -1,4 +1,5 @@
 ﻿using Sm4shAIEditor.Static;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -68,11 +69,54 @@ namespace Sm4shAIEditor
                 }
             }
         }
+        public param(string val_dir, string flg_dir, string cmd_dir, string sit1_dir, string sit2_dir, string sit3_dir)
+        {
+            unk_size = 0xf;//this is the same for all files so I'm not adding it to disassembly until I know what it is
+            string[] values = File.ReadAllLines(val_dir);
+            for (int i = 0; i < val_count; i++)
+                vals[i] = sbyte.Parse(values[i]);
+            string[] flags = File.ReadAllLines(flg_dir);
+            for (int i = 0; i < flg_count; i++)
+                this.flags[i] = byte.Parse(flags[i]);
+            //parse cmd file
+            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(cmd_dir));
+            for (int i = 0; i < cmd_count; i++)
+            {
+                string word = sReader.ReadWord();
+                sReader.SkipToEndLine();
+                cmds[i] = new Cmd(sReader);
+            }
+            //parse situation files
+            List<Situation> ls = new List<Situation>();
+            byte sit_index = 0;
+            foreach (string sit_dir in new string[] { sit1_dir, sit2_dir, sit3_dir })
+            {
+                if (sit_dir == sit1_dir) sit_return_start = sit_index;
+                else if (sit_dir == sit2_dir) sit_attack_start = sit_index;
+                else if (sit_dir == sit3_dir) sit_defend_start = sit_index;
+                sReader.CharArray = File.ReadAllText(sit_dir).ToCharArray();
+                while (true)
+                {
+                    string word = sReader.ReadWord();
+                    if (word != "if")
+                    {
+                        if (word == null) break;//end of file
+                        else throw new Exception("ERROR: expected 'if', received '" + word + "'");
+                    }
+                    ls.Add(new Situation(sReader));
+                    sit_index++;
+                }
+                if (sit_dir == sit1_dir) sit_return_end = (byte)(sit_index - 1);
+                else if (sit_dir == sit2_dir) sit_attack_end = (byte)(sit_index - 1);
+                else if (sit_dir == sit3_dir) sit_defend_end = (byte)(sit_index - 1);
+            }
+            sits = ls.ToArray();
+        }
 
         public class Cmd
         {
             public const int unk_count = 0x2e;
-            public Unk[] unks { get; set; }
+            public Unk[] unks { get; set; } = new Unk[unk_count];
 
             public Cmd(BinaryReader bR)
             {
@@ -83,6 +127,18 @@ namespace Sm4shAIEditor
                     ls.Add(new Unk(i, util.ReadReverseUInt16(bR), util.ReadReverseUInt16(bR)));
                 }
                 unks = ls.ToArray();
+            }
+            public Cmd(CustomStringReader sR)
+            {
+                for (int i = 0; i < unk_count; i++)
+                {
+                    byte index = byte.Parse(sR.ReadWord());
+                    sR.ReadUntilAnyOfChars(",", true);
+                    ushort hi_prob = ushort.Parse(sR.ReadWord());
+                    sR.ReadUntilAnyOfChars(",", true);
+                    ushort lw_prob = ushort.Parse(sR.ReadWord());
+                    unks[i] = new Unk(index, hi_prob, lw_prob);
+                }
             }
 
             public struct Unk
@@ -114,7 +170,7 @@ namespace Sm4shAIEditor
             public byte flags { get; set; }
             //0x1 -> negate condition0
             //0x2 -> negate condition1
-            //0x4 -> && the conditions
+            //0x4 -> || the conditions
             //0x8 -> ?
             public byte count { get; set; }
             public action[] actions { get; set; }
@@ -128,6 +184,63 @@ namespace Sm4shAIEditor
                 actions = new action[count];
                 for (int i = 0; i < count; i++)
                     actions[i] = new action(bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), bR.ReadByte(), util.ReadReverseUInt16(bR));
+            }
+            public Situation(CustomStringReader sReader)
+            {
+                flags = 0;
+                string word = sReader.ReadWord();
+                if (word == null)
+                {
+                    string pre = sReader.ReadChar();
+                    if (pre == "!")
+                    {
+                        flags |= 0x1;
+                        word = sReader.ReadWord();
+                    }
+                }
+                condition0 = (byte)checks.IndexOf(word);
+                string op = sReader.ReadIfSymbols();
+                if (op != "&&")
+                {
+                    if (op == "||") flags |= 0x4;
+                    else throw new Exception("ERROR: invalid logical operator '" + op + "'");
+                }
+                word = sReader.ReadWord();
+                if (word == null)
+                {
+                    string pre = sReader.ReadChar();
+                    if (pre == "!")
+                    {
+                        flags |= 0x2;
+                        word = sReader.ReadWord();
+                    }
+                }
+                condition1 = (byte)checks.IndexOf(word);
+                string post = sReader.ReadChar();
+                if (post != ":")
+                {
+                    if (post == ";") flags |= 0x8;
+                    else throw new Exception("ERROR: invalid character '" + post + "'");
+                }
+                //actions:
+                while (true)
+                {
+                    action action = new action();
+                    int oldPosition = sReader.Position;
+                    string firstWord = sReader.ReadWord();
+                    if (byte.TryParse(firstWord, out action.hi_rank_prob))
+                    {
+                        action.lw_rank_prob = byte.Parse(sReader.ReadWord());
+                        action.max_rank = byte.Parse(sReader.ReadWord());
+                        action.min_rank = byte.Parse(sReader.ReadWord());
+                        action.act = ushort.Parse(sReader.ReadWord(), System.Globalization.NumberStyles.HexNumber);
+                    }
+                    else
+                    {
+                        sReader.Position = oldPosition;
+                        break;
+                    }
+                }
             }
 
             public struct action
@@ -171,8 +284,14 @@ namespace Sm4shAIEditor
             }
         }
 
+        public int get_address_table_size()
+        {
+            return 4 * (cmd_count + sits.Length);
+        }
+
         public static int act_id2cmd(int act_id)
         {
+            //unused, right now anyway
             //basically uses act IDs in range [0x6011,0x602e), but unsure if 0x601f or 0x6020 is unused
             if (act_id > 0x6010)
             {
