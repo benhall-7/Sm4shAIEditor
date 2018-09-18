@@ -124,7 +124,9 @@ namespace Sm4shAIEditor
                 for (byte i = bR.ReadByte(); i > 0; i = bR.ReadByte())//temporarily entrust that there are always 0x2e of these
                 {
                     bR.BaseStream.Position += 3;//3 bytes padding
-                    ls.Add(new Unk(i, util.ReadReverseUInt16(bR), util.ReadReverseUInt16(bR)));
+                    ushort hi_rank_prob = util.ReadReverseUInt16(bR);
+                    ushort lw_rank_prob = util.ReadReverseUInt16(bR);
+                    ls.Add(new Unk(i, hi_rank_prob, lw_rank_prob));
                 }
                 unks = ls.ToArray();
             }
@@ -158,7 +160,7 @@ namespace Sm4shAIEditor
             {
                 string str = "";
                 for (int i = 0; i < unks.Length; i++)
-                    str += string.Format("\t{0}, {1}, {2}\n", unks[i].index, unks[1].hi_rank_prob, unks[i].lw_rank_prob);
+                    str += string.Format("\t{0}, {1}, {2}\n", unks[i].index, unks[i].hi_rank_prob, unks[i].lw_rank_prob);
                 return str;
             }
         }
@@ -223,6 +225,7 @@ namespace Sm4shAIEditor
                     else throw new Exception("ERROR: invalid character '" + post + "'");
                 }
                 //actions:
+                List<action> ls = new List<action>();
                 while (true)
                 {
                     action action = new action();
@@ -234,6 +237,7 @@ namespace Sm4shAIEditor
                         action.max_rank = byte.Parse(sReader.ReadWord());
                         action.min_rank = byte.Parse(sReader.ReadWord());
                         action.act = ushort.Parse(sReader.ReadWord(), System.Globalization.NumberStyles.HexNumber);
+                        ls.Add(action);
                     }
                     else
                     {
@@ -241,6 +245,8 @@ namespace Sm4shAIEditor
                         break;
                     }
                 }
+                actions = ls.ToArray();
+                count = (byte)actions.Length;
             }
 
             public struct action

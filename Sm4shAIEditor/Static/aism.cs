@@ -252,7 +252,7 @@ namespace Sm4shAIEditor.Static
                         writer.WriteLine(aipd.sits[i].ToString());
                     writer.Dispose();
                 }
-                Console.WriteLine("Completed");
+                Console.WriteLine("Complete");
             }
             catch (Exception e)
             {
