@@ -88,9 +88,9 @@ namespace Sm4shAIEditor.Static
             Array.Reverse(bytes);
             binWriter.Write(bytes);
         }
-        public static uint Align0x10(uint position)
+        public static uint Align(uint position, uint alignTo)
         {
-            return ((position + 0xf) / 0x10) * 0x10;
+            return (position + alignTo - 1) / alignTo * alignTo;
         }
     }
 }

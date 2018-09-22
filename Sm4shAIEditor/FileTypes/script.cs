@@ -40,7 +40,7 @@ namespace Sm4shAIEditor
                 actData.Add(new Act(act.Key, act.Value));
             }
             actCount = (uint)actData.Count;
-            uint offset = util.Align0x10(0x10 + (4 * actCount));
+            uint offset = util.Align(0x10 + (4 * actCount), 0x10);
             foreach (script.Act act in actData)
             {
                 acts.Add(act, offset);
@@ -852,7 +852,7 @@ namespace Sm4shAIEditor
             }
         }//end of Act class
 
-        public class CmdInfo
+        public struct CmdInfo
         {
             public string name { get; private set; }
             public string desc { get; private set; }
