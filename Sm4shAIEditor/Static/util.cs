@@ -10,17 +10,17 @@ namespace Sm4shAIEditor.Static
         public static string workDir
         {
             get { return Properties.Settings.Default.work_directory; }
-            set { Properties.Settings.Default.work_directory = value; Properties.Settings.Default.Save(); }
+            set { Properties.Settings.Default.work_directory = CorrectFormatFolderPath(value); Properties.Settings.Default.Save(); }
         }
         public static string compDir
         {
             get { return Properties.Settings.Default.export_directory; }
-            set { Properties.Settings.Default.export_directory = value; Properties.Settings.Default.Save(); }
+            set { Properties.Settings.Default.export_directory = CorrectFormatFolderPath(value); Properties.Settings.Default.Save(); }
         }
         public static string gameFtDir
         {
             get { return Properties.Settings.Default.game_fighter_directory; }
-            set { Properties.Settings.Default.game_fighter_directory = value; Properties.Settings.Default.Save(); }
+            set { Properties.Settings.Default.game_fighter_directory = CorrectFormatFolderPath(value); Properties.Settings.Default.Save(); }
         }
         public static Dictionary<AITree.AIType, uint> fileMagic = new Dictionary<AITree.AIType, uint>()
         {

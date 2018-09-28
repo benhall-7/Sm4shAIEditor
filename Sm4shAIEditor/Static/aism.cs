@@ -99,6 +99,8 @@ namespace Sm4shAIEditor.Static
                         pathIn + "situation_attack.txt",
                         pathIn + "situation_defend.txt");
                     Console.Write(asm);
+                    if (!Directory.Exists(pathOut))
+                        Directory.CreateDirectory(pathOut);
                     BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
                     binWriter.Write(util.fileMagic[type]);
                     util.WriteReverseUInt32(binWriter, aipd.unk_size);
