@@ -197,6 +197,11 @@ namespace Sm4shAIEditor
                             if (tree == null) throw new Exception(notOpenMsg);
                             tree = null;
                             break;
+                        case opcode.pd:
+                            Console.WriteLine("workspace: " + util.workDir);
+                            Console.WriteLine("compile: " + util.compDir);
+                            Console.WriteLine("game: " + util.gameFtDir);
+                            break;
                     }
                 }
             }
@@ -222,7 +227,7 @@ namespace Sm4shAIEditor
             }
         }
 
-        enum opcode { h, wp, cp, gp, fl, tl, d, a, po, pn, pac, pag, pcm, pcl };
+        enum opcode { h, wp, cp, gp, fl, tl, d, a, po, pn, pac, pag, pcm, pcl, pd };
         static Dictionary<opcode, string> descriptions = new Dictionary<opcode, string>()
             {
                 { opcode.h, "this help text" },
@@ -238,12 +243,13 @@ namespace Sm4shAIEditor
                 "\t  -this list used for handling projects" },
                 { opcode.d, "disassemble file to workspace: [input file]" },
                 { opcode.a, "assemble folder to compile: [input folder]" },
-                { opcode.po, "open project (uses current 'wp' value)"},
-                { opcode.pn, "new project (uses current 'wp' and 'gp' values)"},
-                { opcode.pac, "add files from compile directory to project"},
-                { opcode.pag, "add files from game fighter directory to project"},
-                { opcode.pcm, "compile project workspace data"},
-                { opcode.pcl, "close project"}
+                { opcode.po, "open project (uses current 'wp' value)" },
+                { opcode.pn, "new project (uses current 'wp' and 'gp' values)" },
+                { opcode.pac, "add files from compile directory to project" },
+                { opcode.pag, "add files from game fighter directory to project" },
+                { opcode.pcm, "compile project workspace data" },
+                { opcode.pcl, "close project" },
+                { opcode.pd, "print workspace/compile/game fighter directories" }
             };
         static string helpReminder = string.Format("See {0} for help text", nameof(opcode.h));
     }
