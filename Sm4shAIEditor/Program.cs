@@ -207,9 +207,15 @@ namespace Sm4shAIEditor
                                 if (tree == null) throw new Exception(notOpenMsg);
                                 foreach (var ft in tree.fighters)
                                 {
-                                    Console.WriteLine(ft.name + ":");
-                                    foreach (var file in ft.files)
-                                        Console.WriteLine("  >{0}", AITree.AITypeToString[file.type]);
+                                    Console.Write(ft.name + ": {");
+                                    int count = ft.files.Count;
+                                    for (int j = 0; j < count; j++)
+                                    {
+                                        Console.Write(AITree.AITypeToString[ft.files[j].type]);
+                                        if (j < count - 1)
+                                            Console.Write(", ");
+                                    }
+                                    Console.WriteLine("}");
                                 }
                                 break;
                             }
