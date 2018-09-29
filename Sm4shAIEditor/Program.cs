@@ -202,6 +202,17 @@ namespace Sm4shAIEditor
                             Console.WriteLine("compile: " + util.compDir);
                             Console.WriteLine("game: " + util.gameFtDir);
                             break;
+                        case opcode.pt:
+                            {
+                                if (tree == null) throw new Exception(notOpenMsg);
+                                foreach (var ft in tree.fighters)
+                                {
+                                    Console.WriteLine(ft.name + ":");
+                                    foreach (var file in ft.files)
+                                        Console.WriteLine("  >{0}", AITree.AITypeToString[file.type]);
+                                }
+                                break;
+                            }
                     }
                 }
             }
@@ -227,7 +238,7 @@ namespace Sm4shAIEditor
             }
         }
 
-        enum opcode { h, wp, cp, gp, fl, tl, d, a, po, pn, pac, pag, pcm, pcl, pd };
+        enum opcode { h, wp, cp, gp, fl, tl, d, a, po, pn, pac, pag, pcm, pcl, pd, pt };
         static Dictionary<opcode, string> descriptions = new Dictionary<opcode, string>()
             {
                 { opcode.h, "this help text" },
@@ -249,7 +260,8 @@ namespace Sm4shAIEditor
                 { opcode.pag, "add files from game fighter directory to project" },
                 { opcode.pcm, "compile project workspace data" },
                 { opcode.pcl, "close project" },
-                { opcode.pd, "print workspace/compile/game fighter directories" }
+                { opcode.pd, "print workspace/compile/game fighter directories" },
+                { opcode.pt, "print project tree" }
             };
         static string helpReminder = string.Format("See {0} for help text", nameof(opcode.h));
     }
