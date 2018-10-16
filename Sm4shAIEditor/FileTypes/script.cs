@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-//Some assistance with the file format is credit to Sammi Husky
-
 namespace Sm4shAIEditor
 {
     class script
@@ -1079,73 +1077,6 @@ namespace Sm4shAIEditor
             {0x1054, 0},
         };
 
-        public static List<string> fighters = new List<string>()
-        {
-            "miifighter",
-            "miiswordsman",
-            "miigunner",
-            "mario",
-            "donkey",
-            "link",
-            "samus",
-            "yoshi",
-            "kirby",
-            "fox",
-            "pikachu",
-            "luigi",
-            "captain",
-            "ness",
-            "peach",
-            "koopa",
-            "zelda",
-            "sheik",
-            "marth",
-            "gamewatch",
-            "ganon",
-            "falco",
-            "wario",
-            "metaknight",
-            "pit",
-            "szerosuit",
-            "pikmin",
-            "diddy",
-            "dedede",
-            "ike",
-            "lucario",
-            "robot",
-            "toonlink",
-            "lizardon",
-            "sonic",
-            "purin",
-            "mariod",
-            "lucina",
-            "pitb",
-            "rosetta",
-            "wiifit",
-            "littlemac",
-            "murabito",
-            "palutena",
-            "reflet",
-            "duckhunt",
-            "koopajr",
-            "shulk",
-            "gekkouga",
-            "pacman",
-            "rockman",
-            "mewtwo",
-            "ryu",
-            "lucas",
-            "roy",
-            "cloud",
-            "bayonetta",
-            "kamui",
-            "koopag",
-            "warioman",
-            "littlemacg",
-            "lucariom",
-            "miienemyf",
-            "miienemys",
-            "miienemyg"
-        };
+        static List<string> fighters = new List<string> { "miifighter", "miiswordsman", "miigunner", "mario", "donkey", "link", "samus", "yoshi", "kirby", "fox", "pikachu", "luigi", "captain", "ness", "peach", "koopa", "zelda", "sheik", "marth", "gamewatch", "ganon", "falco", "wario", "metaknight", "pit", "szerosuit", "pikmin", "diddy", "dedede", "ike", "lucario", "robot", "toonlink", "lizardon", "sonic", "purin", "mariod", "lucina", "pitb", "rosetta", "wiifit", "littlemac", "murabito", "palutena", "reflet", "duckhunt", "koopajr", "shulk", "gekkouga", "pacman", "rockman", "mewtwo", "ryu", "lucas", "roy", "cloud", "bayonetta", "kamui", "koopag", "warioman", "littlemacg", "lucariom", "miienemyf", "miienemys", "miienemyg" };
     }//end of Script class
 }

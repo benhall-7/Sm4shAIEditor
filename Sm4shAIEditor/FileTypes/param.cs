@@ -135,9 +135,7 @@ namespace Sm4shAIEditor
                 for (int i = 0; i < unk_count; i++)
                 {
                     byte index = byte.Parse(sR.ReadWord());
-                    sR.ReadUntilAnyOfChars(",", true);
                     ushort hi_prob = ushort.Parse(sR.ReadWord());
-                    sR.ReadUntilAnyOfChars(",", true);
                     ushort lw_prob = ushort.Parse(sR.ReadWord());
                     unks[i] = new Unk(index, hi_prob, lw_prob);
                 }
@@ -160,7 +158,7 @@ namespace Sm4shAIEditor
             {
                 string str = "";
                 for (int i = 0; i < unks.Length; i++)
-                    str += string.Format("\t{0}, {1}, {2}\n", unks[i].index, unks[i].hi_rank_prob, unks[i].lw_rank_prob);
+                    str += string.Format("\t{0}\t{1}\t{2}\n", unks[i].index, unks[i].hi_rank_prob, unks[i].lw_rank_prob);
                 return str;
             }
         }
@@ -295,15 +293,27 @@ namespace Sm4shAIEditor
             return 4 * (cmd_count + sits.Length);
         }
 
+        //currently unused funcs
         public static int act_id2cmd(int act_id)
         {
-            //unused, right now anyway
             //basically uses act IDs in range [0x6011,0x602e), but unsure if 0x601f or 0x6020 is unused
             if (act_id > 0x6010)
             {
                 if (act_id < 0x6020)
                     return act_id - 0x6011;
                 if ((act_id -= 0x6012) < cmd_count)
+                    return act_id;
+            }
+            return 0;
+        }
+        public static int act_id2cmd2(int act_id)
+        {
+            //[0x6031, 0x]
+            if (act_id > 0x6030)
+            {
+                if (act_id < 0x6040)
+                    return act_id - 0x6031;
+                if ((act_id -= 0x6034) < 0x16)
                     return act_id;
             }
             return 0;
@@ -364,7 +374,7 @@ namespace Sm4shAIEditor
             "reflet_32",
             "reflet_33",
             "sheik_34",
-            "fox_falco_35",
+            "fox_falco_special_s_on",
             "szerosuit_36",
             "szerosuit_37",
             "palutena_38",

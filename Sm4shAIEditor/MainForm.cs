@@ -158,9 +158,6 @@ namespace Sm4shAIEditor
             Config config = new Config();
             if (!config.check && (config.ShowDialog() != DialogResult.OK))
                 return false;
-            util.workDir = util.CorrectFormatFolderPath(util.workDir);
-            util.compDir = util.CorrectFormatFolderPath(util.compDir);
-            util.gameFtDir = util.CorrectFormatFolderPath(util.gameFtDir);
             return true;
         }
     }
