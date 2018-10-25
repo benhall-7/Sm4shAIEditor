@@ -1,61 +1,57 @@
-﻿namespace Sm4shAIEditor
+﻿using System;
+
+namespace Sm4shAIEditor
 {
     class CustomStringReader
     {
-        private static string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.";
-        private static string validEqnChars = "=+-*/";
-        private static string validIfChars = "&|";
-        private static string spaceCharacters = " \t\r\n";
+        private const string validWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.";
+        private const string validEqnChars = "=+-*/";
+        private const string validIfChars = "&|";
+        private const string spaceCharacters = " \t\r\n";
         private static char CommentChar = '#';
 
+        private string name = "Unnamed";
+
         public int Position { get; set; }
-        private char[] charArray { get; set; }
-        public char[] CharArray
+        private string source { get; set; }
+        public string Source
         {
-            get
-            {
-                return charArray;
-            }
+            get { return source; }
             set
             {
-                charArray = value;
+                source = value;
                 Position = 0;
             }
         }
         public bool EndString
         {
-            get
-            {
-                if (Position >= CharArray.Length)
-                    return true;
-                else
-                    return false;
-            }
+            get { return Position >= Source.Length; }
         }
 
         public CustomStringReader(string text)
         {
-            charArray = text.ToCharArray();
-            //when setting a new charArray, position is automatically set to 0
+            source = text;
+        }
+        public CustomStringReader(string text, string name)
+        {
+            source = text;
+            this.name = name;
         }
 
         public string ReadChar()
         {
             string c = null;
             if (!EndString)
-            {
-                c = CharArray[Position].ToString();
-                Position++;
-            }
+                c += Source[Position++];
             return c;
         }
         public void SkipWhiteSpace()
         {
             while (!EndString)
             {
-                if (spaceCharacters.Contains(CharArray[Position].ToString()))
+                if (spaceCharacters.Contains(Source[Position].ToString()))
                     Position++;
-                else if (CharArray[Position] == CommentChar)
+                else if (Source[Position] == CommentChar)
                 {
                     Position++;
                     SkipToEndLine();
@@ -67,7 +63,7 @@
         {
             while (!EndString)
             {
-                if (CharArray[Position] != '\n')
+                if (Source[Position] != '\n')
                     Position++;
                 else break;
             }
@@ -141,12 +137,15 @@
             else
             {
                 for (string c = ReadChar(); c != null && !charsToEndAt.Contains(c); c = ReadChar())
-                {
                     s += c;
-                }
                 Position--;
             }
             return s;
+        }
+
+        public string ExceptionMsg(string message)
+        {
+            return string.Format("ERROR [{0}, pos {1}]:\n\t>{2}", name, Position, message);
         }
     }
 }

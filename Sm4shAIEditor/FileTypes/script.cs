@@ -102,20 +102,27 @@ namespace Sm4shAIEditor
                 ScriptFloats = new Dictionary<uint, float>();
                 LabelNames = new List<string>();
 
-                CustomStringReader sReader = new CustomStringReader(text);
-                bool isIfArg = false;
-                while (!sReader.EndString)
+                CustomStringReader sReader = new CustomStringReader(text, ID.ToString("X4"));
+                try
                 {
-                    Cmd cmd = new Cmd(sReader, ref isIfArg, this);
-                    cmd.ParamCount = (byte)cmd.ParamList.Count;
-                    cmd.Size = (UInt16)(4 + (4 * cmd.ParamCount));
-                    CmdList.Add(cmd);
-                    sReader.SkipWhiteSpace();
-                    ScriptFloatOffset += cmd.Size;
+                    bool isIfArg = false;
+                    while (!sReader.EndString)
+                    {
+                        Cmd cmd = new Cmd(sReader, ref isIfArg, this);
+                        CmdList.Add(cmd);
+                        sReader.SkipWhiteSpace();
+                        ScriptFloatOffset += cmd.Size;
+                    }
+                    //warnings
+                    if (VarCount > 25)
+                        Console.WriteLine("NOTICE: (Act {0}) variable count exceeded 25", ID);
                 }
-                //warnings
-                if (VarCount > 25)
-                    Console.WriteLine("NOTICE: (Act {0}) variable count exceeded 25", ID);
+                catch (Exception e)
+                {
+                    //yes this looks janky
+                    //it's for conveying inner info to an outer try/catch block
+                    throw new Exception(sReader.ExceptionMsg(e.Message));
+                }
             }
 
             public class Cmd
@@ -146,7 +153,7 @@ namespace Sm4shAIEditor
                     ID = id;
                     ParamList = paramList;
                     ParamCount = (byte)paramList.Count;
-                    Size = (UInt16)(ParamCount * 4 + 4);
+                    Size = (ushort)(ParamCount * 4 + 4);
                 }
                 public Cmd(CustomStringReader sReader, ref bool isIfArg, Act parent)
                 {
@@ -167,7 +174,7 @@ namespace Sm4shAIEditor
                             if (nextChar == ")")
                                 isIfArg = false;
                             else
-                                throw new Exception("syntax; expected '&&', '||', or ')' keys");
+                                throw new Exception("expected '&&', '||', or ')' keys");
                         }
 
                         if (isIfArg)
@@ -188,7 +195,8 @@ namespace Sm4shAIEditor
                         if (parent.CmdList.Count > 0 && parent.CmdList[parent.CmdList.Count - 1].ID == 8)//if last command was Else
                         {
                             sReader.SkipWhiteSpace();
-                            if (sReader.ReadChar() != "{")//basically we just want to skip to past the { sign so we can read more commands
+                            //basically we just want to skip to past the { sign so we can read more commands
+                            if (sReader.ReadChar() != "{")
                                 sReader.Position--;//if Else is followed by a real command, don't skip the first letter
                         }
                         word = sReader.ReadWord();
@@ -283,6 +291,8 @@ namespace Sm4shAIEditor
                         if (!isIfArg && canHaveArgs)
                             ConvertCmdParams(sReader);
                     }
+                    ParamCount = (byte)ParamList.Count;
+                    Size = (ushort)(ParamCount * 4 + 4);
                 }
 
                 private void ConvertCmdParams(CustomStringReader sReader)
@@ -302,7 +312,7 @@ namespace Sm4shAIEditor
                                 sReader.SkipWhiteSpace();
                                 string append = sReader.ReadChar();
                                 if (append != ")")
-                                    throw new Exception(string.Format("Syntax error in {0} arg: {1}", cmd_info[ID].name, append));
+                                    throw new Exception(string.Format("syntax error in {0} arg: {1}", cmd_info[ID].name, append));
                                 if (word == null) break;
                                 if (parent.LabelNames.Contains(word))
                                     ParamList.Add((uint)parent.LabelNames.IndexOf(word));

@@ -94,7 +94,7 @@ namespace Sm4shAIEditor
                 if (sit_dir == sit1_dir) sit_return_start = sit_index;
                 else if (sit_dir == sit2_dir) sit_attack_start = sit_index;
                 else if (sit_dir == sit3_dir) sit_defend_start = sit_index;
-                sReader.CharArray = File.ReadAllText(sit_dir).ToCharArray();
+                sReader.Source = File.ReadAllText(sit_dir);
                 while (true)
                 {
                     string word = sReader.ReadWord();
