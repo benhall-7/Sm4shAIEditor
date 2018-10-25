@@ -145,7 +145,7 @@ namespace Sm4shAIEditor
 
         public string ExceptionMsg(string message)
         {
-            return string.Format("ERROR [{0}, pos {1}]:\n\t>{2}", name, Position, message);
+            return string.Format("[{0}, pos {1}]:\n\t>{2}", name, Position, message);
         }
     }
 }
