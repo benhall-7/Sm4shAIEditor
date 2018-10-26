@@ -79,38 +79,46 @@ namespace Sm4shAIEditor
             for (int i = 0; i < flg_count; i++)
                 this.flags[i] = byte.Parse(flags[i]);
             //parse cmd file
-            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(cmd_dir));
-            for (int i = 0; i < cmd_count; i++)
+            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(cmd_dir), "section_3.txt");
+            try
             {
-                string word = sReader.ReadWord();
-                sReader.SkipToEndLine();
-                cmds[i] = new Cmd(sReader);
-            }
-            //parse situation files
-            List<Situation> ls = new List<Situation>();
-            byte sit_index = 0;
-            foreach (string sit_dir in new string[] { sit1_dir, sit2_dir, sit3_dir })
-            {
-                if (sit_dir == sit1_dir) sit_return_start = sit_index;
-                else if (sit_dir == sit2_dir) sit_attack_start = sit_index;
-                else if (sit_dir == sit3_dir) sit_defend_start = sit_index;
-                sReader.Source = File.ReadAllText(sit_dir);
-                while (true)
+                for (int i = 0; i < cmd_count; i++)
                 {
                     string word = sReader.ReadWord();
-                    if (word != "if")
-                    {
-                        if (word == null) break;//end of file
-                        else throw new Exception("ERROR: expected 'if', received '" + word + "'");
-                    }
-                    ls.Add(new Situation(sReader));
-                    sit_index++;
+                    sReader.SkipToEndLine();
+                    cmds[i] = new Cmd(sReader);
                 }
-                if (sit_dir == sit1_dir) sit_return_end = (byte)(sit_index - 1);
-                else if (sit_dir == sit2_dir) sit_attack_end = (byte)(sit_index - 1);
-                else if (sit_dir == sit3_dir) sit_defend_end = (byte)(sit_index - 1);
+                //parse situation files
+                List<Situation> ls = new List<Situation>();
+                byte sit_index = 0;
+                foreach (string sit_dir in new string[] { sit1_dir, sit2_dir, sit3_dir })
+                {
+                    if (sit_dir == sit1_dir) sit_return_start = sit_index;
+                    else if (sit_dir == sit2_dir) sit_attack_start = sit_index;
+                    else if (sit_dir == sit3_dir) sit_defend_start = sit_index;
+                    sReader.Source = File.ReadAllText(sit_dir);
+                    sReader.name = sit_dir;
+                    while (true)
+                    {
+                        string word = sReader.ReadWord();
+                        if (word != "if")
+                        {
+                            if (word == null) break;//end of file
+                            else throw new Exception("ERROR: expected 'if', received '" + word + "'");
+                        }
+                        ls.Add(new Situation(sReader));
+                        sit_index++;
+                    }
+                    if (sit_dir == sit1_dir) sit_return_end = (byte)(sit_index - 1);
+                    else if (sit_dir == sit2_dir) sit_attack_end = (byte)(sit_index - 1);
+                    else if (sit_dir == sit3_dir) sit_defend_end = (byte)(sit_index - 1);
+                }
+                sits = ls.ToArray();
             }
-            sits = ls.ToArray();
+            catch (Exception e)
+            {
+                throw new Exception(sReader.ExceptionMsg(e.Message), e);
+            }
         }
 
         public class Cmd

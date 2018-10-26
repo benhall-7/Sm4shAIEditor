@@ -165,7 +165,10 @@ namespace Sm4shAIEditor.Static
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: {0}", e.Message);
-                Console.WriteLine(e.StackTrace);
+                if (e.InnerException != null)
+                    Console.WriteLine(e.InnerException.StackTrace);
+                else
+                    Console.WriteLine(e.StackTrace);
             }
         }
 
@@ -259,7 +262,10 @@ namespace Sm4shAIEditor.Static
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: {0}", e.Message);
-                Console.WriteLine(e.StackTrace);
+                if (e.InnerException != null)
+                    Console.WriteLine(e.InnerException.StackTrace);
+                else
+                    Console.WriteLine(e.StackTrace);
             }
         }
     }

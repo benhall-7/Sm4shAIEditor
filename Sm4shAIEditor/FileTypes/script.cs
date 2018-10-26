@@ -78,6 +78,7 @@ namespace Sm4shAIEditor
                     CmdList.Add(cmd);
 
                     //add values to the script float list
+                    //actually a poor implementation, but doesn't fail in any reasonable conditions
                     foreach (uint cmdParam in cmd.ParamList)
                     {
                         if (cmdParam >= 0x2000 &&
@@ -102,7 +103,7 @@ namespace Sm4shAIEditor
                 ScriptFloats = new Dictionary<uint, float>();
                 LabelNames = new List<string>();
 
-                CustomStringReader sReader = new CustomStringReader(text, ID.ToString("X4"));
+                CustomStringReader sReader = new CustomStringReader(text, ID.ToString("X4") + ".txt");
                 try
                 {
                     bool isIfArg = false;
@@ -121,7 +122,7 @@ namespace Sm4shAIEditor
                 {
                     //yes this looks janky
                     //it's for conveying inner info to an outer try/catch block
-                    throw new Exception(sReader.ExceptionMsg(e.Message));
+                    throw new Exception(sReader.ExceptionMsg(e.Message), e);
                 }
             }
 

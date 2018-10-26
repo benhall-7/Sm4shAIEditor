@@ -26,32 +26,39 @@ namespace Sm4shAIEditor
         {
             common_subactions = cmn_subs;
             special_subactions = spc_subs;
-            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(attackDir));
-            List<attack> atks = new List<attack>();
-            while (true)
+            CustomStringReader sReader = new CustomStringReader(File.ReadAllText(attackDir), "attack_data.txt");
+            try
             {
-                attack atk = new attack();
-                string subactionStr = sReader.ReadWord();
-                if (subactionStr == null)
-                    break;
-                atk.subaction = ushort.Parse(subactionStr);
-                sReader.ReadUntilAnyOfChars("[", true);
-                atk.start = ushort.Parse(sReader.ReadWord());
-                sReader.ReadUntilAnyOfChars(",", true);
-                atk.end = ushort.Parse(sReader.ReadWord());
-                sReader.ReadUntilAnyOfChars("[", true);
-                atk.x1 = float.Parse(sReader.ReadWord());
-                sReader.ReadUntilAnyOfChars(",", true);
-                atk.x2 = float.Parse(sReader.ReadWord());
-                sReader.ReadUntilAnyOfChars(",", true);
-                atk.y1 = float.Parse(sReader.ReadWord());
-                sReader.ReadUntilAnyOfChars(",", true);
-                atk.y2 = float.Parse(sReader.ReadWord());
-                sReader.SkipToEndLine();
-                atks.Add(atk);
+                List<attack> atks = new List<attack>();
+                while (true)
+                {
+                    attack atk = new attack();
+                    string subactionStr = sReader.ReadWord();
+                    if (subactionStr == null)
+                        break;
+                    atk.subaction = ushort.Parse(subactionStr);
+                    sReader.ReadUntilAnyOfChars("[", true);
+                    atk.start = ushort.Parse(sReader.ReadWord());
+                    sReader.ReadUntilAnyOfChars(",", true);
+                    atk.end = ushort.Parse(sReader.ReadWord());
+                    sReader.ReadUntilAnyOfChars("[", true);
+                    atk.x1 = float.Parse(sReader.ReadWord());
+                    sReader.ReadUntilAnyOfChars(",", true);
+                    atk.x2 = float.Parse(sReader.ReadWord());
+                    sReader.ReadUntilAnyOfChars(",", true);
+                    atk.y1 = float.Parse(sReader.ReadWord());
+                    sReader.ReadUntilAnyOfChars(",", true);
+                    atk.y2 = float.Parse(sReader.ReadWord());
+                    sReader.SkipToEndLine();
+                    atks.Add(atk);
+                }
+                attacks = atks.ToArray();
+                count = (uint)attacks.Length;
             }
-            attacks = atks.ToArray();
-            count = (uint)attacks.Length;
+            catch (Exception e)
+            {
+                throw new Exception(sReader.ExceptionMsg(e.Message), e);
+            }
         }
         
         private void InitializeEntries(UInt32 entryCount, BinaryReader binReader)

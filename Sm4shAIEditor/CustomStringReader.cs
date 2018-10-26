@@ -10,8 +10,7 @@ namespace Sm4shAIEditor
         private const string spaceCharacters = " \t\r\n";
         private static char CommentChar = '#';
 
-        private string name = "Unnamed";
-
+        public string name { get; set; } = "Unnamed";
         public int Position { get; set; }
         private string source { get; set; }
         public string Source
