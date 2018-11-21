@@ -314,9 +314,8 @@ namespace Sm4shAIEditor
             }
             return 0;
         }
-        public static int act_id2cmd2(int act_id)
+        public static int act_id2index(int act_id)
         {
-            //[0x6031, 0x]
             if (act_id > 0x6030)
             {
                 if (act_id < 0x6040)

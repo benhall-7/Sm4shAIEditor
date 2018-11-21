@@ -79,14 +79,14 @@ namespace Sm4shAIEditor
 
                     //add values to the script float list
                     //actually a poor implementation, but doesn't fail in any reasonable conditions
-                    foreach (uint cmdParam in cmd.ParamList)
+                    foreach (uint param in cmd.ParamList)
                     {
-                        if (cmdParam >= 0x2000 &&
-                            cmdParam < 0x2100 &&
-                            !ScriptFloats.ContainsKey(cmdParam) &&
+                        if (param >= 0x2000 &&
+                            param < 0x2100 &&
+                            !ScriptFloats.ContainsKey(param) &&
                             cmd.ID != 0x1b)
                         {
-                            ScriptFloats.Add(cmdParam, GetScriptFloat(binReader, cmdParam, actPosition, ScriptFloatOffset));
+                            ScriptFloats.Add(param, GetScriptFloat(binReader, param, actPosition, ScriptFloatOffset));
                         }
                     }
 
@@ -368,6 +368,18 @@ namespace Sm4shAIEditor
                                 }
                             }
                             break;
+                        case 0x1b://set act
+                            {
+                                sReader.ReadUntilAnyOfChars("(", true);
+                                string word = sReader.ReadWord();
+                                sReader.SkipWhiteSpace();
+                                string append = sReader.ReadChar();
+                                if (append != ")")
+                                    throw new Exception(string.Format("syntax error in {0} arg: {1}", cmd_info[ID].name, append));
+                                if (word != null)
+                                    ParamList.Add(ActName2ID_0x(word));
+                                break;
+                            }
                         case 0x1e:
                             sReader.ReadUntilAnyOfChars("(", true);
                             while (true)
@@ -488,7 +500,7 @@ namespace Sm4shAIEditor
                 byte relID = 0xFF;
                 for (int cmdIndex = 0; cmdIndex < CmdList.Count; cmdIndex++)
                 {
-                    script.Act.Cmd cmd = CmdList[cmdIndex];
+                    Cmd cmd = CmdList[cmdIndex];
 
                     //control the nested level spaces
                     string ifPadding = "";
@@ -622,6 +634,13 @@ namespace Sm4shAIEditor
                             cmdString += cmdParams + "\r\n";
                             text += ifPadding + cmdString;
                             break;
+                        case 0x1b:
+                            cmdString += cmd_info[cmd.ID].name + "(";
+                            if (cmd.ParamCount > 0)
+                                cmdParams += ActID2Name_0x(cmd.ParamList[0]);
+                            cmdString += cmdParams + ")" + "\r\n";
+                            text += ifPadding + cmdString;
+                            break;
                         case 0x1e://VarAbs, which supports arbitrary number of args
                             cmdString += cmd_info[cmd.ID].name + "(";
                             for (int i = 0; i < cmd.ParamCount; i++)
@@ -636,22 +655,7 @@ namespace Sm4shAIEditor
                             break;
                         default:
                             cmdString += cmd_info[cmd.ID].name + "(";
-                            string parsed = ParseCmdParams(cmd);
-                            if (parsed != null)
-                            {
-                                cmdParams += parsed;
-                            }
-                            else
-                            {
-                                //hopefully I get to the point where this becomes obsolete
-                                for (int i = 0; i < cmd.ParamCount; i++)
-                                {
-                                    cmdParams += "0x" + cmd.ParamList[i].ToString("X");
-
-                                    if (i != cmd.ParamCount - 1)
-                                        cmdParams += ", ";
-                                }
-                            }
+                            cmdParams += ParseCmdParams(cmd);
                             cmdString += cmdParams + ")" + "\r\n";
                             text += ifPadding + cmdString;
                             break;
@@ -726,12 +730,12 @@ namespace Sm4shAIEditor
                 return id;
             }
 
-            protected float GetScriptFloat(BinaryReader binReader, uint cmdParam, uint actPosition, uint floatOffset)
+            protected float GetScriptFloat(BinaryReader binReader, uint param, uint actPosition, uint floatOffset)
             {
                 float scriptFloat;
-                Int32 binPosition = (Int32)binReader.BaseStream.Position;
-                cmdParam -= 0x2000;
-                binReader.BaseStream.Seek(actPosition + floatOffset + cmdParam * 4, SeekOrigin.Begin);
+                int binPosition = (int)binReader.BaseStream.Position;
+                param -= 0x2000;
+                binReader.BaseStream.Seek(actPosition + floatOffset + param * 4, SeekOrigin.Begin);
                 scriptFloat = util.ReadReverseFloat(binReader);
                 binReader.BaseStream.Seek(binPosition, SeekOrigin.Begin);
                 return scriptFloat;
@@ -859,6 +863,34 @@ namespace Sm4shAIEditor
                 if (varID > VarCount)
                     VarCount = (ushort)(varID + 1);
             }
+
+            public static string ActID2Name(uint id)
+            {
+                if (Enum.IsDefined(typeof(act_names), id))
+                    return ((act_names)id).ToString();
+                return id.ToString("x4");
+            }
+
+            public static uint ActName2ID_Hex(string name)
+            {
+                if (Enum.IsDefined(typeof(act_names), name))
+                    return (uint)Enum.Parse(typeof(act_names), name);
+                return uint.Parse(name, System.Globalization.NumberStyles.HexNumber);
+            }
+
+            public static string ActID2Name_0x(uint id)
+            {
+                if (Enum.IsDefined(typeof(act_names), id))
+                    return ((act_names)id).ToString();
+                return "0x" + id.ToString("x4");
+            }
+
+            public static uint ActName2ID_0x(string name)
+            {
+                if (name.Substring(0, 2) != "0x")
+                    throw new FormatException("name '" + name + "' is in an incorrect format");
+                return ActName2ID_Hex(name.Remove(0, 2));
+            }
         }//end of Act class
 
         public struct CmdInfo
@@ -912,7 +944,7 @@ namespace Sm4shAIEditor
             new CmdInfo("Or","For use only in If statements. Use || instead"),
             new CmdInfo("OrNot","For use only in If statements. Use || !(condition) instead"),
             new CmdInfo("And","For use only in If statements. Use && instead"),
-            new CmdInfo("AndNot","For use only in If statemnets. Use && !(condition) instead"),
+            new CmdInfo("AndNot","For use only in If statements. Use && !(condition) instead"),
             new CmdInfo("SetFrame","Sets a value representing the execution frame, continues counting up every frame", new byte[] { 3 }),
             new CmdInfo("SetAct","Sets a new Act ID, to be called when the script finishes", new byte[] { 0 }),
             new CmdInfo("Call","Goes to to a specified label immediately. When a return command is reached, go back immediately", new byte[] { 0 }),
@@ -1087,6 +1119,30 @@ namespace Sm4shAIEditor
             {0x1047, 0},
             {0x1054, 0},
         };
+
+        public enum act_names : uint
+        {
+            attack1 = 0x6031,
+            attack_s3,
+            attack_hi3,
+            attack_lw3,
+            attack_s4,
+            attack_hi4,
+            attack_lw4,
+            special_n,
+            special_s,
+            special_hi,
+            special_lw,
+            attack_air_n = 0x6041,
+            attack_air_f,
+            attack_air_b,
+            attack_air_hi,
+            attack_air_lw,
+            special_air_n,
+            special_air_s,
+            special_air_hi,
+            special_air_lw,
+        }
 
         static List<string> fighters = new List<string> { "miifighter", "miiswordsman", "miigunner", "mario", "donkey", "link", "samus", "yoshi", "kirby", "fox", "pikachu", "luigi", "captain", "ness", "peach", "koopa", "zelda", "sheik", "marth", "gamewatch", "ganon", "falco", "wario", "metaknight", "pit", "szerosuit", "pikmin", "diddy", "dedede", "ike", "lucario", "robot", "toonlink", "lizardon", "sonic", "purin", "mariod", "lucina", "pitb", "rosetta", "wiifit", "littlemac", "murabito", "palutena", "reflet", "duckhunt", "koopajr", "shulk", "gekkouga", "pacman", "rockman", "mewtwo", "ryu", "lucas", "roy", "cloud", "bayonetta", "kamui", "koopag", "warioman", "littlemacg", "lucariom", "miienemyf", "miienemys", "miienemyg" };
     }//end of Script class

@@ -58,20 +58,20 @@ namespace Sm4shAIEditor.Static
                     Dictionary<uint, string> acts = new Dictionary<uint, string>();
                     string[] IDs = File.ReadAllLines(pathIn + "acts.txt");
                     foreach(string ID in IDs)
-                        acts.Add(uint.Parse(ID, NumberStyles.HexNumber), File.ReadAllText(pathIn + ID + ".txt"));
-                    script script = new script(acts);
+                        acts.Add(script.Act.ActName2ID_Hex(ID), File.ReadAllText(pathIn + ID + ".txt"));
+                    script Script = new script(acts);
                     Console.Write(asm);
                     if (!Directory.Exists(pathOut))
                         Directory.CreateDirectory(pathOut);
                     BinaryWriter binWriter = new BinaryWriter(File.Create(pathOut + fileType + ".bin"));
                     binWriter.Write((int)0);//pad
-                    util.WriteReverseUInt32(binWriter, script.actCount);
+                    util.WriteReverseUInt32(binWriter, Script.actCount);
                     binWriter.Write((long)0);//pad
-                    foreach (var act in script.acts.Keys)
-                        util.WriteReverseUInt32(binWriter, script.acts[act]);
-                    foreach (var act in script.acts.Keys)
+                    foreach (var act in Script.acts.Keys)
+                        util.WriteReverseUInt32(binWriter, Script.acts[act]);
+                    foreach (var act in Script.acts.Keys)
                     {
-                        binWriter.BaseStream.Position = script.acts[act];
+                        binWriter.BaseStream.Position = Script.acts[act];
                         util.WriteReverseUInt32(binWriter, act.ID);
                         util.WriteReverseUInt32(binWriter, act.ScriptOffset);
                         util.WriteReverseUInt32(binWriter, act.ScriptFloatOffset);
@@ -90,7 +90,7 @@ namespace Sm4shAIEditor.Static
                     }
                     binWriter.Dispose();
                 }
-                else //param and param_nfp will use same methods
+                else //param and param_nfp use same methods
                 {
                     param aipd = new param(pathIn + "section_1.txt",
                         pathIn + "section_2.txt",
@@ -214,8 +214,9 @@ namespace Sm4shAIEditor.Static
                     StreamWriter writer = new StreamWriter(File.Create(pathOut + "acts.txt"));
                     foreach (var act in script.acts.Keys)
                     {
-                        writer.WriteLine(act.ID.ToString("X4"));
-                        File.WriteAllText(pathOut + act.ID.ToString("X4") + ".txt", act.ToString());
+                        string name = script.Act.ActID2Name(act.ID);
+                        writer.WriteLine(name);
+                        File.WriteAllText(pathOut + name + ".txt", act.ToString());
                     }
                     writer.Dispose();
                 }
