@@ -970,11 +970,11 @@ namespace Sm4shAIEditor
             new CmdInfo("SwingChkSet","Sets a value indicating that the AI should 'respond' to successfully hitting the target. Affects a value in memory which affects act frequency"),
             new CmdInfo("GetNearestCliffAbs","", new byte[] { 2 }),
             new CmdInfo("ClearStick","If arg is not given, sets both StickX and StickY to 0. Otherwise, if the arg is 0, only sets StickX to 0, else sets StickY to 0", new byte[] { 0 }),
-            new CmdInfo("Unk_Stick","Add values to StickX and StickY, but multiplies the arguments by an unknown value", new byte[] { 3, 3 }),
+            new CmdInfo("AddStickLazy","Add values to StickX and StickY, but multiplies the arguments by an unknown value", new byte[] { 3, 3 }),
             new CmdInfo("Null_34","This command serves no function?"),
             new CmdInfo("Null_35","This command serves no function?"),
-            new CmdInfo("StickAngleFront","Sets StickX and StickY using an angle measure in degrees, clockwise", new byte[] { 3 }),
-            new CmdInfo("StickAngleBack","Sets StickX and StickY using an angle measure in degrees, counter-clockwise", new byte[] { 3 }),
+            new CmdInfo("AddStickDegCW","Sets StickX and StickY using an angle measure in degrees, clockwise", new byte[] { 3 }),
+            new CmdInfo("AddStickDegCCW","Sets StickX and StickY using an angle measure in degrees, counter-clockwise", new byte[] { 3 }),
             new CmdInfo("ACos","Sets a variable to the arccosine of itself. Will throw an error if the absolute value > 1", new byte[] { 1 }),
             new CmdInfo("Unk_39","")
         };
